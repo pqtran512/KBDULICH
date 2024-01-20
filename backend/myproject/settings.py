@@ -37,9 +37,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'django_mysql',
+    'mydata.apps.MydataConfig',
     'rest_framework',
     'corsheaders',
-    'myapi',
 ]
 
 MIDDLEWARE = [
