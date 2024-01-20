@@ -8,6 +8,35 @@ class ManagerSerializer(serializers.ModelSerializer):
         fields=('manager_ID', 'email', 'password')
 
 class StaffSerializer(serializers.ModelSerializer):
+    staff_ID = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
+    phone_no = serializers.CharField(required=True)
+    dateOfBirth = serializers.DateField()
+    isActive = serializers.BooleanField()
+    gender = serializers.CharField(max_length=1)
+    lastName = serializers.CharField(required=True)
+    firstName = serializers.CharField(required=True)
+    encryp_pass = serializers.CharField(required=True)
+    managerID = serializers.PrimaryKeyRelatedField(queryset=Manager.objects.all(), allow_null=False, required=True)
+
+    def createStaff(self, staff_data):
+        return Staff.objects.create(**staff_data)
+    
+    def editStaff(self, instance, new_data):
+        instance.staff_ID = new_data.get('staff_ID', instance.staff_ID)
+        instance.email = new_data.get('email', instance.email)
+        instance.phone_no = new_data.get('phone_no', instance.phone_no)
+        instance.dateOfBirth = new_data.get('dateOfBirth', instance.dateOfBirth)
+        instance.isActive = new_data.get('isActive', instance.isActive)
+        instance.gender = new_data.get('gender', instance.gender)
+        instance.lastName = new_data.get('lastName', instance.lastName)
+        instance.firstName = new_data.get('firstName', instance.firstName)
+        instance.encryp_pass = new_data.get('encryp_pass', instance.encryp_pass)
+        instance.managerID = new_data.get('managerID', instance.managerID)
+
+        instance.save()
+        return instance
+    
     class Meta:
         model=Staff
         fields=('staff_ID', 'email', 'phone_no', 'dateOfBirth', 'isActive', 'gender', 'lastName', 'firstName', 'encryp_pass', 'managerID')
@@ -71,6 +100,11 @@ class EditRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model=EditRequest
         fields=('tour_draft', 'request_ID')
-        
+
+class AddRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=AddRequest
+        fields=('request_ID', 'departure', 'vehicle', 'seat_num', 'price', 'isActive', 'starting_date', 'bookingDeadline', 'day_num', 'night_num', 'note', 'places')
+
 
 
