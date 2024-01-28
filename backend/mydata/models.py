@@ -2,14 +2,15 @@ import json
 from django.db import models
 from django_mysql.models import ListCharField
 from django.core.validators import MinValueValidator, MaxValueValidator
+#from django_cryptography.fields import encrypt
 
 class Manager(models.Model):
-    manager_ID = models.CharField(max_length=50, primary_key=True)
+    manager_ID = models.AutoField(primary_key=True)
     email = models.EmailField(null=False, unique=True)
     password = models.CharField(max_length=50, null=False)
 
 class Staff(models.Model):
-    staff_ID = models.CharField(max_length=50, primary_key=True)
+    staff_ID = models.AutoField(primary_key=True)
     email = models.EmailField(null=False, unique=True)
     phone_no = models.CharField(max_length=10)
     dateOfBirth = models.DateField()
@@ -21,7 +22,7 @@ class Staff(models.Model):
     managerID = models.ForeignKey(Manager, on_delete=models.CASCADE)
 
 class Place(models.Model):
-    place_ID = models.CharField(max_length=50, primary_key=True)
+    place_ID = models.AutoField(primary_key=True)
     province = models.CharField(max_length=30, null=False)
     description = models.CharField(max_length=1000, null=False)
     name = models.CharField(max_length = 100, null=False, unique=True)
@@ -31,7 +32,7 @@ class PlaceImages(models.Model):
     place_ID = models.ForeignKey(Place, on_delete=models.CASCADE)
 
 class Customer(models.Model):
-    customer_ID = models.CharField(max_length=50, primary_key=True)
+    customer_ID = models.AutoField(primary_key=True)
     username = models.CharField(max_length=20, null=False, unique=True)
     password = models.CharField(max_length=20, null=False)
     phone_no = models.CharField(max_length=10, null=False, unique=True)
@@ -76,7 +77,7 @@ class Customer_views_Place(models.Model):
     user_ID = models.ForeignKey(Customer, on_delete=models.CASCADE)
 
 class Feedback(models.Model):
-    feedback_ID = models.CharField(max_length=30, primary_key=True)
+    feedback_ID = models.AutoField(primary_key=True)
     ratings = models.IntegerField(
         null=False,
         validators=[
@@ -90,7 +91,7 @@ class Feedback(models.Model):
     tour_ID = models.ForeignKey(Tour, on_delete=models.CASCADE)
 
 class Order(models.Model):
-    order_ID = models.CharField(max_length=30, primary_key=True)
+    order_ID = models.AutoField(primary_key=True)
     pay_method = models.CharField(max_length=20, null=False)
     user_ID = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
     email = models.EmailField(null=False, unique=True)
@@ -107,7 +108,7 @@ class Staff_add_Order_of_Tour(models.Model):
     order_ID = models.ForeignKey(Order, on_delete=models.CASCADE)
 
 class Request(models.Model):
-    request_ID = models.CharField(max_length=30, primary_key=True)
+    request_ID = models.AutoField(primary_key=True)
     status = models.CharField(max_length=20, null=False)
     date = models.DateTimeField(auto_now_add=True)
     reply = models.CharField(max_length=200)

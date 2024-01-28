@@ -40,8 +40,14 @@ INSTALLED_APPS = [
     'django_mysql',
     'mydata.apps.MydataConfig',
     'rest_framework',
+    # 'django_filters',
+    # 'rest_framework.authtoken',
     'corsheaders',
 ]
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+# }
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
