@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './assets/fonts/prata/style.css';
+@import './assets/fonts/segoe-ui/style.css';
+@import './assets/fonts/vampiro-one/style.css';
+@import './assets/fonts/font-icon/style.css';
+
+@layer components {
+    html {
+        scroll-behavior: smooth;
+    }
+    .navbar-list {
+        @media (max-width: 1279px) {
+            transition: all 0.3s ease;
+            height: calc(100vh - 95px);
+            &.left-open {
+                left: 0;
+                padding: 24px;
+                row-gap: 16px;
+            }
+        }
+    }
+    .navbar-title {
+        @media (max-width: 1279px) {
+            & .arrow{
+                &.up {
+                    transform: rotate(180deg);
+                }
+            }
+            ul {
+                max-height: 0px;
+                overflow: hidden;
+                &.open {
+                    max-height: 600px;
+                    overflow-y: scroll;
+                } 
+            }
+        }
+    }
+    .dropdown {
+        max-height: 0px;
+        overflow: hidden;
+        &.open {
+            max-height: 170px;
+            overflow-y: scroll;
+        }
+    }
+    select>option {
+        font-size: 16px;
+    }
+    .text-shadow {
+        -webkit-text-stroke: 2px #2C333A;
+    }
+    .grid-rows-temp {
+        grid-template-rows: min-content;
+    }
+    .grid-cols-md {
+        grid-template-columns: auto auto;
+    }
+    .grid-subcols-xl {
+        grid-template-columns: 302px auto;
+    }
+    .grid-subcols2-xl {
+        grid-template-columns: auto 302px;
+    }
+    .grid-cols-xl {
+        grid-template-columns: auto 519px;
+    }
+    .grid-cols-btn {
+        grid-template-columns: 145px 145px;
+    }
+    .grid-cols-101 {
+        grid-template-columns: 101px auto;
+    }
+    .grid-cols-845 {
+        grid-template-columns: 845px auto;
+        grid-template-rows: min-content;
+    }
+    /* toggle button */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 34px;
+        height: 20px;
+    }
+    .switch input { 
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #858F9B;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        right: 4px;
+        bottom: 3px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+    input:checked + .slider {
+        background-color: #0051CD;
+    }
+    input:checked + .slider:before {
+        -webkit-transform: translateX(-12px);
+        -ms-transform: translateX(-12px);
+        transform: translateX(-12px);
+    }
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+    .slider.round:before {
+        border-radius: 50%;
+    }
+    .h-line {
+        height: calc(100% - 28px);
+    }
+    .tourtable {
+        tr {
+            height: 60px;
+            box-shadow: 0px -1px 0px 0px #C4C4C4 inset;
+        }
+        tr:first-child {
+            height: 62px;
+            box-shadow: 0px -1px 0px 0px #C4C4C4 inset;
+        }
+        td {
+            padding-right: 30px;
+        }
+        td:last-child {
+            padding-right: 0px;
+        }
+    }
+    .mytable {
+        td:first-child {
+            padding-left: 20px;
+        }
+    }
+    /* hover button */
+    .btn-light::before {
+        background-color: #0051CD;
+        border-radius: 99px;
+    }
+    .btn-dark::before {
+        background-color: white;
+        border-radius: 99px;
+    }
+    .btn-search::before {
+        background-color: white;
+        border-radius: 200px;
+    }
+    .btn1:hover {
+        outline: #0051CD solid 3px;
+        color: #0051CD;
+        transition: 0.2s ease-out;
+    }
+    .btn2:hover {
+        border: 3px solid #002466;
+        color: #002466;
+        transition: 0.2s ease-out;
+        transition-delay: 0.1s;
+    }
+    .btn3:hover {
+        border: 2px solid white;
+        color: white;
+        transition: 0.2s ease-out;
+    }
+    .hover-filled-slide-right::before {
+        position: absolute;
+        content: "";
+        top:0; bottom: 0; left: 0;
+        height: 100%; width: 0%;
+    }
+    .hover-filled-slide-right:hover::before {
+        width: 100%;
+        transition: 0.2s ease-out;
+    }
+    .activeBtn {
+        background-color: #1A6DE3;
+        color: white;
+    }
+    .star-container {
+        cursor: pointer;
+        .star {
+            transition: all 300ms;
+            &.change-color {
+                color: #F8CC1A;
+            }
+            &.yellow {
+                color: #F8CC1A;
+            }
+        }
+        .keyword {
+            transition: all 300ms;
+            &.change-color {
+                color: #E9A800;
+            }
+            &.yellow {
+                color: #E9A800;
+            }
+        }
+    }
+}
+@layer utilities {
+    .card:hover>.card-img {
+        transform: scaleY(1.25);
+    }
+    .sub-menu:hover>.sub-menu-dot {
+        opacity: 1;
+        display: block;
+        background-color: #126DA6;
+    }
+    .sub-menu:hover>.sub-menu-title {
+        color: #126DA6;
+        padding-left: 8px;
+    }
+}

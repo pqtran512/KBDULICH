@@ -1,0 +1,22 @@
+export const path = {
+    AUTH: '/auth',
+    LOGIN: 'login',
+    REGISTER: 'register',
+    RESETPASS: 'reset_pass',
+    HOME: '/*',
+    SEARCH: 'search',
+    TOUR_DETAIL: 'tour-detail',
+    TOUR_BOOKING: 'tour-booking',
+    TOUR_BOOKING2: 'tour-booking2',
+    TOUR_BOOKING3: 'tour-booking3',
+    NEWS: 'news',
+    NEWS_DETAIL: 'news-detail',
+    PERSONAL_PROFILE: 'personal-profile',
+    CONTACT: 'contact',
+
+    SYSTEM_HOME: '/staff/*',
+    SYSTEM_TOUR_DETAIL: 'tour-detail',
+    NEW_TOUR: 'new-tour',
+    REQUEST_LIST: 'request',
+    REQUEST_DETAIL: 'request-detail',
+}
