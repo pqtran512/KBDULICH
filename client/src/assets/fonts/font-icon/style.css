@@ -1,0 +1,96 @@
+@font-face {
+  font-family: 'TwebIcons-22';
+  src:  url('fonts/TwebIcons-22.eot?vqo623');
+  src:  url('fonts/TwebIcons-22.eot?vqo623#iefix') format('embedded-opentype'),
+    url('fonts/TwebIcons-22.ttf?vqo623') format('truetype'),
+    url('fonts/TwebIcons-22.woff?vqo623') format('woff'),
+    url('fonts/TwebIcons-22.svg?vqo623#TwebIcons-22') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="twi-22-"], [class*=" twi-22-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'TwebIcons-22' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.twi-22-paperclip-line:before {
+  content: "\e90b";
+}
+.twi-22-alert-circle-line:before {
+  content: "\e90d";
+}
+.twi-22-book-open-fill:before {
+  content: "\e914";
+}
+.twi-22-map-fill:before {
+  content: "\e915";
+}
+.twi-22-align-justify-line:before {
+  content: "\e916";
+}
+.twi-22-filter-line:before {
+  content: "\e901";
+}
+.twi-22-heart-fill:before {
+  content: "\e90a";
+}
+.twi-22-x-line:before {
+  content: "\e90c";
+}
+.twi-22-search-line:before {
+  content: "\e90e";
+}
+.twi-22-thumbs-up-line:before {
+  content: "\e913";
+}
+.twi-22-instagram-line:before {
+  content: "\e912";
+}
+.twi-22-facebook2-fill:before {
+  content: "\e900";
+}
+.twi-22-map-pin-fill:before {
+  content: "\e902";
+}
+.twi-22-bookmark-fill:before {
+  content: "\e903";
+}
+.twi-22-linkedin-fill:before {
+  content: "\e904";
+}
+.twi-22-x-circle-fill:before {
+  content: "\e905";
+}
+.twi-22-twitter-fill:before {
+  content: "\e906";
+}
+.twi-22-mail-fill:before {
+  content: "\e907";
+}
+.twi-22-phone-fill:before {
+  content: "\e908";
+}
+.twi-22-facebook-fill:before {
+  content: "\e909";
+}
+.twi-22-heart-line:before {
+  content: "\e90f";
+}
+.twi-22-chevron-line:before {
+  content: "\e910";
+}
+.twi-22-mail-line:before {
+  content: "\e911";
+}
