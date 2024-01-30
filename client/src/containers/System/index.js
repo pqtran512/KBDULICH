@@ -1,0 +1,7 @@
+export {default as Header} from './Header'
+export {default as Sidebar} from './Sidebar'
+export {default as SystemHome} from './SystemHome'
+export {default as SHomepage} from './SHomepage'
+export {default as SysTourDetail} from './TourDetail'
+export {default as NewTour} from './NewTour'
+export {default as RequestList} from './RequestList'
