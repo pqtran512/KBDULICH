@@ -9,7 +9,7 @@ export const apiRegister = (payload) => new Promise(async(resolve, reject) => {
         })
         resolve(response)
     } catch (error) {
-        console.log(error)
+        reject(error)
     }
 })
 
