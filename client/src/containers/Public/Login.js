@@ -14,15 +14,15 @@ const Login = () => {
         password: ''
     })
     const dispatch = useDispatch()
-    // const { isLoggedIn, msg, update } = useSelector(state => state.auth) // auth in rootReducer
+    const { isLoggedIn, msg, update } = useSelector(state => state.auth) // auth in rootReducer
     const navigate = useNavigate()
 
     // FUNCTIONS
     // validate inputs and call API
     const handleSubmit = async () => {
         let invalids = validate(payload)
-        // if (invalids === 0) 
-        //     dispatch(actions.login(payload)) 
+        if (invalids === 0) 
+            dispatch(actions.login(payload))
     }
     // validate inputs function
     const validate = (payload) => {
@@ -72,13 +72,13 @@ const Login = () => {
         return invalids
     } 
     // if isLoggedIn is true -> go to homepage
-    // useEffect(() => {
-    //     isLoggedIn && navigate('/')
-    // }, [isLoggedIn])
+    useEffect(() => {
+        isLoggedIn && navigate('/')
+    }, [isLoggedIn])
     // Popup msg when login failed
-    // useEffect(() => {
-    //     msg && Swal.fire('Oops !', msg, 'error')
-    // }, [msg, update]) // variable in [] -> dependency -> run when 1 of them changes
+    useEffect(() => {
+        msg && Swal.fire('Oops !', msg, 'error')
+    }, [msg, update]) // variable in [] -> dependency -> run when 1 of them changes
 
     return (
         <div className='mt-10 flex flex-col gap-5 bg-white w-[550px] rounded-xl p-8'>
