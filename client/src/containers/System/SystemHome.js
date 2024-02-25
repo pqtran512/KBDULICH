@@ -8,7 +8,7 @@ const SystemHome = () => {
     return (
         <div className='font-segoe'>
             <Header/>
-            <div className='flex gap-20 w-full'>
+            <div className='relative xl:flex gap-10 w-full'>
                 <Sidebar/>
                 <Outlet/>
             </div>

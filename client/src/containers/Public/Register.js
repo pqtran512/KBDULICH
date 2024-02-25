@@ -13,20 +13,21 @@ const Register = () => {
     // Register API
     const [payload, setPayload] = useState({
         username: '',
-        phone: '', 
+        phone_no: '', 
         email: '',
         password: '',
         password2: ''
     })
     const dispatch = useDispatch()
-    // const { isLoggedIn, msg, update } = useSelector(state => state.auth) // auth in rootReducer
+    const navigate = useNavigate()
+    const { isLoggedIn, msg, update } = useSelector(state => state.auth) // auth in rootReducer
 
     // FUNCTIONS
     // validate inputs and call API
     const handleSubmit = async () => {
         let invalids = validate(payload)
-        // if (invalids === 0) 
-        //     dispatch(actions.register(payload)) 
+        if (invalids === 0) 
+            dispatch(actions.register(payload)) 
     }
     // validate inputs function
     const validate = (payload) => {
@@ -59,7 +60,7 @@ const Register = () => {
                         }
                     }
                     break;
-                case 'phone':
+                case 'phone_no':
                     if (item[1] === '') { // item[1] is the value field
                         setInvalidFields(prev => [...prev, {
                             name: item[0],
@@ -127,6 +128,14 @@ const Register = () => {
         })
         return invalids
     } 
+    /// if isLoggedIn is true -> go to homepage
+    useEffect(() => {
+        isLoggedIn && navigate('/')
+    }, [isLoggedIn])
+    // Popup msg when login failed
+    useEffect(() => {
+        msg && Swal.fire('Oops !', msg, 'error')
+    }, [msg, update]) // variable in [] -> dependency -> run when 1 of them changes
 
     return (
         <div className='mt-4 flex flex-col gap-3 bg-white w-[550px] rounded-xl p-8'>
@@ -148,9 +157,9 @@ const Register = () => {
                     setInvalidFields={setInvalidFields} 
                     label='Số điện thoại' 
                     placeholder='Nhập số điện thoại' 
-                    value={payload.phone} 
+                    value={payload.phone_no} 
                     setValue={setPayload} 
-                    keyPayload='phone'
+                    keyPayload='phone_no'
                     asterisk
                     width='w-full'
                 />

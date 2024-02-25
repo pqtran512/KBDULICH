@@ -37,15 +37,6 @@ const Login = () => {
                             message: 'Bạn chưa nhập email !'
                         }])
                         invalids++
-                    } 
-                    else {
-                        if (!(/\S+@\S+\.\S+/.test(item[1]))) {
-                            setInvalidFields(prev => [...prev, {
-                                name: item[0],
-                                message: 'Email không hợp lệ !'
-                            }])
-                            invalids++
-                        }
                     }
                     break;
                 case 'password':
@@ -74,7 +65,7 @@ const Login = () => {
     // if isLoggedIn is true -> go to homepage
     useEffect(() => {
         isLoggedIn && navigate('/')
-    }, [isLoggedIn])
+    }, [isLoggedIn, navigate])
     // Popup msg when login failed
     useEffect(() => {
         msg && Swal.fire('Oops !', msg, 'error')
@@ -86,8 +77,8 @@ const Login = () => {
             <InputForm 
                 invalidFields={invalidFields} 
                 setInvalidFields={setInvalidFields} 
-                label='Email' 
-                placeholder='Nhập email' 
+                label='Email/ Tên' 
+                placeholder='Nhập email hoặc tên người dùng' 
                 value={payload.email} 
                 setValue={setPayload} 
                 keyPayload={'email'}

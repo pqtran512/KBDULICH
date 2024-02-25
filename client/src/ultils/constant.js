@@ -14,9 +14,24 @@ export const path = {
     PERSONAL_PROFILE: 'personal-profile',
     CONTACT: 'contact',
 
-    SYSTEM_HOME: '/staff/*',
+    STAFF_HOME: '/staff/*',
+    MANAGER_HOME: '/manager/*',
+    TOUR_LIST: 'tour',
     SYSTEM_TOUR_DETAIL: 'tour-detail',
-    NEW_TOUR: 'new-tour',
+    TOUR_NEW: 'tour-new',
+    TOUR_EDIT: 'tour-edit',
+
+    CUSTOMER_DETAIL: 'customer-detail',
+    
     REQUEST_LIST: 'request',
     REQUEST_DETAIL: 'request-detail',
+    REQUEST_DUP: 'create',
+    
+    STAFF_LIST: 'staff',
+    STAFF_DETAIL: 'staff-detail',
+    STAFF_NEW: 'staff-new',
+    STAFF_EDIT: 'staff-edit',
+
+    REPORT: 'report',
+    ACCOUNT: 'account'
 }

@@ -151,6 +151,11 @@
             padding-left: 20px;
         }
     }
+    .mytable2 {
+        td:first-child {
+            padding-left: 10px;
+        }
+    }
     /* hover button */
     .btn-light::before {
         background-color: #0051CD;
@@ -214,6 +219,40 @@
                 color: #E9A800;
             }
         }
+    }
+    .btn-3::before,
+    .btn-3::after {
+        position: absolute;
+        content: "";
+    }
+    .btn-3 {
+        padding: 5px;
+    }
+    .btn-3::before,
+    .btn-3::after {
+        background: transparent;
+        z-index: 2;
+    }
+
+    .hover-border-2::before,
+    .hover-border-2::after {
+        width: 10%; height: 25%;
+        transition: 0.35s;
+    }
+    .hover-border-2::before {
+        bottom: 0; left: 0;
+        border-left: 1px solid rgb(28, 31, 30);
+        border-bottom: 1px solid rgb(28, 31, 30);
+    }
+    .hover-border-2::after {
+        top: 0; right: 0;
+        border-right: 1px solid rgb(28, 31, 30);
+        border-top: 1px solid rgb(28, 31, 30);
+    }
+    .hover-border-2:hover::before,
+    .hover-border-2:hover::after {
+        width: 99%;
+        height: 99%;
     }
 }
 @layer utilities {

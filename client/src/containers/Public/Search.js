@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Card2, Datepicker, SelectInput, SearchBar } from '../../components';
+import { Button, Card2, Datepicker, SelectInput, SearchBar, Pagination } from '../../components';
 import { Link } from 'react-router-dom';
 import icons from '../../ultils/icons';
 
@@ -111,7 +111,7 @@ const Search = () => {
                                 <div className="pt-[10px] pb-[14px] pr-[10px]">
                                     <div className="text-title-1 font-semibold text-neutral-1-900">Ngày đi</div>
                                 </div>
-                                <Datepicker width='w-[397px]' outline/>
+                                <Datepicker width='w-[397px]' outline  min={true}/>
                             </div>
                             <div>
                                 <div className="pt-[10px] pb-[14px] pr-[10px]">
@@ -234,19 +234,8 @@ const Search = () => {
                                 <Card2 hidden='hidden md:block' animation='md:animate-fade-right'/>
                                 <Card2 hidden='hidden md:block' animation='md:animate-fade-left'/>
                             </div>
-                             {/* Pagination  */}
-                            <ul className="hidden xl:flex items-center justify-end gap-2">
-                                <li><div className="flex items-center justify-center w-10 h-10 rounded-[4px] text-[14px] leading-[22px] bg-neutral-1-300 text-primary-2 transition-all group hover:bg-white hover:text-white hover:font-semibold">
-                                    <Link to={"#"} className="flex items-center justify-center w-[38px] h-[38px] rounded-[4px] bg-neutral-1-300 transition-all duration-[40ms] group-hover:bg-primary-2">1</Link></div>
-                                </li>
-                                <li><div className="flex items-center justify-center w-10 h-10 rounded-[4px] text-[14px] leading-[22px] bg-neutral-1-300 text-primary-2 transition-all group hover:bg-white hover:text-white hover:font-semibold">
-                                    <Link to={"#"} className="flex items-center justify-center w-[38px] h-[38px] rounded-[4px] bg-neutral-1-300 transition-all duration-[40ms] group-hover:bg-primary-2">2</Link></div>
-                                </li>
-                                <li><div className="flex items-center justify-center w-10 h-10 rounded-[4px] text-[14px] leading-[22px] bg-neutral-1-300 text-primary-2 transition-all group hover:bg-white hover:text-white hover:font-semibold">
-                                    <Link to={"#"} className="flex items-center justify-center w-[38px] h-[38px] rounded-[4px] bg-neutral-1-300 transition-all duration-[40ms] group-hover:bg-primary-2"><i className="twi-22-chevron-line text-[12px] text-center group-hover:font-semibold"></i></Link>
-                                    </div>
-                                </li>
-                            </ul>
+                            {/* Pagination  */}
+                            <Pagination />
                         </div>
                     </div>
                 </div>

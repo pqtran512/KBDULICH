@@ -1,12 +1,17 @@
 import {Routes,Route} from "react-router-dom";
 import { Auth, Login, ResetPass, Register, Home, Homepage, Search, TourDetail, TourBooking, TourBooking2, TourBooking3, News, NewsDetail, PersonalProfile, Contact} from "./containers/Public";
-import { SystemHome, SHomepage, SysTourDetail, NewTour, RequestList } from "./containers/System";
+import { SystemHome, STourList, SysTourDetail, TourNew, RequestList, RequestDetail, MTourList, StaffDetail, StaffList, StaffNew, Report, Account, CustomerDetail, TourEdit, StaffEdit } from "./containers/System";
 import { path } from "./ultils/constant";
 
 function App() {
   return (
     <div>
       <Routes>
+        <Route path={path.AUTH} element={<Auth/>} >
+          <Route path={path.LOGIN} element={<Login/>} />
+          <Route path={path.REGISTER} element={<Register/>} />
+          <Route path={path.RESETPASS} element={<ResetPass/>} />
+        </Route>
         <Route path={path.HOME} element={<Home/>} >
           <Route path='*' element={<Homepage/>} />
           <Route path={path.SEARCH} element={<Search/>} />
@@ -19,17 +24,34 @@ function App() {
           <Route path={path.PERSONAL_PROFILE} element={<PersonalProfile/>} />
           <Route path={path.CONTACT} element={<Contact/>} />
         </Route>
-        <Route path={path.SYSTEM_HOME} element={<SystemHome/>} >
-          <Route path='*' element={<SHomepage/>} />
+        <Route path={path.STAFF_HOME} element={<SystemHome/>} >
+          <Route path='*' element={<STourList/>} />
+          <Route path={path.TOUR_LIST} element={<STourList/>} />
           <Route path={path.SYSTEM_TOUR_DETAIL} element={<SysTourDetail/>} />
-          <Route path={path.NEW_TOUR} element={<NewTour/>} />
+          <Route path={path.TOUR_EDIT} element={<TourEdit/>} />
+          <Route path={path.TOUR_NEW} element={<TourNew/>} />
+          <Route path={path.CUSTOMER_DETAIL} element={<CustomerDetail/>} />
           <Route path={path.REQUEST_LIST} element={<RequestList/>} />
-          <Route path={path.REQUEST_DETAIL} element={<SysTourDetail/>} />
+          <Route path={path.REQUEST_DETAIL} element={<RequestDetail/>}>
+            <Route path={path.REQUEST_DUP} element={<RequestList/>} />
+          </Route>
+          <Route path={path.ACCOUNT} element={<Account/>} />
         </Route>
-        <Route path={path.AUTH} element={<Auth/>} >
-          <Route path={path.LOGIN} element={<Login/>} />
-          <Route path={path.REGISTER} element={<Register/>} />
-          <Route path={path.RESETPASS} element={<ResetPass/>} />
+        <Route path={path.MANAGER_HOME} element={<SystemHome/>} >
+          <Route path='*' element={<MTourList/>} />
+          <Route path={path.TOUR_LIST} element={<MTourList/>} />
+          <Route path={path.SYSTEM_TOUR_DETAIL} element={<SysTourDetail/>} />
+          <Route path={path.TOUR_EDIT} element={<TourEdit/>} />
+          <Route path={path.REQUEST_LIST} element={<RequestList/>} />
+          <Route path={path.REQUEST_DETAIL} element={<RequestDetail/>}>
+            <Route path={path.REQUEST_DUP} element={<RequestDetail/>} />
+          </Route>
+          <Route path={path.STAFF_LIST} element={<StaffList/>} />
+          <Route path={path.STAFF_DETAIL} element={<StaffDetail/>} />
+          <Route path={path.STAFF_EDIT} element={<StaffEdit/>} />
+          <Route path={path.STAFF_NEW} element={<StaffNew/>} />
+          <Route path={path.REPORT} element={<Report/>} />
+          <Route path={path.ACCOUNT} element={<Account/>} />
         </Route>
       </Routes>
     </div>

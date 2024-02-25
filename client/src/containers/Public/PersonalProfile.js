@@ -24,7 +24,7 @@ const PersonalProfile = () => {
     const navigate = useNavigate()
     // Handle feedback
     const handleSubmitFeedback = async () => {
-        console.log(feedback)
+        // console.log(feedback)
         Swal.fire('Gửi đánh giá thành công !', '', 'success').then((result) => {
             setIsShown(false);
             document.body.style.overflow = "auto";

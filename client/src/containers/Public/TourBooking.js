@@ -196,6 +196,16 @@ const TourBooking = () => {
                                 asterisk
                                 width='w-full'
                             />
+                            <InputForm 
+                                invalidFields={invalidFields} 
+                                setInvalidFields={setInvalidFields} 
+                                label='Ghi chú (nếu có)' 
+                                placeholder='Nhập ghi chú' 
+                                value={payload.note} 
+                                setValue={setPayload} 
+                                keyPayload={'note'}
+                                width='w-full'
+                            />
                             <Button 
                                 text='Tiếp tục'
                                 textColor='text-white' 

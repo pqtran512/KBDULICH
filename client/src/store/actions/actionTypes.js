@@ -6,6 +6,10 @@ const actionTypes = {
     LOGOUT: 'LOGOUT',
 
     // USER
-    GET_CURRENT: 'GET_CURRENT'
+    GET_CURRENT: 'GET_CURRENT',
+
+    // TOUR
+    GET_TOURS: 'GET_TOURS',
+    GET_TOURS_LIMIT: 'GET_TOURS_LIMIT'
 }
 export default actionTypes

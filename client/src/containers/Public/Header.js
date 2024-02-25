@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import blueLogo from '../../assets/img/header-footer/logo-blue.png'
 import icons from '../../ultils/icons';
-import {Link} from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import * as actions from '../../store/actions'
 
@@ -12,6 +12,8 @@ const Header = () => {
     const dispatch = useDispatch()
     const [isOpen, setIsOpen] = useState(false);
     const [isDropdown, setIsDropdown] = useState(false);
+    const {isLoggedIn} = useSelector(state => state.auth)
+    const navigate = useNavigate()
 
     // FUNCTION
     // onclick navbar-menu function on mobile/ tablet screen
@@ -24,6 +26,10 @@ const Header = () => {
         // 👇️ toggle isDropdown state on click
         setIsDropdown(current => !current);
     };
+    const logout = async () => {
+        dispatch(actions.logout())
+        navigate('/auth/login')
+    }
     return (
         <header className='w-full bg-white shadow-shad1 sticky top-0 z-50'>
             <div className='mx-auto w-full md:max-w-3xl xl:max-w-7xl'>
@@ -71,19 +77,19 @@ const Header = () => {
                                     </ul>
                                 </div>
                                 <Link to={'/contact'} className='w-full pb-2 xl:w-fit xl:pl-16'>Liên hệ</Link>
-                                {/* {isLoggedIn &&  */}
-                                    <button className='h-fit xl:pl-16'>
+                                {isLoggedIn && 
+                                    <button className='h-fit xl:pl-16' onClick={logout}>
                                         <FiLogOut size={28}/>
                                     </button>
-                                {/* } */}
+                                }
                             </div>
                         </div>
-                        <Link to={'/auth/login'} className='h-fit'>
+                        <Link to={`${isLoggedIn ? '/personal-profile' : '/auth/login'} `} className='h-fit'>
                             <FaRegUser size={28}/>
                         </Link>
-                        {/* {isLoggedIn &&  */}
+                        {isLoggedIn && 
                         <div className='hidden md:block pl-8'>Xin chào, user1</div>
-                        {/* } */}
+                        }
                     </div>
                 </div>
             </div>

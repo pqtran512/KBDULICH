@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import logoBlue from '../../assets/img/header-footer/logo-blue.png'
 import { Datepicker, ButtonRound, Card1, Card2, Card3, CardArticle, SelectInput } from '../../components'
+import { getTours } from '../../store/actions/tourAction';
+import { useDispatch, useSelector } from 'react-redux'
 
 const places = [
     { value: 'An Giang', label: 'An Giang' },
@@ -10,6 +12,12 @@ const places = [
   ]
   
 const Homepage = () => {
+    const dispatch = useDispatch()
+    const { tours } = useSelector(state => state.tour)
+    useEffect(() => {
+        dispatch(getTours())
+    }, [])
+
     return (
         <div className='overflow-x-hidden'>
             {/* Banner giới thiệu */}
@@ -36,7 +44,7 @@ const Homepage = () => {
                                 <div className="flex justify-between items-center md:gap-x-[37px] xl:gap-x-[104px]">
                                     <div className="min-w-[148px]">
                                         <div className="pr-2 text-[14px] h-[31px] text-neutral-1-900 font-semibold xl:text-[18px]">Chọn ngày</div>
-                                        <Datepicker width='w-[148px]' outline/>
+                                        <Datepicker width='w-[148px]' outline min={true}/>
                                     </div>
                                     <ButtonRound link='/search' width='w-[148px]' height='h-[52px]' text='Tìm kiếm' textColor='text-white' bgColor='bg-primary-2' type='btn1' hoverType='btn-dark' textSize='text-caption-2 md:text-button1'/>
                                 </div>
@@ -47,6 +55,18 @@ const Homepage = () => {
                                     <Card1 img='../img/home/sec1-img1.png' text1='Quảng Ninh' text2='Du lịch Thành phố Hạ Long' price='10,500,000đ' />
                                     <Card1 img='../img/home/sec1-img2.png' text1='Đà Nẵng' text2='Du lịch Bà Nà Hills' price='12,500,000đ' />
                                     <Card1 img='../img/home/sec1-img3.png' text1='Quảng Ninh' text2='Du lịch Thành phố Hạ Long' price='10,500,000đ' />
+                                    {/* {tours?.length > 0 && tours.map(item => {
+                                        return (
+                                            <Card1
+                                                key={item?.id}
+                                                img={JSON.parse(item?.images?.image)}
+                                                text1={item?.province}
+                                                text2={item?.name}
+                                                price={item?.price}
+                                                id={item?.id}
+                                            />
+                                        )
+                                    })} */}
                                 </div>
                             </div>
                         </div>
