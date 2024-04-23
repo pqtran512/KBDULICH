@@ -1,5 +1,5 @@
 import actionTypes from './actionTypes'
-import { apiRegister, apiLogin } from '../../services/authService'
+import { apiRegister, apiLogin, apiForgotPassword, apiChangePassword } from '../../services/authService'
 
 export const register = (payload) => async (dispatch) => { // register func. returns a func
     try {
@@ -40,6 +40,50 @@ export const login = (payload) => async (dispatch) => { // register func. return
     } catch (error) {
         dispatch({
             type: actionTypes.LOGIN_FAIL,
+            data: null
+        })
+    }
+}
+
+export const forgotPassword = (payload) => async (dispatch) => { // register func. returns a func
+    try {
+        const response = await apiForgotPassword(payload)
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.MAIL_SUCESS,
+                data: response.data.msg
+            })
+        } else {
+            dispatch({
+                type: actionTypes.MAIL_FAIL,
+                data: response.data.msg
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.MAIL_FAIL,
+            data: null
+        })
+    }
+}
+
+export const changePassword = (payload) => async (dispatch) => { // register func. returns a func
+    try {
+        const response = await apiChangePassword(payload)
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.CHANGEPASS_SUCESS,
+                data: response.data.token
+            })
+        } else {
+            dispatch({
+                type: actionTypes.CHANGEPASS_FAIL,
+                data: response.data.msg
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.CHANGEPASS_FAIL,
             data: null
         })
     }

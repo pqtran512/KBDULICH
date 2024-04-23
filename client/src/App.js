@@ -1,6 +1,6 @@
 import {Routes,Route} from "react-router-dom";
-import { Auth, Login, ResetPass, Register, Home, Homepage, Search, TourDetail, TourBooking, TourBooking2, TourBooking3, News, NewsDetail, PersonalProfile, Contact} from "./containers/Public";
-import { SystemHome, STourList, SysTourDetail, TourNew, RequestList, RequestDetail, MTourList, StaffDetail, StaffList, StaffNew, Report, Account, CustomerDetail, TourEdit, StaffEdit } from "./containers/System";
+import { Auth, Login, ResetPass1, ResetPass2, Register, Home, Homepage, Search, TourDetail, TourBooking, TourBooking2, TourBooking3, News, NewsDetail, PersonalProfile, Contact} from "./containers/Public";
+import { SystemLogin, SystemResetPass1, SystemResetPass2, SystemHome, STourList, SysTourDetail, TourNew, RequestList, RequestDetail, MTourList, StaffDetail, StaffList, StaffNew, Report, Account, CustomerDetail, TourEdit, StaffEdit, SystemAuth } from "./containers/System";
 import { path } from "./ultils/constant";
 
 function App() {
@@ -10,12 +10,20 @@ function App() {
         <Route path={path.AUTH} element={<Auth/>} >
           <Route path={path.LOGIN} element={<Login/>} />
           <Route path={path.REGISTER} element={<Register/>} />
-          <Route path={path.RESETPASS} element={<ResetPass/>} />
+          <Route path={path.RESETPASS1} element={<ResetPass1/>} />
+          <Route path={path.RESETPASS2} element={<ResetPass2/>} />
+        </Route>
+        <Route path={path.SYSTEM_AUTH} element={<SystemAuth/>} >
+          <Route path={path.LOGIN} element={<SystemLogin/>} />
+          <Route path={path.RESETPASS1} element={<SystemResetPass1/>} />
+          <Route path={path.RESETPASS2} element={<SystemResetPass2/>} />
         </Route>
         <Route path={path.HOME} element={<Home/>} >
           <Route path='*' element={<Homepage/>} />
           <Route path={path.SEARCH} element={<Search/>} />
-          <Route path={path.TOUR_DETAIL} element={<TourDetail/>} />
+          <Route path={path.SEARCH__PAGE} element={<Search/>} />
+          {/* <Route path={path.TOUR_DETAIL} element={<TourDetail/>} /> */}
+          <Route path={path.TOUR_DETAIL_ID} element={<TourDetail/>} />
           <Route path={path.TOUR_BOOKING} element={<TourBooking/>} />
           <Route path={path.TOUR_BOOKING2} element={<TourBooking2/>} />
           <Route path={path.TOUR_BOOKING3} element={<TourBooking3/>} />

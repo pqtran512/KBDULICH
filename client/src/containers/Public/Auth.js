@@ -4,7 +4,6 @@ import whiteLogo from '../../assets/img/header-footer/logo-white.png'
 import '../../index.scss';
 
 const Auth = () => {
-
     return (
         <div className='w-full h-screen bg-primary-1 font-segoe text-neutral-1-900 pb-[18px]'>
             <div className='w-full h-full flex flex-col items-center justify-center'>

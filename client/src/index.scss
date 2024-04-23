@@ -72,7 +72,7 @@
         grid-template-columns: 145px 145px;
     }
     .grid-cols-101 {
-        grid-template-columns: 101px auto;
+        grid-template-columns: 115px auto;
     }
     .grid-cols-845 {
         grid-template-columns: 845px auto;
@@ -253,6 +253,11 @@
     .hover-border-2:hover::after {
         width: 99%;
         height: 99%;
+    }
+    // range slider
+    .track.track-1 {
+        background: #1A6DE3;
+        height: 3px;
     }
 }
 @layer utilities {

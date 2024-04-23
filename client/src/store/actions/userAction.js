@@ -7,7 +7,7 @@ export const getCurrent = () => async (dispatch) => {
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.GET_CURRENT,
-                currentData: response.data.response // access response returned by server/services/user.js
+                currentData: response.data.response // access response returned
             })
         } else {
             dispatch({

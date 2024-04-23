@@ -1,31 +1,22 @@
-import React, { useState }  from 'react';
-import { Button } from '../../components'
-import momo from '../../assets/img/home/momo.png'
-import vnpay from '../../assets/img/home/vnpay.png'
+import React, { useEffect }  from 'react';
+import { PayPal } from '../../components'
 import icons from '../../ultils/icons';
-import Swal from 'sweetalert2'
-import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { useLocation, useParams } from 'react-router-dom'
+import { getTour } from '../../store/actions/tourAction'
+import { splitDate } from '../../ultils/splitDate';
 
 const { FaCheck } = icons
 
 const TourBooking2 = () => {
-    const [selectedValue, setSelectedValue] = useState("option1"); 
-    const navigate = useNavigate()
-    const handleRadioChange = (value) => { 
-        setSelectedValue(value); 
-    }; 
-    const handleSubmit = async () => {
-        Swal.fire({
-            title: "Thanh toán thành công",
-            text: "",
-            icon: "success",
-            confirmButtonText: "Tiếp tục"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                navigate('/tour-booking3')
-            }
-        })
-    }
+    const location = useLocation();
+    const dispatch = useDispatch() 
+    const payload = location.state.payload;
+    const {tourID} = useParams();
+    const { tour } = useSelector(state => state.tour)
+    useEffect(() => {
+        dispatch(getTour({tour_ID: tourID}))
+    }, [dispatch, tourID])
     return (
         <div>
             <section className="mx-auto w-full pt-10 xl:max-w-7xl">
@@ -72,68 +63,35 @@ const TourBooking2 = () => {
                             <div className='text-body-2 font-semibold text-neutral-900 pb-2 md:text-header-1'>Thông tin đặt tour</div>
                             <div className='py-3 flex gap-5 border-b-[3px] border-white'>
                                 <img className='h-16 w-24 rounded-md' src='../img/home/sec2-img2.png' alt='' />
-                                <div className="text-neutral-1-900 text-title-2 font-semibold xl:text-title-1">Du lịch Bà Nà - Cầu Vàng - Sơn Trà - Biển Mỹ Khê - Hội An | 3N2Đ</div>
+                                <div className="text-neutral-1-900 text-title-2 font-semibold xl:text-title-1">{tour.name} | {tour.day_num}N{tour.night_num}Đ</div>
                             </div>
                             <div className="pt-5 flex flex-col gap-6 text-body-2">
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Mã tour</div>
-                                    <div className='text-neutral-1-900'>T_0512</div>
+                                    <div className='text-neutral-1-900'>{tour.tour_ID}</div>
                                 </div>
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Ngày khởi hành</div>
-                                    <div className='text-neutral-1-900'>31/08/2023</div>
+                                    <div className='text-neutral-1-900'>{splitDate(tour.starting_date)[0]}/{splitDate(tour.starting_date)[1]}/{splitDate(tour.starting_date)[2]}</div>
                                 </div>
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Số khách</div>
-                                    <div className='text-neutral-1-900'>1 khách</div>
+                                    <div className='text-neutral-1-900'>{payload.ticket_num} khách</div>
                                 </div>
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Giá 1 khách</div>
-                                    <div className='text-neutral-1-900'>22,690,000 VND</div>
+                                    <div className='text-neutral-1-900'>{Number(tour.price).toLocaleString()} VND</div>
                                 </div>
                                 <div className='w-full h-[2px] mb-2 bg-white'></div>
                                 <div className='flex font-semibold justify-between text-body-1'>
                                     <div className='text-neutral-1-900'>Tổng tiền</div>
-                                    <div className='text-secondary-1'>22,690,000 VND</div>
+                                    <div className='text-secondary-1'>{Number(tour.price*payload.ticket_num).toLocaleString()} VND</div>
                                 </div>
                             </div>
                         </div>
                         <div className='pt-10 flex flex-col gap-5 xl:pt-0 xl:w-1/2'>
                             <div className='text-body-2 font-semibold text-neutral-900 md:text-header-1'>Lựa chọn ngân hàng bạn sẽ thanh toán</div>
-                            <label htmlFor="option1" className='w-full flex justify-between shadow-md font-semibold py-3 px-5 rounded-t-xl cursor-pointer hover:bg-neutral-3-100'>
-                                <div className='flex gap-4 items-center'>
-                                    <img className="object-contain w-8 h-8" src={momo} alt=''/>
-                                    Thanh toán bằng Ví MoMo
-                                </div>
-                                <input 
-                                type="radio"
-                                id="option1"
-                                value="option1"
-                                checked={selectedValue === "option1"} 
-                                onChange={() => handleRadioChange("option1")} 
-                                /> 
-                            </label>
-                            <label htmlFor="option2" className='w-full flex justify-between shadow-md font-semibold py-3 px-5 rounded-t-xl cursor-pointer hover:bg-neutral-3-100'>
-                                <div className='flex gap-4 items-center'>
-                                    <img className="object-contain w-8 h-8" src={vnpay} alt=''/>
-                                    Ví điện tử VNPAY
-                                </div>
-                                <input 
-                                type="radio"
-                                id="option2"
-                                value="option2"
-                                checked={ selectedValue === "option2"} 
-                                onChange={() => handleRadioChange("option2")} 
-                                /> 
-                            </label>
-                            <Button 
-                                text='Xác nhận'
-                                textColor='text-white' 
-                                bgColor='bg-primary-2'
-                                mt
-                                wfull
-                                onClick={handleSubmit}
-                            />
+                            <PayPal payload={payload} tour={tour} />
                         </div>
                     </div>
                 </div>

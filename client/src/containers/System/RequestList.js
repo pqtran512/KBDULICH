@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { SearchBar } from '../../components';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import icons from '../../ultils/icons';
 
 const { MdContentCopy, CgArrowsExchangeAltV, FaArrowUpRightFromSquare } = icons
 
 const RequestList = () => {
+    const location = useLocation()
     const navigate = useNavigate()
     const [role, setRole] = useState('')
 
@@ -26,8 +27,7 @@ const RequestList = () => {
                 <div className='font-prata text-neutral-1-900 font-semibold text-header-1 xl:text-heading-4'>Danh sách Đề xuất</div>
                 <div className='ml-auto xl:ml-0'>
                     <SearchBar placeholder='Nhập ..' newPlaceholder='Nhập tìm kiếm . . .' width='w-12 md:w-24 xl:w-28' change={true} newWidth='w-[380px] md:w-[500px]' 
-                        id={true} tour={true} sendDate={true} replyDate={true}
-                    />
+                        optionBar={true} id={true} tour={true} sendDate={true} replyDate={true} path={location.pathname}/>
                 </div>
             </div>
             <div className='pb-3 text-body-1 text-neutral-1-900'>Tổng số: <span className='font-semibold'>3</span></div>
@@ -80,7 +80,7 @@ const RequestList = () => {
                 </tr>
                 <tr className='h-12 border-b-2 border-neutral-2-200'>
                     <td>3</td>
-                    <td><Link to={'/staff/tour-detail'} className='w-[250px] block text-accent-10 hover:text-accent-9 xl:w-[400px]'>Du lịch Bà Nà Hills - Cầu Rồng - Bán Đảo Sơn Trà</Link></td>
+                    <td><Link to={role === 'staff'? '/staff/tour-detail' : '/manager/tour-detail'} className='w-[250px] block text-accent-10 hover:text-accent-9 xl:w-[400px]'>Du lịch Bà Nà Hills - Cầu Rồng - Bán Đảo Sơn Trà</Link></td>
                     {role === 'staff' ? <></> : <td className='hidden md:table-cell'><Link to={'/manager/staff-detail'} className='text-accent-10 hover:text-accent-9'>Nguyễn Thị Anh</Link></td>}
                     <td className='hidden md:table-cell'>Tạo</td>
                     <td className='hidden md:table-cell'></td>

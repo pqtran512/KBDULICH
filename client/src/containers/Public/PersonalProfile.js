@@ -22,6 +22,24 @@ const PersonalProfile = () => {
     })
     const [isShown, setIsShown] = useState(false);
     const navigate = useNavigate()
+    // FUNCTION
+    const handleCancelBooking = async () => {
+        Swal.fire({
+            title: 'Chắc chắn ?',
+            text: "Bạn chắc chắn muốn hủy đặt vé ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Chắc chắn",
+            cancelButtonText: "Hủy",
+            showLoaderOnConfirm: true,
+            allowOutsideClick: () => !Swal.isLoading(),
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setPayload(prev => ({...prev, 'isActive': true}))
+                Swal.fire('Hủy thành công', 'Vui lòng kiểm tra email trong vòng 7 ngày tới !', 'success')
+            }
+        })
+    }
     // Handle feedback
     const handleSubmitFeedback = async () => {
         // console.log(feedback)
@@ -161,6 +179,13 @@ const PersonalProfile = () => {
                                 </div>
                                 <div className='flex justify-between items-end'>
                                     <div className='text-body-1 font-semibold'>Thành tiền: <span className='text-secondary-1'>8,500,000 đ</span></div>
+                                    <Button 
+                                        text='Hủy đặt'
+                                        textColor='text-white' 
+                                        bgColor='bg-accent-3'
+                                        redBtn
+                                        onClick={handleCancelBooking}
+                                    />
                                 </div>
                             </div>
                             {/* Card 2 */}
@@ -211,7 +236,7 @@ const PersonalProfile = () => {
                                 </div>
                                 <div className='flex justify-between items-end'>
                                     <div className='text-body-1 font-semibold'>Thành tiền: <span className='text-secondary-1'>8,500,000 đ</span></div>
-                                    <button className='py-2 px-8 rounded-md bg-[#919EAB] text-white'>Đã đánh giá</button>
+                                    <button className='cursor-default py-2 px-8 rounded-md bg-[#919EAB] text-white'>Đã đánh giá</button>
                                 </div>
                             </div>
                         </>

@@ -3,7 +3,7 @@ import icons from '../ultils/icons'
 
 const { BsEyeFill, FaEyeSlash } = icons
 
-const InputForm = ({ width, label, asterisk, placeholder, type, value, setValue, keyPayload, invalidFields, setInvalidFields, min, style2}) => {
+const InputForm = ({ width, label, asterisk, placeholder, type, value, setValue, keyPayload, invalidFields, setInvalidFields, min, max, style2}) => {
     const [visible, setIsVisible] = useState(false);
     const [focus, setFocus] = useState(false);
     return (
@@ -12,11 +12,12 @@ const InputForm = ({ width, label, asterisk, placeholder, type, value, setValue,
             <input 
                 id={keyPayload}
                 type={type === 'password'? (visible? 'text' : 'password') : (type || 'text')}
-                spellcheck="false"
+                spellCheck="false"
                 className={`rounded-md transition-all ${width} ${style2? 'outline-none bg-neutral-3-50 p-1 border-neutral-1-900 text-neutral-1-700' : 'rounded-md mt-1 p-3 bg-neutral-3-50 text-neutral-1-600'}`}  
                 placeholder={placeholder}
                 value={value}
                 min={min || 0}
+                max={max || null}
                 onChange={(e) => {
                     if (type === 'number') {
                         setValue(prev => ({...prev, [keyPayload]: +e.target.value}))
@@ -31,7 +32,7 @@ const InputForm = ({ width, label, asterisk, placeholder, type, value, setValue,
                     setFocus(true)
                 }}
                 onBlur={() => setFocus(false)}
-                autocomplete="off"
+                autoComplete="off"
             />
             {style2? 
                 <span className={`${focus? 'w-full' : 'w-0'} absolute bottom-0 left-0 h-[1px] bg-black transition-all duration-[0.4s]`}></span>

@@ -69,7 +69,7 @@ const Register = () => {
                         invalids++
                     } 
                     else {
-                        if (!(/^[0-9]+$/.test(item[1]))) {
+                        if (!(/^[0-9]{10}$/.test(item[1]))) {
                             setInvalidFields(prev => [...prev, {
                                 name: item[0],
                                 message: 'Số điện thoại không hợp lệ !'

@@ -1,8 +1,22 @@
-import React, {memo, useState} from 'react';
+import React, {memo, useState } from 'react';
 import Select from 'react-select';
+import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
 
-const SelectInput = ({myStyle, style2, style3, placeholder, options, defaultValue, setValue, keyPayload, invalidFields, setInvalidFields}) => {
+const SelectInput = ({myStyle, style2, style3, placeholder, options, defaultValue, setValue, setVar, keyPayload, invalidFields, setInvalidFields, path}) => {
   const [selectedOption, setSelectedOption] = useState(defaultValue);
+  const navigate = useNavigate()
+  const [paramsSeach] = useSearchParams()
+  let entries = paramsSeach.entries()
+  const append = (entries, value) => {
+    let params = []
+    paramsSeach.append('sort', value)
+    for (let entry of entries) {
+        params.push(entry);
+    }
+    let searchParamsObject = {}
+    params?.map(i => {searchParamsObject = {...searchParamsObject, [i[0]]: i[1]}})
+    return searchParamsObject
+  }
   return (
     <>
       <Select
@@ -101,8 +115,13 @@ const SelectInput = ({myStyle, style2, style3, placeholder, options, defaultValu
           defaultValue={selectedOption}
           value={selectedOption}
           onChange={(e) => {
-            setSelectedOption();
+            setSelectedOption(e);
             setValue && setValue(prev => ({...prev, [keyPayload]: e.value}))
+            setVar && setVar(e.value)
+            path && navigate({
+                pathname: path,
+                search: createSearchParams(append(entries, e.value)).toString()
+            });
           }}
           onFocus={() => setInvalidFields && setInvalidFields([])}
           options={options}

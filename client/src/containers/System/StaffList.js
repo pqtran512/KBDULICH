@@ -15,7 +15,7 @@ const StaffList = () => {
                 <div className='font-prata text-neutral-1-900 font-semibold text-header-1 xl:text-heading-4'>Danh sách Nhân viên</div>
                 <div className='ml-auto xl:ml-0'>
                     <SearchBar placeholder='Nhập ..' newPlaceholder='Nhập tìm kiếm . . .' width='w-10 md:w-24 xl:w-28' change={true} newWidth='w-[380px] xl:w-[500px]' 
-                        person={true} email={true}
+                        optionBar={true} person={true} email={true}
                     />
                 </div>
             </div>
@@ -91,7 +91,7 @@ const StaffList = () => {
                     <i className="twi-22-chevron-line text-[12px] leading-6"></i>
                 </Link>
             </div>
-            <Button2 text='+ Thêm nhân viên mới' textColor='text-white' bgColor='bg-[#363837]' btn3={true} onClick={() => navigate('/manager/staff-new')}/>
+            <Button2 text='+ Thêm nhân viên mới' textColor='text-white' bgColor='bg-[#363837]' onClick={() => navigate('/manager/staff-new')}/>
         </div>
     )
 }

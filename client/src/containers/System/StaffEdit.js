@@ -77,15 +77,7 @@ const StaffEdit = () => {
                     </div>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Ngày sinh:</div>
-                        <Datepicker width='w-40'
-                            // defaultValue={payload.departureDate}
-                            // value={payload.departureDate}
-                            setValue={setPayload} 
-                            keyPayload={'departureDate'}
-                            textColor='text-neutral-1-600'
-                            bgColor='bg-neutral-3-50'
-                            min={false}
-                        />
+                        <Datepicker width='w-[148px]' height='h-7' top='top-[6px]' outline />
                     </div>
                 </div>
                 <div className='flex flex-col gap-6'>
@@ -130,7 +122,7 @@ const StaffEdit = () => {
                 <div className='pb-1 font-prata text-neutral-1-900 font-semibold border-b-2 border-neutral-2-200 w-full px-4 rounded-xl shadow-title text-header-2 md:text-header-1'>Các Tour phụ trách</div>
                 <div className='pt-6 w-full flex justify-end'>
                     <SearchBar placeholder='Nhập ..' newPlaceholder='Nhập tìm kiếm . . .' width='w-12 md:w-24 xl:w-28' change={true} newWidth='w-[380px] md:w-[380px] xl:w-[620px]' 
-                        id={true} tour={true} 
+                        optionBar={true} id={true} tour={true} 
                     />
                 </div>
                 <div className='pb-3 text-body-1 text-neutral-1-900'>Tổng số: 2</div>

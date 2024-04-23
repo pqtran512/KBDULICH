@@ -1,31 +1,22 @@
-import React, { useState }  from 'react';
+import React, { useState, useEffect }  from 'react';
 import bookConfirm from '../../assets/img/home/book-confirm.png'
 import icons from '../../ultils/icons';
-import Swal from 'sweetalert2'
-import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { useLocation, useParams } from 'react-router-dom'
+import { getTour } from '../../store/actions/tourAction'
+import { splitDate } from '../../ultils/splitDate';
 
 const { FaCheck } = icons
 
 const TourBooking3 = () => {
-    const [selectedValue, setSelectedValue] = useState("option1"); 
-    const navigate = useNavigate()
-
-    const handleRadioChange = (value) => { 
-        setSelectedValue(value); 
-    }; 
-    const handleSubmit = async () => {
-        // Swal.fire('Thanh toán thành công', '', 'success')
-        Swal.fire({
-            title: "Thanh toán thành công",
-            text: "",
-            icon: "success",
-            confirmButtonText: "Tiếp tục"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                navigate('/tour-booking2')
-            }
-        })
-    }
+    const dispatch = useDispatch() 
+    const location = useLocation();
+    const payload = location.state.new_payload;
+    const {tourID} = useParams();
+    const { tour } = useSelector(state => state.tour)
+    useEffect(() => {
+        dispatch(getTour({tour_ID: tourID}))
+    }, [dispatch, tourID])
     return (
         <div>
             <section className="mx-auto w-full pt-10 xl:max-w-7xl">
@@ -83,37 +74,37 @@ const TourBooking3 = () => {
                         <div className="pt-5 flex flex-col gap-6 text-body-2">
                             <div className='flex justify-between'>
                                 <div className="text-neutral-1-500">Mã đơn hàng</div>
-                                <div className='text-neutral-1-900'>1523</div>
+                                <div className='text-neutral-1-900'>1523</div> {/* data */}
                             </div>
                             <div className='flex justify-between'>
                                 <div className="text-neutral-1-500">Ngày khởi hành</div>
-                                <div className='text-neutral-1-900'>31/08/2023</div>
+                                <div className='text-neutral-1-900'>{splitDate(tour.starting_date)[0]}/{splitDate(tour.starting_date)[1]}/{splitDate(tour.starting_date)[2]}</div>
                             </div>
                             <div className='flex justify-between'>
                                 <div className="text-neutral-1-500">Số khách</div>
-                                <div className='text-neutral-1-900'>2 khách</div>
+                                <div className='text-neutral-1-900'>{payload.ticket_num} khách</div>
                             </div>
                             <div className='flex justify-between'>
                                 <div className="text-neutral-1-500">Thành tiền</div>
-                                <div className='text-secondary-1 font-semibold'>22,690,000 VND</div>
+                                <div className='text-secondary-1 font-semibold'>{Number(payload.total_bill).toLocaleString()} VND</div>
                             </div>
                             <div className='w-full h-[2px] bg-neutral-3-200'></div>
                             <div className='text-body-2 font-semibold text-neutral-900 md:text-header-1'>Thông tin liên hệ</div>
                             <div className='flex justify-between'>
                                 <div className="text-neutral-1-500">Họ và tên</div>
-                                <div className='text-neutral-1-900'>Phạm Quỳnh Trân</div>
+                                <div className='text-neutral-1-900'>{payload.username}</div>
                             </div>
                             <div className='flex justify-between'>
                                 <div className="text-neutral-1-500">Email</div>
-                                <div className='text-neutral-1-900'>abc@gmail.com</div>
+                                <div className='text-neutral-1-900'>{payload.email}</div>
                             </div>
                             <div className='flex justify-between'>
                                 <div className='text-neutral-1-500'>Số điện thoại</div>
-                                <div className='text-neutral-1-900'>029644846151</div>
+                                <div className='text-neutral-1-900'>{payload.phone}</div>
                             </div>
                             <div className='flex justify-between'>
                                 <div className='text-neutral-1-500'>Ghi chú</div>
-                                <div className='text-neutral-1-900'>Phòng tầng cao</div>
+                                <div className='text-neutral-1-900'>{payload.note}</div>
                             </div>
                         </div>
                     </div>

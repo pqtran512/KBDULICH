@@ -217,15 +217,7 @@ const TourDetail = () => {
                 <div className='flex gap-2 items-center'>
                     <div className='font-semibold'>Ngày khởi hành:</div>
                     {isEdit? 
-                        <Datepicker width='w-40'
-                            // defaultValue={payload.departureDate}
-                            // value={payload.departureDate}
-                            setValue={setPayload} 
-                            keyPayload={'departureDate'}
-                            textColor='text-neutral-1-600'
-                            bgColor='bg-neutral-3-50'
-                            min={true}
-                        />
+                        <Datepicker width='w-[148px]' height='h-7' top='top-[6px]' outline />
                         :
                         <div className='font-normal'>{payload.departureDate}</div>
                     }

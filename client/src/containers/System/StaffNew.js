@@ -131,15 +131,7 @@ const StaffNew = () => {
                 <div className='flex flex-col gap-6'>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Ngày sinh:</div>
-                        <Datepicker width='w-48 xl:w-52'
-                            // defaultValue={payload.departureDate}
-                            // value={payload.departureDate}
-                            setValue={setPayload} 
-                            keyPayload={'departureDate'}
-                            textColor='text-neutral-1-600'
-                            bgColor='bg-neutral-3-50'
-                            min={false}
-                        />
+                        <Datepicker width='w-[148px]' height='h-7' top='top-[6px]' outline />
                     </div>
                     <div className='flex gap-[50px] items-center'>
                         <div className='font-semibold'>SĐT:</div>

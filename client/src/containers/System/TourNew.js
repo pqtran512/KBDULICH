@@ -12,6 +12,7 @@ const TourNew = () => {
     const vehicles = ['Xe 4 chỗ', 'Xe 7 chỗ', 'Xe khách', 'Máy bay'] // available vehicles
     const [destination, setDestination] = useState([])
     const [payload, setPayload] = useState({ 
+        id: '',
         name: '',
         price: 0,
         departureDate: '', 
@@ -147,7 +148,20 @@ const TourNew = () => {
             <div className='font-prata text-neutral-1-900 font-semibold text-header-1 border-b-2 border-neutral-2-200 pb-1 w-full px-4 rounded-xl shadow-title xl:text-heading-4'>Thêm Tour mới</div>
             <div className='relative mt-16 text-body-2 text-neutral-1-900 flex flex-col gap-6 mx-auto px-4 py-6 border-[3px] border-secondary-2 rounded-b-2xl rounded-tr-2xl xl:text-body-1'>
                 <div className='absolute -top-6 left-0.5 bg-gradient-to-tr from-secondary-2 to-accent-4 border border-white outline-offset-2 outline outline-[3px] outline-secondary-2 rounded-t-xl w-[100px] h-5'></div>
-                <div className='flex flex-col gap-4 md:flex-row md:justify-between xl:justify-start xl:gap-40'>
+                <div className='flex flex-col gap-6 xl:flex-row xl:justify-between'>
+                    <div className='flex gap-2 items-center xl:gap-[73px]'>
+                        <div className='font-semibold'>Mã tour: </div>
+                        <InputForm 
+                            invalidFields={invalidFields} 
+                            setInvalidFields={setInvalidFields}  
+                            value={payload.id}
+                            setValue={setPayload} 
+                            keyPayload={'id'}
+                            placeholder='Nhập mã Tour'
+                            width='w-40'
+                            style2={true}
+                        />
+                    </div>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Tên chương trình: </div>
                         <InputForm 
@@ -179,15 +193,7 @@ const TourNew = () => {
                 </div>
                 <div className='flex gap-[18px] items-center'>
                     <div className='font-semibold'>Ngày khởi hành:</div>
-                    <Datepicker width='w-40'
-                        // defaultValue={payload.departureDate}
-                        // value={payload.departureDate}
-                        setValue={setPayload} 
-                        keyPayload={'departureDate'}
-                        textColor='text-neutral-1-600'
-                        bgColor='bg-neutral-3-50'
-                        min={true}
-                    />
+                    <Datepicker width='w-[148px]' height='h-7' top='top-[6px]' outline min={true}/>
             </div>
                 <div className='flex items-center gap-2 xl:gap-[63px]'>
                     <div className='font-semibold'>Xuất phát:</div>
@@ -271,7 +277,7 @@ const TourNew = () => {
                     <div className='font-semibold pl-5 xl:pl-10'>Mô tả chi tiết:</div>
                         <>{showSchedule()}</>
                 </div>
-                <div className='flex gap-2 items-center'>
+                <div className='flex gap-2 items-center justify-between'>
                     <div className='font-semibold'>Ghi chú:</div>
                     <InputForm 
                         invalidFields={invalidFields} 
@@ -279,7 +285,7 @@ const TourNew = () => {
                         value={payload.note}
                         setValue={setPayload} 
                         keyPayload={'note'}
-                        width='w-[275px] md:w-[615px] xl:w-[1070px]'
+                        width='w-[275px] md:w-[615px] xl:w-[1060px]'
                         style2={true}
                     />
                 </div>

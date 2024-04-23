@@ -1,19 +1,49 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux'
+import { useSearchParams } from 'react-router-dom'
+import PageNumber from './PageNumber';
 
-const Pagination = ({number, length}) => {
+const Pagination = ({limit, blackStyle, count}) => {
+    const [searchParams] = useSearchParams()
+    const [arrPage, setArrPage] = useState([])
+    const [currentPage, setCurrentPage] = useState(1)
+    const [isHideEnd, setIsHideEnd] = useState(false)
+    const [isHideStart, setIsHideStart] = useState(false)
+    useEffect(() => {
+        let page = searchParams.get('page')
+        page && +page !== currentPage && setCurrentPage(+page)
+        !page && setCurrentPage(1)
+    }, [searchParams])
+    useEffect(() => {
+        let maxPage = Math.ceil(count / limit)
+        let end = (currentPage + 1) > maxPage ? maxPage : (currentPage + 1)
+        let start = (currentPage - 1) <= 0 ? 1 : (currentPage - 1)
+        let temp = []
+        for (let i = start; i <= end; i++) temp.push(i)
+        setArrPage(temp)
+        currentPage >= (maxPage - 1) ? setIsHideEnd(true) : setIsHideEnd(false)
+        currentPage <= 2 ? setIsHideStart(true) : setIsHideStart(false)
+        // 3 => 1 2 3 (1 ... 2 3)
+    }, [count, currentPage])
+
     return (
-        <ul className="pt-8 flex items-center justify-end gap-2 ">
-            <li><div className="flex items-center justify-center w-10 h-10 rounded-[4px] text-[14px] leading-[22px] bg-neutral-1-300 text-primary-2 font-semibold transition-all group hover:bg-none hover:text-white hover:font-semibold xl:bg-blue-grad">
-                <a href="/" className="flex items-center justify-center w-9 h-9 rounded-[4px] bg-neutral-1-300 transition-all group-hover:bg-primary-2 xl:bg-white">1</a></div>
-            </li>
-            <li><div className="flex items-center justify-center w-10 h-10 rounded-[4px] text-[14px] leading-[22px] bg-neutral-1-300 text-primary-2 font-semibold transition-all group hover:bg-none hover:text-white hover:font-semibold xl:bg-blue-grad">
-                <a href="/" className="flex items-center justify-center w-9 h-9 rounded-[4px] bg-neutral-1-300 transition-all group-hover:bg-primary-2 xl:bg-white">2</a></div>
-            </li>
-            <li><div className="flex items-center justify-center w-10 h-10 rounded-[4px] text-[14px] leading-[22px] bg-neutral-1-300 text-primary-2 transition-all group hover:bg-none hover:text-white hover:font-semibold xl:bg-blue-grad">
-                <a href="/" className="flex items-center justify-center w-9 h-9 rounded-[4px] bg-neutral-1-300 transition-all group-hover:bg-primary-2 xl:bg-white"><i className="twi-22-chevron-line text-[12px] font-semibold text-center group-hover:font-semibold"></i></a>
-                </div>
-            </li>
-        </ul>
+        <div className="flex items-end justify-end gap-2 ">
+            {!isHideStart && <PageNumber icon={<i className="twi-22-chevron-line rotate-180 text-[12px] font-semibold text-center group-hover:font-semibold"></i>} blackStyle={blackStyle} text={1} setCurrentPage={setCurrentPage} />}
+            {!isHideStart && <div className={`${blackStyle? 'text-black' : 'text-primary-2'} text-body-2 font-semibold`}>. . .</div>}
+            {arrPage.length > 0 && arrPage.map(item => {
+                return (
+                    <PageNumber
+                        key={item}
+                        text={item}
+                        setCurrentPage={setCurrentPage}
+                        currentPage={currentPage}
+                        blackStyle={blackStyle}
+                    />
+                )
+            })}
+            {!isHideEnd && <div className={`${blackStyle? 'text-black' : 'text-primary-2'} text-body-2 font-semibold`}>. . .</div>}
+            {!isHideEnd &&<PageNumber icon={<i className="twi-22-chevron-line text-[12px] font-semibold text-center group-hover:font-semibold"></i>} blackStyle={blackStyle} setCurrentPage={setCurrentPage} text={Math.ceil(count / limit)} />}
+        </div>
     )
 }
 

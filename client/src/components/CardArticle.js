@@ -8,7 +8,7 @@ const CardArticle = ({pb, animation, hidden}) => {
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit faucibus augue, a maximus elit ex vitae libero...',
         ];
     return (
-        <Link to={'/news-detail'} className={`${hidden} ${pb} bg-white shadow-shad3 animate-fade-down md:animate-fade-right md:shadow-none xl:animate-fade-down xl:shadow-shad3`}>
+        <Link to={'/news-detail'} className={`${hidden} ${pb} bg-white shadow-shad3 md:shadow-none xl:shadow-shad3 ${animation}`}>
             <div className="relative w-full pt-[56.28%] md:pt-[56.32%] xl:pt-[56.1%]">
                 <img className="absolute w-full h-full top-0 left-0 object-cover md:object-contain xl:object-cover" src={placeInfo[0]} alt=''/>
             </div>
@@ -17,7 +17,7 @@ const CardArticle = ({pb, animation, hidden}) => {
                 <div className="my-2 text-[14px] leading-[20px] font-semibold text-neutral-1-900 md:line-clamp-2 xl:text-title-1">
                     {placeInfo[1]} </div>
                 <div className="text-[14px] mb-2 text-neutral-1-500 leading-[19px] line-clamp-2 md:min-h-[38px]">{placeInfo[2]}</div>
-                <Link to={'/news-detail'} className="block w-fit text-title-2 text-primary-2 font-semibold xl:text-title-1">Xem thêm</Link>
+                <div className="block w-fit text-title-2 text-primary-2 font-semibold xl:text-title-1">Xem thêm</div>
             </div>
         </Link>
     )

@@ -1,11 +1,11 @@
 import axiosConfig from '../axiosConfig'
-import axios from 'axios'
 
-export const apiGetTours = () => new Promise(async (resolve, reject) => {
+export const apiGetToursCondition = (query) => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosConfig({
-            method: 'get',
-            url: '/api/v1/tour/all',
+            method: 'post',
+            url: `/api/tour/get_by_condition`,
+            data: query // param: query
         })
         resolve(response)
 
@@ -14,12 +14,11 @@ export const apiGetTours = () => new Promise(async (resolve, reject) => {
     }
 })
 
-export const apiGetToursLimit = (query) => new Promise(async (resolve, reject) => {
+export const apiGetToursRating = () => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosConfig({
-            method: 'get',
-            url: `/api/v1/tour/limit`,
-            params: query
+            method: 'post',
+            url: '/api/tour/highest_ratings',
         })
         resolve(response)
 
@@ -27,3 +26,46 @@ export const apiGetToursLimit = (query) => new Promise(async (resolve, reject) =
         reject(error)
     }
 })
+
+export const apiGetTour = (id) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/tour/get_by_id',
+            data: id 
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
+
+export const apiGetByName = (name) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/tour/get_by_name',
+            data: name 
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
+
+export const apiGetByStaff = (id) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/tour/get_by_staffID',
+            data: id 
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
+

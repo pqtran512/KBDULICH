@@ -10,7 +10,7 @@ const Login = () => {
     // PARAMETERS
     const [invalidFields, setInvalidFields] = useState([])
     const [payload, setPayload] = useState({ 
-        email: '',
+        username: '',
         password: ''
     })
     const dispatch = useDispatch()
@@ -21,7 +21,7 @@ const Login = () => {
     // validate inputs and call API
     const handleSubmit = async () => {
         let invalids = validate(payload)
-        if (invalids === 0) 
+        if (invalids === 0)
             dispatch(actions.login(payload))
     }
     // validate inputs function
@@ -30,11 +30,11 @@ const Login = () => {
         let fields = Object.entries(payload) // tranform an object {key: value} to array [key, value]
         fields.forEach(item => {
             switch (item[0]) {
-                case 'email':
+                case 'username':
                     if (item[1] === '') { // item[1] is the value field
                         setInvalidFields(prev => [...prev, {
                             name: item[0],
-                            message: 'Bạn chưa nhập email !'
+                            message: 'Bạn chưa nhập email hoặc tên người dùng !'
                         }])
                         invalids++
                     }
@@ -81,7 +81,7 @@ const Login = () => {
                 placeholder='Nhập email hoặc tên người dùng' 
                 value={payload.email} 
                 setValue={setPayload} 
-                keyPayload={'email'}
+                keyPayload={'username'}
                 width='w-full'
             />
             <InputForm 
@@ -95,7 +95,7 @@ const Login = () => {
                 type='password'
                 width='w-full'
             />
-            <Link to={'/auth/reset_pass'} className='text-body-2 text-primary-1 mt-2 ml-auto'>Quên mật khẩu</Link>
+            <Link to={'/auth/reset_pass1'} className='text-body-2 text-primary-1 hover:text-secondary-1 mt-2 ml-auto'>Quên mật khẩu</Link>
             <Button 
                 text='Xác nhận'
                 textColor='text-white' 

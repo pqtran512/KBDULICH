@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
-import { Button, Card2, Datepicker, SelectInput, SearchBar, Pagination } from '../../components';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Button, Card2, Datepicker, SelectInput, Pagination, RangeSlider, Loading } from '../../components';
 import icons from '../../ultils/icons';
-
-const { FiGrid } = icons
+import { useDispatch, useSelector } from 'react-redux'
+import { useSearchParams } from 'react-router-dom'
+import { getToursCondition } from '../../store/actions/tourAction'
+import { createSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { formatVietnameseToString } from '../../ultils/formatVietnameseToString';
+ 
+const { MdSort } = icons
 const places = [
+    { value: '', label: 'Chọn điểm đến' },
     { value: 'An Giang', label: 'An Giang' },
     { value: 'Đồng Tháp', label: 'Đồng Tháp' },
     { value: 'Phan Thiết', label: 'Phan Thiết' },
@@ -13,45 +18,203 @@ const places = [
 
 const Search = () => {
     // PARAMETERS
-    const [rangeValue, setRangeValue] = useState(0)
-    const [activeDayBtn, setActiveDayBtn] = useState(null);
-    const [activePeopleBtn, setActivePeopleBtn] = useState(null);
-    const [activeTourTypeBtn, setActiveTourTypeBtn] = useState(null);
-    const [activeVehicleBtn, setActiveVehicleBtn] = useState(null);
-    const orderOpts = [
-        { value: 'Tour ưu đãi', label: 'Tour ưu đãi' },
-        { value: 'Giá rẻ nhất', label: 'Giá rẻ nhất' },
-        { value: 'Ngày gần nhất', label: 'Ngày gần nhất' },
-      ];
+    const location = useLocation();
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
+    const [openFilter, setOpenFilter] = useState(false);
+    const currentPage = searchParams.get('page') || 1
+    const { tours_cond, count_cond } = useSelector(state => state.tour)
+    const [prices, setPrices] = useState([1000000, 20000000]);
+    const [searchOption, setSearchOption] = useState({ 
+        departure: '',
+        destination: '',
+        day_num: '',
+        starting_date: '',
+        ticket_num: '',
+        seat_num: '',
+        price: 'F'+prices[0]+'T'+prices[1],
+        vehicle: '',
+        isActive: 1,
+    })
+    const [order, setOrder] = useState(searchParams.get('order') || 'asc');
+    const [filter, setFilter] = useState(searchParams.get('sort') || 'rating');
+    const filterOpts = [
+        { value: 'rating', label: 'Yêu thích nhất' }, 
+        { value: 'price', label: 'Giá' },
+        { value: 'starting_date', label: 'Ngày khởi hành' }, // ngày gần nhất
+    ];
+    const [sortTour, setSortTour] = useState([]);
+    const [postsPerPage] = useState(8);
+    const searchRef = useRef()
+    const [loading, setLoading] = useState(false);
     // FUNCTION
-    // Buttons số ngày
-    const handleDayBtn= (btnName) => {
-        setActiveDayBtn(btnName);
+    const getDefaultDeparture = () => { 
+        const entries = searchParams.entries()
+        for (let entry of entries) {
+            if (entry[0] === 'departure') {
+                const defaultValue= places.find(place => formatVietnameseToString(place.value) === searchParams.get('departure'));
+                return defaultValue
+            }
+        }
+        return null
+    }
+    const getDefaultDestination = () => { 
+        const entries = searchParams.entries()
+        for (let entry of entries) {
+            if (entry[0] === 'destination') {
+                const defaultValue= places.find(place => formatVietnameseToString(place.value) === searchParams.get('destination'));
+                return defaultValue
+            }
+        }
+        return null
+    }
+    const getDefaultSDate= () => { 
+        const entries = searchParams.entries()
+        for (let entry of entries) {
+            if (entry[0] === 'starting_date') {
+                const [year, month, day] = searchParams.get('starting_date').split('_');
+                const myDate = new Date(Date.UTC(year, month - 1, day));
+                return myDate
+            }
+        }
+        return null
+    }
+    useEffect(() => {
+        searchRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, [currentPage])
+    const isDayBtnActive = (btnName) => { // Buttons số ngày
+        return searchOption.day_num === btnName;
     };
-    const isDayBtnActive = (btnName) => {
-        return activeDayBtn === btnName;
+    const isPeopleBtnActive = (btnName) => { // Buttons số lượng người
+        return searchOption.ticket_num === btnName;
     };
-    // Buttons số lượng người
-    const handlePeopleBtn = (btnName) => {
-        setActivePeopleBtn(btnName);
+    const isTourTypeBtnActive = (btnName) => { // Buttons dòng tour
+        return searchOption.seat_num === btnName;
     };
-    const isPeopleBtnActive = (btnName) => {
-        return activePeopleBtn === btnName;
+    const isVehicleBtnActive = (btnName) => { // Buttons phương tiện
+        return searchOption.vehicle === btnName;
     };
-    // Buttons dòng tour
-    const handleTourTypeBtn = (btnName) => {
-        setActiveTourTypeBtn(btnName);
+    useEffect(() => {
+        setSearchOption(prev => ({...prev, price:'F'+prices[0]+'T'+prices[1]}))
+    }, [prices])
+    const handleSubmit = async () => {
+        let params = {}
+        if (searchOption.departure !== '') {
+            params.departure = formatVietnameseToString(searchOption.departure);
+        }
+        if (searchOption.destination !== '') {
+            params.destination = formatVietnameseToString(searchOption.destination);
+        }
+        if (searchOption.day_num !== '') {
+            params.day_num = searchOption.day_num;
+        }
+        if (searchOption.starting_date !== '') {
+            params.starting_date = searchOption.starting_date;
+        }
+        if (searchOption.ticket_num !== '') {
+            params.ticket_num = searchOption.ticket_num;
+        }
+        params.price_lower = prices[0];
+        params.price_upper = prices[1];
+        if (searchOption.vehicle !== '') {
+            params.vehicle = searchOption.vehicle;
+        }
+        navigate({
+            pathname: location?.pathname,
+            search: createSearchParams(params).toString(),
+        });
+        console.log(prices)
+        console.log('submit', searchOption)
+        setLoading(true);
+        dispatch(getToursCondition(searchOption))
+            .then(() => {
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+                setLoading(false); // Ensure loading is set to false even if an error occurs
+            });
+        searchRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+    const getFilterLabel = () => {
+        const selectedOption = filterOpts.find(option => option.value === filter);
+        return selectedOption ? selectedOption.label : 'Yêu thích nhất';
     };
-    const isTourTypeBtnActive = (btnName) => {
-        return activeTourTypeBtn === btnName;
-    };
-    // Buttons phương tiện
-    const handleVehicleBtn = (btnName) => {
-        setActiveVehicleBtn(btnName);
-    };
-    const isVehicleBtnActive = (btnName) => {
-        return activeVehicleBtn === btnName;
-    };
+    useEffect(() => {
+        searchOption.page = searchParams.get('page')
+    }, [searchParams, searchOption])
+    useEffect(() => {
+        const departure = getDefaultDeparture()
+        const destination = getDefaultDestination()
+        const search_date = searchParams.get('starting_date')
+        const price_lower = searchParams.get('price_lower')
+        const price_upper = searchParams.get('price_upper')
+        const daynum = searchParams.get('day_num')
+        const ticketnum = searchParams.get('ticket_num')
+        const seatnum = searchParams.get('seat_num')
+        const vehicle = searchParams.get('vehicle')
+        const updatedOptions = {};
+        if (departure) { updatedOptions.departure = departure.value;}
+        if (destination) { updatedOptions.destination = destination.value;}
+        if (search_date) { updatedOptions.starting_date = search_date;}
+        if (price_lower) { updatedOptions.price = 'F'+price_lower+'T'+price_upper;}
+        if (search_date) { updatedOptions.starting_date = search_date;}
+        if (daynum) { updatedOptions.day_num = daynum;}
+        if (ticketnum) { updatedOptions.ticket_num = ticketnum;}
+        if (seatnum) { updatedOptions.seat_num = seatnum;}
+        if (vehicle) { updatedOptions.vehicle = vehicle;}
+        setSearchOption(prev => ({ ...prev, ...updatedOptions }));
+        console.log(daynum)
+        setLoading(true);
+        dispatch(getToursCondition({
+            departure: (departure && departure.value) || '',
+            destination: (destination && destination.value) || '',
+            starting_date: search_date || '',
+            price: (price_lower && ('F'+price_lower+'T'+price_upper)) || 'F1000000T20000000',
+            day_num: daynum || '',
+            ticket_num: ticketnum || '',
+            seat_num: seatnum || '',
+            vehicle: vehicle || '',
+            isActive: 1,
+        })).then(() => {
+            setLoading(false);
+        })
+        .catch((error) => {
+            console.error("Error fetching data:", error);
+            setLoading(false); // Ensure loading is set to false even if an error occurs
+        });
+    }, [dispatch]);
+    // sort
+    const sorting = (col) => {
+        if (col === null) {
+            const sorted = [...tours_cond]
+            setSortTour(sorted)
+        }
+        else if (col !== 'rating') {
+            if (order === "asc") {
+                const sorted = [...tours_cond].sort((a, b) => 
+                    a[col] > b[col] ? 1 : -1
+                );
+                setSortTour(sorted)
+                setOrder('dsc')
+            }
+            if (order === "dsc") {
+                const sorted = [...tours_cond].sort((a, b) => 
+                    a[col] < b[col] ? 1 : -1
+                );
+                setSortTour(sorted)
+                setOrder('asc')
+            }
+        }
+    }
+    useEffect(() => {
+        sorting(searchParams.get('sort'));
+    }, [tours_cond, filter]);
+    // pagination
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage; 
+    const currentTours = sortTour.slice(indexOfFirstPost, indexOfLastPost);
     return (
         <div>
             <section className="flex justify-center relative w-full bg-sea animate-fade bg-center bg-no-repeat bg-cover rounded-b-[20px]">
@@ -62,7 +225,7 @@ const Search = () => {
                     </div>
                 </div>
             </section>
-            <section className="mx-auto w-full pt-10 pb-[120px] animate-fade md:pb-[120px] xl:pb-[80px] xl:max-w-7xl">
+            <section ref={searchRef} className="mx-auto w-full pt-10 pb-[120px] animate-fade md:pb-[120px] xl:pb-[80px] xl:max-w-7xl">
                 <div className="px-6 lg:px-2 2xl:px-0">
                     <div className="hidden xl:flex items-center py-[10px] mb-7 gap-x-2">
                         <div className="text-neutral-1-600 text-[20px] leading-[34px]">Du lịch</div>
@@ -71,129 +234,133 @@ const Search = () => {
                         </div>
                         <div className="text-neutral-1-900 text-[20px] leading-[34px]">Du lịch trong nước</div>
                     </div>
-                    <div className="flex w-full">
-                        <div className="hidden xl:grid w-1/3 pr-6 gap-4 h-fit">
-                            <div className="text-heading-3 text-neutral-1-900 font-semibold">Lọc kết quả</div>
-                            <div>
-                                <div className="pt-[10px] pb-[14px] pr-[10px]">
-                                    <div className="text-title-1 font-semibold text-neutral-1-900">Điểm đi</div>
+                    <div className="flex flex-col w-full xl:flex-row">
+                        <div className="w-full flex justify-end md:py-5 xl:hidden" onClick={() => setOpenFilter(curr => !curr)}>
+                            <div className="flex items-center justify-center text-primary-2 border-[1.2px] border-primary-2 bg-white py-2 px-6 w-fit rounded-md">
+                                <i className="twi-22-filter-line text-[24px] leading-6"></i>
+                                <div className="pl-2 text-body-1">Lọc kết quả</div>
+                            </div>
+                        </div>
+                        <div className={`${openFilter? 'max-h-[1100px] overflow-clip xl:overflow-visible my-8': 'max-h-0 overflow-hidden'}  grid gap-2 h-fit transition-all duration-500 xl:w-1/3 xl:gap-4 xl:pr-6 xl:my-0 xl:max-h-max xl:overflow-visible`}>
+                            <div className="text-heading-4 text-neutral-1-900 font-semibold xl:text-heading-3">Lọc kết quả</div>
+                            <div className='md:flex gap-40 xl:flex-col xl:gap-4'>
+                                <div>
+                                    <div className="pt-[10px] pr-[10px] pb-2 xl:pb-[14px]">
+                                        <div className="text-title-1 font-semibold text-neutral-1-900">Điểm đi</div>
+                                    </div>
+                                    <SelectInput options={places} myStyle='w-[200px] text-body-2 xl:w-full xl:text-body-1' placeholder='--- Chọn điểm đi ---' keyPayload='departure' setValue={setSearchOption} defaultValue={() => getDefaultDeparture()} />
                                 </div>
-                                <SelectInput options={places} myStyle='w-full' placeholder='--- Chọn điểm đi ---'/>
+                                <div>
+                                    <div className="pt-[10px] pr-[10px] pb-2 xl:pb-[14px]">
+                                        <div className="text-title-1 font-semibold text-neutral-1-900">Điểm đến</div>
+                                    </div>
+                                    <SelectInput options={places} myStyle='w-[200px] text-body-2 xl:w-full xl:text-body-1' placeholder='--- Chọn điểm đến ---' keyPayload='destination' setValue={setSearchOption} defaultValue={() => getDefaultDestination()} />
+                                </div>
                             </div>
                             <div>
-                                <div className="pt-[10px] pb-[14px] pr-[10px]">
-                                    <div className="text-title-1 font-semibold text-neutral-1-900">Điểm đến</div>
-                                </div>
-                                <SelectInput options={places} myStyle='w-full' placeholder='--- Chọn điểm đến ---'/>
-                            </div>
-                            <div>
-                                <div className="pt-[10px] pb-[14px] pr-[10px]">
+                                <div className="pt-[10px] pr-[10px] pb-2 xl:pb-[14px]">
                                     <div className="text-title-1 font-semibold text-neutral-1-900">Số ngày</div>
                                 </div>
-                                <div className="flex justify-center">
-                                    <div className="grid gap-y-4 gap-x-6 grid-cols-btn">
+                                <div className="flex pl-1 xl:pl-0 xl:justify-center">
+                                    <div className="grid gap-y-4 gap-x-6 grid-cols-btn text-neutral-1-900 text-body-2 xl:text-body-1">
                                         <button 
-                                            className={`${isDayBtnActive('dayBtn1') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn `}
-                                            onClick={() => handleDayBtn('dayBtn1')}>1-3 ngày</button>
+                                            className={`${isDayBtnActive('F1T3') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                            onClick={() => setSearchOption(prev => ({...prev, 'day_num': 'F1T3'}))}>1-3 ngày</button>
                                         <button 
-                                            className={`${isDayBtnActive('dayBtn2') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn `}
-                                            onClick={() => handleDayBtn('dayBtn2')}>4-7 ngày</button>
+                                            className={`${isDayBtnActive('F4T7') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                            onClick={() => setSearchOption(prev => ({...prev, 'day_num': 'F4T7'}))}>4-7 ngày</button>
                                         <button 
-                                            className={`${isDayBtnActive('dayBtn3') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn `}
-                                            onClick={() => handleDayBtn('dayBtn3')}>8-14 ngày</button>
+                                            className={`${isDayBtnActive('F8T10') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                            onClick={() => setSearchOption(prev => ({...prev, 'day_num': 'F8T10'}))}>8-10 ngày</button>
                                         <button 
-                                            className={`${isDayBtnActive('dayBtn4') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn `}
-                                            onClick={() => handleDayBtn('dayBtn4')}>Trên 14 ngày</button>
+                                            className={`${isDayBtnActive('A10') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                            onClick={() => setSearchOption(prev => ({...prev, 'day_num': 'A10'}))}>Trên 10 ngày</button>
                                     </div>
                                 </div>
                             </div>
                             <div>
-                                <div className="pt-[10px] pb-[14px] pr-[10px]">
+                                <div className="pt-[10px] pr-[10px] pb-2 xl:pb-[14px]">
                                     <div className="text-title-1 font-semibold text-neutral-1-900">Ngày đi</div>
                                 </div>
-                                <Datepicker width='w-[397px]' outline  min={true}/>
-                            </div>
-                            <div>
-                                <div className="pt-[10px] pb-[14px] pr-[10px]">
-                                    <div className="text-title-1 font-semibold text-neutral-1-900">Số lượng người</div>
+                                <div className='ml-1 w-[200px] xl:ml-0 xl:w-full'>
+                                    <Datepicker width='w-[176px] xl:w-[397px]' height='h-9' top='top-[10px]' outline keyPayload='starting_date' setValue={setSearchOption} 
+                                        defaultValue={getDefaultSDate()}/>
                                 </div>
-                                <div className="flex justify-center">
-                                    <div className="grid gap-y-4 gap-x-6 grid-cols-btn text-body-1 text-neutral-1-900">
-                                        <button 
-                                            className={`${isPeopleBtnActive('peopleBtn1') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
-                                            onClick={() => handlePeopleBtn('peopleBtn1')}>1 người</button>
-                                        <button 
-                                            className={`${isPeopleBtnActive('peopleBtn2') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
-                                            onClick={() => handlePeopleBtn('peopleBtn2')}>2 người</button>
-                                        <button 
-                                            className={`${isPeopleBtnActive('peopleBtn3') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
-                                            onClick={() => handlePeopleBtn('peopleBtn3')}>3-5 người</button>
-                                        <button 
-                                            className={`${isPeopleBtnActive('peopleBtn4') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
-                                            onClick={() => handlePeopleBtn('peopleBtn4')}>5+ người</button>
+                            </div>
+                            <div className='md:flex gap-10 xl:flex-col xl:gap-4'>
+                                <div>
+                                    <div className="pt-[10px] pr-[10px] pb-2 xl:pb-[14px]">
+                                        <div className="text-title-1 font-semibold text-neutral-1-900">Số lượng người</div>
+                                    </div>
+                                    <div className="flex pl-1 xl:pl-0 xl:justify-center">
+                                        <div className="grid gap-y-4 gap-x-6 grid-cols-btn text-neutral-1-900 text-body-2 xl:text-body-1">
+                                            <button 
+                                                className={`${isPeopleBtnActive('A1') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                                onClick={() => setSearchOption(prev => ({...prev, 'ticket_num': 'A1'}))}>1 người</button>
+                                            <button 
+                                                className={`${isPeopleBtnActive('A2') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                                onClick={() => setSearchOption(prev => ({...prev, 'ticket_num': 'A2'}))}>2 người</button>
+                                            <button 
+                                                className={`${isPeopleBtnActive('A3') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                                onClick={() => setSearchOption(prev => ({...prev, 'ticket_num': 'A3'}))}>3-5 người</button>
+                                            <button 
+                                                className={`${isPeopleBtnActive('A5') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                                onClick={() => setSearchOption(prev => ({...prev, 'ticket_num': 'A5'}))}>5+ người</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div>
-                                <div className="pt-[10px] pb-[14px] pr-[10px]">
-                                    <div className="text-title-1 font-semibold text-neutral-1-900">Dòng Tour</div>
-                                </div>
-                                <div className="flex justify-center">
-                                    <div className="grid gap-y-4 gap-x-6 grid-cols-btn">
-                                        <button 
-                                            className={`${isTourTypeBtnActive('tourTypeBtn1') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
-                                            onClick={() => handleTourTypeBtn('tourTypeBtn1')}> &lt; 5 người</button>
-                                        <button 
-                                            className={`${isTourTypeBtnActive('tourTypeBtn2') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
-                                            onClick={() => handleTourTypeBtn('tourTypeBtn2')}>5 - 10 người</button>
-                                        <button 
-                                            className={`${isTourTypeBtnActive('tourTypeBtn3') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
-                                            onClick={() => handleTourTypeBtn('tourTypeBtn3')}>10 - 15 người</button>
-                                        <button 
-                                            className={`${isTourTypeBtnActive('tourTypeBtn4') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
-                                            onClick={() => handleTourTypeBtn('tourTypeBtn4')}> &gt; 15 người</button>
+                                <div>
+                                    <div className="pt-[10px] pr-[10px] pb-2 xl:pb-[14px]">
+                                        <div className="text-title-1 font-semibold text-neutral-1-900">Dòng Tour</div>
+                                    </div>
+                                    <div className="flex pl-1 xl:pl-0 xl:justify-center">
+                                        <div className="grid gap-y-4 gap-x-6 grid-cols-btn text-neutral-1-900 text-body-2 xl:text-body-1">
+                                            <button 
+                                                className={`${isTourTypeBtnActive('U5') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                                onClick={() => setSearchOption(prev => ({...prev, 'seat_num': 'U5'}))}> &lt; 5 người</button>
+                                            <button 
+                                                className={`${isTourTypeBtnActive('F5T10') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                                onClick={() => setSearchOption(prev => ({...prev, 'seat_num': 'F5T10'}))}>5 - 10 người</button>
+                                            <button 
+                                                className={`${isTourTypeBtnActive('F10T15') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                                onClick={() => setSearchOption(prev => ({...prev, 'seat_num': 'F10T15'}))}>10 - 15 người</button>
+                                            <button 
+                                                className={`${isTourTypeBtnActive('A15') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                                onClick={() => setSearchOption(prev => ({...prev, 'seat_num': 'A15'}))}> &gt; 15 người</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                              {/* Search Filter  */}
                             <div className="flex items-center justify-between h-[72px]">
-                                <div className="w-[47%] pr-2 text-heading-4 text-neutral-1-500 font-semibold">Bộ lọc tìm kiếm</div>
+                                <div className="w-[47%] pr-2 text-header-1 text-neutral-1-500 font-semibold xl:text-heading-4">Bộ lọc tìm kiếm</div>
                                 <div className="w-[53%] bg-neutral-1-500 h-[1.5px]"></div>
                             </div>
                             <div className="py-4">
-                                <input 
-                                    className="w-full cursor-pointer" type="range" min="500000" max="10000000" step="500000" 
-                                    value={rangeValue} 
-                                    onChange={(e)=>setRangeValue(e.target.value)}
-                                />
-                                <div className="pt-2 text-body-2 flex justify-between items-center">
-                                    <div id="range-value" className="text-black">{(rangeValue === 0)? 'Từ 600.000vnđ - 50.000.000vnđ' : Number(rangeValue).toLocaleString() + "  vnđ"}</div>
-                                    <div className="text-primary-2">Filter</div>
-                                </div>
+                                <RangeSlider values={prices} setValues={setPrices}/>
                             </div>
                             <div>
-                                <div className="pt-[10px] pb-[14px] pr-[10px]">
+                                <div className="pt-[10px] pr-[10px] pb-2 xl:pb-[14px]">
                                     <div className="text-title-1 font-semibold text-neutral-1-900">Thông tin vận chuyển</div>
                                 </div>
-                                <div className="flex justify-center">
-                                    <div className="grid gap-6 grid-cols-btn text-body-1 text-neutral-1-900">
+                                <div className="flex pl-1 xl:pl-0 xl:justify-center">
+                                    <div className="grid gap-y-4 gap-x-6 grid-cols-btn text-neutral-1-900 text-body-2 xl:text-body-1">
                                         <button 
-                                            className={`${isVehicleBtnActive('vehicleBtn1') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
-                                            onClick={() => handleVehicleBtn('vehicleBtn1')}>Ô tô</button>
+                                            className={`${isVehicleBtnActive('car') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                            onClick={() => setSearchOption(prev => ({...prev, 'vehicle': 'car'}))}>Ô tô</button>
                                         <button 
-                                            className={`${isVehicleBtnActive('vehicleBtn2') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
-                                            onClick={() => handleVehicleBtn('vehicleBtn2')}>Xe khách</button>
+                                            className={`${isVehicleBtnActive('bus') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                            onClick={() => setSearchOption(prev => ({...prev, 'vehicle': 'bus'}))}>Xe khách</button>
                                         <button 
-                                            className={`${isVehicleBtnActive('vehicleBtn3') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
-                                            onClick={() => handleVehicleBtn('vehicleBtn3')}>Máy bay</button>
+                                            className={`${isVehicleBtnActive('plane') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
+                                            onClick={() => setSearchOption(prev => ({...prev, 'vehicle': 'plane'}))}>Máy bay</button>
                                     </div>
                                 </div>
                             </div>
-                            <Button text='Tìm kiếm' textColor='text-white' bgColor='bg-primary-2' mt/>
+                            <Button text='Tìm kiếm' textColor='text-white' bgColor='bg-primary-2' mt onClick={handleSubmit}/>
                         </div>
                         <div className="w-full xl:w-2/3">
-                            <SearchBar placeholder='Nhập địa điểm bạn muốn đi . . .'/>
-                            <div className="xl:pb-8 xl:pt-4">
+                            <div className="pb-8 pt-4">
                                 <div className="text-heading-4 text-neutral-1-900 leading-[39px] font-semibold pb-2 border-b-2 border-neutral-1-200 xl:pb-4 xl:text-[28px]">Du lịch trong nước</div>
                                 <div className="pb-2 w-full h-[13px] xl:h-9 xl:pb-4"></div>
                                 <p className="text-body-2 text-neutral-1-600 max-w-[359px] md:max-w-full xl:text-body-1">Du lịch trong nước luôn là lựa chọn tuyệt vời. Đường bờ biển dài hơn 3260km, những khu bảo tồn thiên nhiên tuyệt vời, 
@@ -202,40 +369,43 @@ const Search = () => {
                                     luôn sẵn sàng phục vụ du khách mọi lúc, mọi nơi, đảm bảo tính chuyên nghiệp và chất lượng dịch vụ tốt nhất thị trường
                                 </p>
                             </div>
-                            <div className="py-8 w-full flex justify-end md:py-[18px] xl:hidden">
-                                <div className="flex items-center justify-center text-primary-2 border-[1.2px] border-primary-2 bg-white py-2 px-6 w-fit rounded-md">
-                                    <i className="twi-22-filter-line text-[28px] leading-7"></i>
-                                    <div className="pl-2 text-body-1">Lọc kết quả</div>
-                                </div>
-                            </div>
                              {/* Sắp xếp theo  */}
                             <div className="bg-neutral-3-100 py-[10px] px-4 md:px-6 xl:pr-[11px] xl:bg-neutral-3-50">
                                 <div className="md:flex items-center justify-between">
                                     <div className="md:flex items-center">
-                                        <div className="pb-1 text-header-2 text-neutral-1-500 font-semibold w-fit h-fit md:pb-0 md:pr-[18px] xl:pr-[34px]">Sắp xếp theo:</div>
+                                        <div className="pb-2 text-title-1 text-neutral-1-500 font-semibold w-fit h-fit md:pb-0 md:pr-[18px] xl:pr-[34px] xl:text-header-2">Sắp xếp theo:</div>
                                         <div className="w-full flex justify-between items-center md:w-fit">
-                                            <SelectInput myStyle='h-fit w-48 xl:w-[200px]' options={orderOpts} placeholder='Được đề xuất'/>
-                                            <FiGrid className='md:hidden' color='#5A6271' size='26'/>
+                                            <SelectInput myStyle='h-fit w-48 xl:w-[200px]' options={filterOpts} placeholder={getFilterLabel()} setVar={setFilter} path={location?.pathname}/>
+                                            <MdSort className={`${order === 'asc'? '' : 'rotate-180'} md:hidden text-primary-2 p-0.5 rounded-md cursor-pointer`} size='26'
+                                                onClick={() => sorting(filter)} />
                                         </div>
                                     </div>
-                                    <FiGrid className='hidden md:block' color='#5A6271' size='26'/>
+                                    <MdSort className={`${order === 'asc'? '' : 'rotate-180'} hidden md:block text-primary-2 p-0.5 rounded-md cursor-pointer hover:text-primary-1`} size='28'
+                                            onClick={() => sorting(filter)} />
                                 </div>
                             </div>
+                            <Loading loading={loading} />
+                            { count_cond? <div className='pt-4 text-header-2 text-neutral-1-500'>Tìm kiếm được {count_cond} kết quả</div> : <></> }
                             {/* Card  */}
                             <div className="pt-6 grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-8 xl:py-8">
                                 {/* desktop, tablet 8 cards, mobile 3 cards */}
-                                <Card2 animation='md:animate-fade-right'/>
-                                <Card2 animation='md:animate-fade-left'/>
-                                <Card2 animation='md:animate-fade-right'/>
-                                
-                                <Card2 hidden='hidden md:block' animation='md:animate-fade-left'/>
-                                <Card2 hidden='hidden md:block' animation='md:animate-fade-right'/>
-                                <Card2 hidden='hidden md:block' animation='md:animate-fade-left'/>
-                                <Card2 hidden='hidden md:block' animation='md:animate-fade-right'/>
-                                <Card2 hidden='hidden md:block' animation='md:animate-fade-left'/>
+                                {count_cond > 0 ? 
+                                    (currentTours.map((tour, idx) => (
+                                        <>
+                                        <Card2
+                                            animation={idx % 2 === 0 ? 'md:animate-fade-right' : 'md:animate-fade-left'}
+                                            tour={tour}
+                                            key={idx}
+                                        />
+                                        </>
+                                    ))) 
+                                    :  <div className='text-right text-header-2 font-semibold text-neutral-1-500'>Không tìm thấy kết quả phù hợp .</div>
+                                }
                             </div>
                             {/* Pagination  */}
-                            <Pagination />
+                            <div className='pt-8'>
+                                <Pagination limit={8} count={count_cond}/> 
+                            </div>
                         </div>
                     </div>
                 </div>

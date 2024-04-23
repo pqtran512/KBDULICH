@@ -1,20 +1,30 @@
-import React, { useState }  from 'react';
+import React, { useState, useEffect }  from 'react';
 import { InputForm, Button } from '../../components'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { getTour } from '../../store/actions/tourAction'
+import { splitDate } from '../../ultils/splitDate';
 
 const TourBooking = () => {
     const [invalidFields, setInvalidFields] = useState([])
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
     const [payload, setPayload] = useState({
         username: '',
         phone: '', 
         email: '',
         note: '',
+        ticket_num: 1,
     })
-    const navigate = useNavigate()
+    const {tourID} = useParams();
+    const { tour } = useSelector(state => state.tour)
+    useEffect(() => {
+        dispatch(getTour({tour_ID: tourID}))
+    }, [dispatch, tourID])
     const handleSubmit = async () => {
         let invalids = validate(payload)
         if (invalids === 0) 
-            navigate('/tour-booking2') // tour-booking?id=tourId
+            navigate('/tour-booking2/'+ tourID, { state: { payload } });
     }
     // validate inputs function
     const validate = (payload) => {
@@ -38,7 +48,7 @@ const TourBooking = () => {
                         invalids++
                     }
                     else {
-                        if (!(/^([a-zA-Z0-9 ]+(_)*)+$/.test(item[1]))) {
+                        if (!(/^([a-z0-9ỳọáầảấờễàạằệếýộậốũứĩõúữịỗìềểẩớặòùồợãụủíỹắẫựỉỏừỷởóéửỵẳẹèẽổẵẻỡơôưăêâđ ]+(_)*)+$/.test(item[1].toLowerCase()))) {
                             setInvalidFields(prev => [...prev, {
                                 name: item[0],
                                 message: 'Tên chỉ chứa ký tự, số và khoảng trắng !'
@@ -82,6 +92,15 @@ const TourBooking = () => {
                             invalids++
                         }
                     }
+                    break;
+                case 'ticket_num':
+                    if (item[1] === 0) { // item[1] is the value field
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Giá trị phải lớn hơn hoặc bằng 1 !'
+                        }])
+                        invalids++
+                    } 
                     break;
                 default:
                     break;
@@ -134,29 +153,20 @@ const TourBooking = () => {
                             <div className='text-body-2 font-semibold text-neutral-900 pb-2 md:text-header-1'>Thông tin đặt tour</div>
                             <div className='py-3 flex gap-5 border-b-[3px] border-white'>
                                 <img className='h-16 w-24 rounded-md' src='../img/home/sec2-img2.png' alt='' />
-                                <div className="text-neutral-1-900 text-title-2 font-semibold xl:text-title-1">Du lịch Bà Nà - Cầu Vàng - Sơn Trà - Biển Mỹ Khê - Hội An | 3N2Đ</div>
+                                <div className="text-neutral-1-900 text-title-2 font-semibold xl:text-title-1">{tour.name} | {tour.day_num}N{tour.night_num}Đ</div>
                             </div>
                             <div className="pt-5 flex flex-col gap-6 text-body-2">
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Mã tour</div>
-                                    <div className='text-neutral-1-900'>T_0512</div>
+                                    <div className='text-neutral-1-900'>{tour.tour_ID}</div>
                                 </div>
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Ngày khởi hành</div>
-                                    <div className='text-neutral-1-900'>31/08/2023</div>
-                                </div>
-                                <div className='flex justify-between'>
-                                    <div className="text-neutral-1-500">Số khách</div>
-                                    <div className='text-neutral-1-900'>1 khách</div>
+                                    <div className='text-neutral-1-900'>{splitDate(tour.starting_date)[0]}/{splitDate(tour.starting_date)[1]}/{splitDate(tour.starting_date)[2]}</div>
                                 </div>
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Giá 1 khách</div>
-                                    <div className='text-neutral-1-900'>22,690,000 VND</div>
-                                </div>
-                                <div className='w-full h-[2px] mb-2 bg-white'></div>
-                                <div className='flex font-semibold justify-between text-body-1'>
-                                    <div className='text-neutral-1-900'>Tổng tiền</div>
-                                    <div className='text-secondary-1'>22,690,000 VND</div>
+                                    <div className='text-neutral-1-900'>{Number(tour.price).toLocaleString()} VND</div>
                                 </div>
                             </div>
                         </div>
@@ -205,6 +215,18 @@ const TourBooking = () => {
                                 setValue={setPayload} 
                                 keyPayload={'note'}
                                 width='w-full'
+                            />
+                            <InputForm 
+                                invalidFields={invalidFields} 
+                                setInvalidFields={setInvalidFields}
+                                label='Số lượng hành khách'  
+                                value={payload.ticket_num}
+                                setValue={setPayload} 
+                                keyPayload={'ticket_num'}
+                                width='w-14'
+                                type='number'
+                                asterisk
+                                min={1}
                             />
                             <Button 
                                 text='Tiếp tục'

@@ -6,15 +6,11 @@ import blackMountain from '../../assets/img/header-footer/black-mountain.jpg'
 const { VscTriangleLeft, CiCircleList, PiGitPullRequestLight, IoBarChartOutline, IoPersonOutline, FaRegUser  } = icons
 
 const Sidebar = () => {
-    const [isClose, setIsClose] = useState(false) // for desktop
+    const [isClose, setIsClose] = useState(window.innerWidth <= 1024? true : false ) // for desktop
     const [switchPage, setSwitchPage] = useState('tour')
     const [isStaff, setIsStaff] = useState(false)
     const location = useLocation();
 
-    useEffect(() => {
-          const isMobile = window.innerWidth <= 1024;
-          setIsClose(isMobile);
-    }, []);
     const handleCloseBtn = event => {
         setIsClose(current => !current);
     };

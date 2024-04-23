@@ -78,9 +78,9 @@ const NewsDetail = () => {
                 <div className="px-6 lg:px-2 2xl:px-0">
                     <div className="pb-8 text-neutral-1-900 text-heading-4 font-semibold leading-[31px] xl:text-[32px] xl:pb-[60px]">Tour liên quan</div>
                     <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 xl:grid-cols-3">
-                        <Card2 animation='md:animate-fade-right'/>
+                        {/* <Card2 animation='md:animate-fade-right'/>
                         <Card2 animation='md:animate-fade-left'/>
-                        <Card2 animation='md:animate-fade-right'/>
+                        <Card2 animation='md:animate-fade-right'/> */}
                     </div>
                 </div>
             </section>

@@ -1,8 +1,8 @@
 export {default as Auth} from './Auth'
 export {default as Login} from './Login'
 export {default as Register} from './Register'
-export {default as ResetPass} from './ResetPass'
-
+export {default as ResetPass1} from './ResetPass1'
+export {default as ResetPass2} from './ResetPass2'
 export {default as Home} from './Home'
 export {default as Header} from './Header'
 export {default as Footer} from './Footer'

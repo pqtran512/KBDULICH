@@ -18,13 +18,11 @@ const Header = () => {
     // FUNCTION
     // onclick navbar-menu function on mobile/ tablet screen
     const handleOpen = event => {
-        // 👇️ toggle isOpen state on click
-        setIsOpen(current => !current);
+        setIsOpen(current => !current); // 👇️ toggle isOpen state on click
     };
     // dropdown navbar submenu on mobile/ tablet screen
     const handleDropdown = event => {
-        // 👇️ toggle isDropdown state on click
-        setIsDropdown(current => !current);
+        setIsDropdown(current => !current); // 👇️ toggle isDropdown state on click
     };
     const logout = async () => {
         dispatch(actions.logout())
@@ -51,21 +49,21 @@ const Header = () => {
                         <div className='xl:flex xl:pr-8'>
                             <div className={(isOpen ? 'left-open' : '') +  " navbar-list z-50 absolute top-full -left-full w-full bg-white text-header-2 font-semibold text-neutral-1-900 overflow-y-scroll scrollbar-width-thin scrollbar-thumb:bg-neutral-3-300 scrollbar-rounded flex flex-col md:text-header-1 xl:static xl:flex-row xl:overflow-visible xl:items-center"}>
                                 <div className='navbar-title w-full relative group xl:w-fit'>
-                                    <Link {...(isOpen? {}: {to:'/search'})} className='menu-title flex items-center pb-2' onClick={handleDropdown}>
+                                    <Link {...(isOpen? {}: {to:'/search'})} className='menu-title flex items-center pb-2 xl:pb-0' onClick={handleDropdown}>
                                         <div>Du lịch</div>
                                         <span className='arrow flex items-center justify-center w-6 h-6'>
                                             <i className='twi-22-chevron-line rotate-90 text-[13px] leading-2 text-neutral-1-900 font-semibold'></i>
                                         </span>
                                     </Link>
-                                    <ul className={(isDropdown ? 'open dropdown' : '') + ' bg-white text-body-1 transition-all duration-500 xl:absolute xl:z-20 xl:left-0 xl:py-1 xl:mt-4 xl:w-[250px] xl:rounded-b-[4px] xl:duration-300 xl:opacity-0 xl:translate-y-2 xl:group-hover:translate-y-0 xl:group-hover:opacity-100'}>
+                                    <ul className={(isDropdown ? 'open dropdown' : '') + ' bg-white text-body-1 transition-all duration-500 xl:absolute xl:z-20 xl:left-0 xl:py-1 xl:mt-2 xl:w-[250px] xl:rounded-b-[4px] xl:duration-300 xl:opacity-0 xl:translate-y-2 xl:group-hover:translate-y-0 xl:group-hover:opacity-100'}>
                                         <li><Link to={'/search'} className='block px-3 py-[10px]'>Du lịch trong nước</Link></li>
-                                        <li><Link to={'/search'} className='block px-3 py-[10px]'>Tour được yêu thích nhất</Link></li>
-                                        <li><Link to={'/search'} className='block px-3 py-[10px]'>Tour trong tháng</Link></li>
-                                        <li><Link to={'/search'} className='block px-3 py-[10px]'>Tour tiết kiệm</Link></li>
+                                        <li><Link to={'/search?sort=departure_date&order=asc'} className='block px-3 py-[10px]'>Tour giờ chót</Link></li>
+                                        <li><Link to={'/search?sort=rating&order=dsc'} className='block px-3 py-[10px]'>Tour được yêu thích nhất</Link></li>
+                                        <li><Link to={'/search?sort=price&order=asc'} className='block px-3 py-[10px]'>Tour tiết kiệm</Link></li>
                                     </ul>
                                 </div>
                                 <div className='navbar-title w-full relative group xl:w-fit xl:pl-16'>
-                                    <Link {...(isOpen? {}: {to:'/news'})} className='menu-title flex items-center pb-2' onClick={handleDropdown}>
+                                    <Link {...(isOpen? {}: {to:'/news'})} className='menu-title flex items-center pb-2 xl:pb-0' onClick={handleDropdown}>
                                         <div>Tin tức</div>
                                         <span className='arrow flex items-center justify-center w-6 h-6'>
                                             <i className='twi-22-chevron-line rotate-90 text-[13px] leading-2 text-neutral-1-900 font-semibold'></i>
@@ -76,7 +74,7 @@ const Header = () => {
                                         <li><Link to={'/news'} className='block px-3 py-[10px]'>Điểm đến được yêu thích nhất</Link></li>
                                     </ul>
                                 </div>
-                                <Link to={'/contact'} className='w-full pb-2 xl:w-fit xl:pl-16'>Liên hệ</Link>
+                                <Link to={'/contact'} className='w-full pb-2 xl:w-fit xl:pl-16 xl:pb-0'>Liên hệ</Link>
                                 {isLoggedIn && 
                                     <button className='h-fit xl:pl-16' onClick={logout}>
                                         <FiLogOut size={28}/>
@@ -84,7 +82,7 @@ const Header = () => {
                                 }
                             </div>
                         </div>
-                        <Link to={`${isLoggedIn ? '/personal-profile' : '/auth/login'} `} className='h-fit'>
+                        <Link to={`${isLoggedIn ? '/personal-profile' : '/auth/login'} `} className='h-fit xl:pl-5'>
                             <FaRegUser size={28}/>
                         </Link>
                         {isLoggedIn && 

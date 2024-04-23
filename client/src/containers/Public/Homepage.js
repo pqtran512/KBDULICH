@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import logoBlue from '../../assets/img/header-footer/logo-blue.png'
-import { Datepicker, ButtonRound, Card1, Card2, Card3, CardArticle, SelectInput } from '../../components'
-import { getTours } from '../../store/actions/tourAction';
+import { Datepicker, ButtonRound, Card1, Card2, Card3, CardArticle, SelectInput, Loading } from '../../components'
+import { getToursCondition, getToursRating } from '../../store/actions/tourAction';
 import { useDispatch, useSelector } from 'react-redux'
+import { createSearchParams, useNavigate } from "react-router-dom";
+import { formatVietnameseToString } from '../../ultils/formatVietnameseToString';
 
 const places = [
+    { value: '', label: 'Chọn ...' },
     { value: 'An Giang', label: 'An Giang' },
     { value: 'Đồng Tháp', label: 'Đồng Tháp' },
     { value: 'Phan Thiết', label: 'Phan Thiết' },
@@ -13,16 +16,48 @@ const places = [
   
 const Homepage = () => {
     const dispatch = useDispatch()
-    const { tours } = useSelector(state => state.tour)
+    const navigate = useNavigate()
+    const [searchOption, setSearchOption] = useState({ 
+        departure: '',
+        destination: '',
+        starting_date: '',
+    })
+    const [loading, setLoading] = useState(false);
     useEffect(() => {
-        dispatch(getTours())
-    }, [])
-
+        setLoading(true);
+        dispatch(getToursRating())
+        dispatch(getToursCondition({ isActive: 1 }))
+            .then(() => {
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+                setLoading(false); // Ensure loading is set to false even if an error occurs
+            });
+    }, [dispatch])
+    const { tours_cond, count_cond, tours_rating } = useSelector(state => state.tour)
+    const handleSearch = () => {
+        let params = {}
+        if (searchOption.departure !== '') {
+            params.departure = formatVietnameseToString(searchOption.departure);
+        }
+        if (searchOption.destination !== '') {
+            params.destination = formatVietnameseToString(searchOption.destination);
+        }
+        if (searchOption.starting_date !== '') {
+            params.starting_date = searchOption.starting_date;
+        }
+        console.log(searchOption)
+        navigate({
+            pathname: 'search',
+            search: createSearchParams(params).toString()
+        });
+    }
     return (
         <div className='overflow-x-hidden'>
             {/* Banner giới thiệu */}
             <section className="flex justify-center relative w-full bg-mountain animate-fade md:bg-mountain-md xl:bg-mountain-xl bg-center bg-no-repeat bg-cover rounded-b-[20px]">
-                <div className="w-full pt-[90px] pb-10 px-6 md:pt-16 md:max-w-3xl md:pb-[200px] lg:px-2 xl:max-w-7xl xl:pt-[150px] xl:pb-[196px] 2xl:px-0">
+                <div className="w-full pt-20 pb-10 px-6 md:pt-16 md:max-w-3xl md:pb-[200px] lg:px-2 xl:max-w-7xl xl:pt-[150px] xl:pb-[196px] 2xl:px-0">
                     <div className="absolute top-0 left-0 h-full right-1/2 bg-grad opacity-80 rounded-bl-[20px] md:right-1/3 xl:right-1/2"></div>
                     <div className="relative z-10">
                         <div className="text-black pb-[71px] font-semibold md:pb-[26px] xl:pb-[62px]">
@@ -34,39 +69,35 @@ const Homepage = () => {
                                 <div className="flex justify-between pb-6 md:pb-0 md:gap-x-[18px] xl:gap-x-[75px]">
                                     <div className="md:w-[156px]">
                                         <div className='text-[14px] h-[31px] text-neutral-1-900 font-semibold xl:text-[18px]'>Nhập điểm đi</div>
-                                        <SelectInput options={places}/>
+                                        <SelectInput options={places} keyPayload='departure' setValue={setSearchOption} myStyle='w-[148px] text-body-2 md:w-[130px] xl:text-body-1 xl:w-[148px]'/>
                                     </div>
                                     <div className="md:w-[163px]">
                                         <div className='text-[14px] h-[31px] text-neutral-1-900 font-semibold xl:text-[18px]'>Nhập điểm đến</div>
-                                        <SelectInput options={places}/>
+                                        <SelectInput options={places} keyPayload='destination' setValue={setSearchOption} myStyle='w-[148px] text-body-2 md:w-[130px] xl:text-body-1 xl:w-[148px]'/>
                                     </div>
                                 </div>
-                                <div className="flex justify-between items-center md:gap-x-[37px] xl:gap-x-[104px]">
+                                <div className="flex justify-between items-end md:items-center md:gap-x-[37px] xl:gap-x-[104px]">
                                     <div className="min-w-[148px]">
                                         <div className="pr-2 text-[14px] h-[31px] text-neutral-1-900 font-semibold xl:text-[18px]">Chọn ngày</div>
-                                        <Datepicker width='w-[148px]' outline min={true}/>
+                                       <Datepicker width='w-[120px] xl:w-[148px]' height='h-9' top='top-[10px]' outline keyPayload='starting_date' setValue={setSearchOption}/>
                                     </div>
-                                    <ButtonRound link='/search' width='w-[148px]' height='h-[52px]' text='Tìm kiếm' textColor='text-white' bgColor='bg-primary-2' type='btn1' hoverType='btn-dark' textSize='text-caption-2 md:text-button1'/>
+                                    <ButtonRound link='/search' width='w-[120px] xl:w-[148px]' height='h-10 md:h-12 xl:h-[52px]' text='Tìm kiếm' textColor='text-white' bgColor='bg-primary-2' type='btn1' hoverType='btn-dark' textSize='text-caption-2 md:text-button1'
+                                        onClick={handleSearch} />
                                 </div>
                             </div>
                             <div className="absolute -z-10 bg-grad2 rounded-[20px] backdrop-blur-md shadow-[20px_20px_59px_11px_rgba(0,0,0,0.07)] w-full top-28 pt-[95px] px-6 pb-6 md:pt-[43px] md:top-20 xl:pt-16 xl:px-[85px] xl:pb-[83px] xl:top-[63px]">
                                 <div className="pb-4 text-[18px] text-neutral-1-900 leading-[31px] font-semibold md:pb-6 md:text-[20px] xl:text-[24px]">Tour giờ chót</div>
-                                <div className="grid grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-x-[132px] xl:grid-cols-3 xl:gap-x-[150px]">
-                                    <Card1 img='../img/home/sec1-img1.png' text1='Quảng Ninh' text2='Du lịch Thành phố Hạ Long' price='10,500,000đ' />
-                                    <Card1 img='../img/home/sec1-img2.png' text1='Đà Nẵng' text2='Du lịch Bà Nà Hills' price='12,500,000đ' />
-                                    <Card1 img='../img/home/sec1-img3.png' text1='Quảng Ninh' text2='Du lịch Thành phố Hạ Long' price='10,500,000đ' />
-                                    {/* {tours?.length > 0 && tours.map(item => {
-                                        return (
-                                            <Card1
-                                                key={item?.id}
-                                                img={JSON.parse(item?.images?.image)}
-                                                text1={item?.province}
-                                                text2={item?.name}
-                                                price={item?.price}
-                                                id={item?.id}
-                                            />
-                                        )
-                                    })} */}
+                                <div className="grid grid-cols-1 gap-y-10 md:grid-cols-2 md:gap-x-20 xl:grid-cols-3 xl:gap-x-36">
+                                    {tours_cond.length > 0 &&
+                                        (() => {
+                                            const sorted = [...tours_cond].sort((a, b) => 
+                                                a['bookingDeadline'] > b['bookingDeadline'] ? 1 : -1
+                                            );
+                                            return sorted?.slice(0, 3).map((tour, idx) => (
+                                                <Card1 key={idx} tour={tour}/>
+                                            ));
+                                        })()
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -74,28 +105,37 @@ const Homepage = () => {
                 </div>
             </section>
             {/* Tour ưu đãi */}
-            <section className="mx-auto w-full pt-[262%] pb-20 md:max-w-3xl md:pb-[120px] md:pt-[461px] xl:pb-[100px] xl:pt-[289px] xl:max-w-7xl">
+            <section className="mx-auto w-full pt-[230%] pb-20 md:max-w-3xl md:pb-[120px] md:pt-[461px] xl:pb-[100px] xl:pt-[289px] xl:max-w-7xl">
                 <div className="px-6 lg:px-2 2xl:px-0">
                     <div className="pb-8 xl:pb-[60px] text-neutral-1-900">
-                        <div className="pb-4 text-[23px] font-semibold leading-[31px] md:text-[24px] md:pb-2 xl:pb-4 xl:text-[32px]">Tour mới nhất</div>
-                        <div className="text-body-2 xl:text-body-1">Khám phá ngay các tour du lịch vô cùng hấp dẫn!</div>
+                        <div className="pb-4 text-[23px] font-semibold leading-[31px] md:text-[24px] md:pb-2 xl:pb-4 xl:text-[32px]">Khám phá hành trình hấp dẫn</div>
+                        <div className="text-body-2 xl:text-body-1">Đừng bỏ lỡ các tour du lịch vô cùng hấp dẫn !</div>
                     </div>
-                    <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-8 xl:grid-cols-3 ">
-                        {/* mobile (3 cards), tablet (6 cards), desktop (9 cards) */}
-                        <Card2 animation='md:animate-fade-right xl:animate-fade'/>
-                        <Card2 animation='md:animate-fade-left xl:animate-fade'/>
-                        <Card2 animation='md:animate-fade-right xl:animate-fade'/>
-                        
-                        <Card2 hidden='hidden md:block' animation='md:animate-fade-left xl:animate-fade'/>
-                        <Card2 hidden='hidden md:block' animation='md:animate-fade-right xl:animate-fade'/>
-                        <Card2 hidden='hidden md:block' animation='md:animate-fade-left xl:animate-fade'/>
-                        
-                        <Card2 hidden='hidden xl:block' animation='xl:animate-fade'/>
-                        <Card2 hidden='hidden xl:block' animation='xl:animate-fade'/>
-                        <Card2 hidden='hidden xl:block' animation='xl:animate-fade'/>
-                    </div>
+                    {loading ? (
+                        <div className='mx-auto'><Loading loading={loading}/></div>
+                    ) : (
+                        <div className="grid gap-y-6 md:grid-cols-2 md:gap-x-6 md:gap-y-8 xl:grid-cols-3 ">
+                            {/* mobile (3 cards), tablet (6 cards), desktop (9 cards) */}
+                            {tours_cond?.slice(0, 3).map((tour, idx) => {
+                                if (idx % 2 === 0) 
+                                    return ( <Card2 animation='md:animate-fade-right xl:animate-fade-down' tour={tour} key={idx}/> );
+                                else 
+                                    return ( <Card2 animation='md:animate-fade-left xl:animate-fade-down' tour={tour} key={idx}/>  );
+                            })}
+                            {tours_cond?.slice(3, 6).map((tour, idx) => {
+                                if (idx % 2 === 0) 
+                                    return ( <Card2 hidden='hidden md:block' animation='md:animate-fade-left xl:animate-fade-down' tour={tour} key={idx}/> );
+                                else 
+                                    return ( <Card2 hidden='hidden md:block' animation='md:animate-fade-right xl:animate-fade-down' tour={tour} key={idx}/>  );
+                            })}
+                            {tours_cond?.slice(6, 9).map((tour, idx) => (
+                                <Card2 hidden='hidden xl:block' animation='xl:animate-fade-down' tour={tour} key={idx} />
+                            ))}
+                        </div>
+                        )   
+                    }
                     <div className="pt-6 w-full flex items-center justify-center xl:pt-11">
-                        <ButtonRound link='/search' width='w-[142px]' height='h-[51px]' text='Xem thêm' textColor='text-neutral-1-900' border='border-[2px] border-primary-2' type='btn3' hoverType='btn-light' textSize='text-button1 font-semibold xl:text-black xl:text-button'/>
+                        <ButtonRound onClick={() => navigate('/search')} width='w-[142px]' height='h-[51px]' text='Xem thêm' textColor='text-neutral-1-900' border='border-[2px] border-primary-2' type='btn3' hoverType='btn-light' textSize='text-button1 font-semibold xl:text-black xl:text-button'/>
                     </div>
                 </div>
             </section>
@@ -122,7 +162,7 @@ const Homepage = () => {
                             </div>
                             <div className="w-[257px] min-h-[94px] flex items-center justify-center bg-white/60 rounded-[50px] backdrop-blur-sm md:bg-white/80">
                                 <div className="w-fit">
-                                    <div className="font-prata text-[28px] leading-[50px] text-primary-2 text-center">+1200</div>
+                                    <div className="font-prata text-[28px] leading-[50px] text-primary-2 text-center">+{count_cond}</div>
                                     <div className="text-body-1 text-neutral-1-900/80 text-center">Tour trong nước</div>
                                 </div>
                             </div>
@@ -141,23 +181,29 @@ const Homepage = () => {
                 <div className="mx-auto px-6 md:max-w-3xl lg:px-2 xl:max-w-7xl 2xl:px-0">
                     <div className="text-heading-4 font-semibold text-neutral-1-900 pb-4 md:pb-2 xl:hidden">Điểm đến được yêu thích nhất</div>
                     <div className="hidden pb-4 text-[32px] font-semibold leading-[31px] text-neutral-1-900 xl:block">
-                        Điểm đến yêu thích trong tháng
+                        Điểm đến được yêu thích nhất
                     </div>
                     <div className="pb-8 text-body-2 text-neutral-1-900 xl:pb-[60px] xl:text-body-1">
                         Sự lựa chọn hoàn hảo và được yêu thích nhất dựa trên đánh giá từ du khách.
                     </div>
                     <div className="grid gap-6 animate-fade-down md:animate-fade xl:grid-cols-xl">
                         <div className="grid gap-6 md:grid-flow-col md:grid-cols-md md:grid-rows-2 xl:grid-subcols-xl">
-                            <Card3 img='./img/home/sec3-img1.png' number='358' text1='Kỳ co eo gió' text2='Quy Nhơn' type='1'/>
-                            <Card3 img='./img/home/sec3-img1.png' number='358' text1='Kỳ co eo gió' text2='Quy Nhơn' type='1'/>
+                            {tours_rating?.length > 0 && tours_rating?.slice(0, 2).map((row) => {
+                                return ( <Card3 key={row.row.tour_ID} row={row} type='1'/> )
+                            })}
                             {/* longest card */}
-                            <Card3 img='./img/home/sec3-img2.png' number='358' text1='Kỳ co eo gió' text2='Quy Nhơn' type='2'/>
+                            {tours_rating?.length > 0 && tours_rating?.slice(2, 3).map((row) => {
+                                return ( <Card3 key={row.row.tour_ID} row={row} type='2'/> )
+                            })}
                         </div>
                         <div className="grid gap-6 md:grid-cols-md md:grid-rows-temp xl:grid-subcols2-xl">
                             {/* largest card */}
-                            <Card3 img='./img/home/sec3-img3.png' number='358' text1='Kỳ co eo gió' text2='Quy Nhơn' type='3'/>
-                            <Card3 img='./img/home/sec3-img4.png' number='358' text1='Kỳ co eo gió' text2='Quy Nhơn' type='1'/>
-                            <Card3 img='./img/home/sec3-img1.png' number='358' text1='Kỳ co eo gió' text2='Quy Nhơn' type='1'/>
+                            {tours_rating?.length > 0 && tours_rating?.slice(3, 4).map((row) => {
+                                return ( <Card3 key={row.row.tour_ID} row={row} type='3'/> )
+                            })}
+                            {tours_rating?.length > 0 && tours_rating?.slice(4, 6).map((row) => {
+                                return ( <Card3 key={row.row.tour_ID} row={row} type='1'/> )
+                            })}
                         </div>
                     </div>
                 </div>

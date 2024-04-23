@@ -240,7 +240,8 @@ module.exports = {
         'coconut-md':"url('/src/assets/img/home/bg-coconut-md.png')",
         'coconut-xl':"url('/src/assets/img/home/bg-coconut-xl.png')",
         'sea':"url('/src/assets/img/home/bg-sea.png')",
-        'wallpaper1': "url('/src/assets/img/home/male-wallpaper.jpg')",
+        'wallpaper1': "url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDk0fHxuYXR1cmV8ZW58MHx8fHwxNjMyMDQwMTg1&ixlib=rb-1.2.1&q=80&w=2000')",
+        'wallpaper2': "url('https://i0.wp.com/digital-photography-school.com/wp-content/uploads/2019/01/mark-harpur-748500-unsplash.jpg?w=1500&ssl=1')",
       },
       animation: {
         'header': 'spin 300ms ease-in-out infinite',

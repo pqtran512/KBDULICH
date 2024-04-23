@@ -1,3 +1,8 @@
+export {default as SystemAuth} from './Auth'
+export {default as SystemLogin} from './Login'
+export {default as SystemResetPass1} from './ResetPass1'
+export {default as SystemResetPass2} from './ResetPass2'
+
 export {default as Header} from './Header'
 export {default as Sidebar} from './Sidebar'
 export {default as SystemHome} from './SystemHome'

@@ -21,7 +21,7 @@ const Header = () => {
     };
     const logout = async () => {
         dispatch(actions.logout())
-        navigate('/auth/login')
+        navigate('/system-auth/login')
     }
     useEffect(() => {
         if (window.location.pathname.startsWith("/staff")){
@@ -48,6 +48,10 @@ const Header = () => {
                     <div className='flex items-center gap-8'>
                         <div className='relative w-fit'>
                             <IoNotifications color='#fff' className='cursor-pointer text-[18px] xl:text-[24px]' onClick={handleDropdown}/>
+                            <span className="absolute right-0.5 top-0 flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-3 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-3"></span>
+                            </span>
                             <ul className={(isDropdown ? 'block' : 'hidden') + ' bg-white shadow-md transition-all duration-150 text-neutral-1-900 absolute z-20 py-1 mt-2 rounded-md text-body-2 xl:text-body-1 ' + (role === 'staff' ? 'w-[220px] right-0 xl:-right-10 xl:w-[250px]' : 'w-[240px] right-0 xl:-left-28 xl:w-[280px]')}>
                                 <li className='cursor-pointer px-3 py-[10px] mb-[10px] border-b border-neutral-2-200 hover:bg-neutral-3-100'>
                                     {role === 'staff' ? <div>Request 3 đã được chấp nhận</div> : <div>Nguyễn Thị Anh đã gửi 1 request</div>}

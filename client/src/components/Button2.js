@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 
-const Button = ({text, textColor, bgColor, onClick}) => {
+const Button2 = ({text, textColor, bgColor, onClick}) => {
     return (
         <button
             type='button'
@@ -10,4 +10,4 @@ const Button = ({text, textColor, bgColor, onClick}) => {
         </button>
     )
 }
-export default memo(Button)
+export default memo(Button2)
