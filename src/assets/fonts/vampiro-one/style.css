@@ -1,0 +1,9 @@
+/* font-weight: thin/100 */
+
+/* font-weight: regular/400 */
+@font-face {
+  font-family: 'Vampiro One';
+  font-style: normal;
+  font-weight: 400;
+  src: local('VampiroOne Regular'), url("VampiroOne-Regular.ttf") format('truetype');
+}
