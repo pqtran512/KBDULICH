@@ -1,0 +1,22 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="24" height="24" fill="#F4F5F7"/>
+<g id="DS Tour" clip-path="url(#clip0_18_1951)">
+<rect width="414" height="7302" transform="translate(-350 -2113)" fill="white"/>
+<g id="Frame 9367">
+<rect width="366" height="96" transform="translate(-326 -52)" fill="#F0F1F3"/>
+<g id="Frame 9300">
+<g id="grid">
+<path id="Vector" d="M10 3H3V10H10V3Z" stroke="#2C333A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_2" d="M21 3H14V10H21V3Z" stroke="#2C333A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_3" d="M21 14H14V21H21V14Z" stroke="#2C333A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path id="Vector_4" d="M10 14H3V21H10V14Z" stroke="#2C333A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_18_1951">
+<rect width="414" height="7302" fill="white" transform="translate(-350 -2113)"/>
+</clipPath>
+</defs>
+</svg>
