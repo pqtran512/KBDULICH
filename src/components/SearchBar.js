@@ -6,17 +6,16 @@ import { splitDateTime } from '../ultils/splitDateTime';
 
 const { FaRegUser, MdOutlineLocalPhone, MdCalendarToday, MdOutlineStickyNote2, LuFlagTriangleRight, FaRegStar, MdFingerprint } = icons
 
-const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, optionBar, id, tour_id, person, staff, tour, phone, email, bookDate, departureDate, rating, note, sendDate, replyDate, path, place, tours, role, setOutput, requests}) => {
+const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, optionBar, id, tour_id, person, staff, tour, phone, email, bookDate, departureDate, rating, note, sendDate, replyDate, path, role, setOutput, tours, requests, places}) => {
     const [changeWidth, setChangeWidth] = useState(false)
     const [searchText, setSearchText] = useState('')
-    const [searchTerm, setSearchTerm] = useState(id? 'Mã' : 'Họ Tên')
+    const [searchTerm, setSearchTerm] = useState(id? 'Mã' : places? 'Địa điểm' : 'Họ Tên')
     const [searchResults, setSearchResults] = useState([]);
     const divRef = useRef(null);
     const navigate = useNavigate()
 
     const handleEnterKeyPress = (value) => {
         // Do something with the input value
-        if (place) setSearchTerm('Địa điểm')
         const formattedSearchTerms = formatVietnameseToString(searchTerm);
         if (searchText !== '') {
             setOutput(searchResults)
@@ -28,7 +27,9 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
             });
         }
         else { 
-            setOutput(tours)
+            tours && setOutput(tours)
+            places && setOutput(places)
+            requests && setOutput(requests)
             navigate(path) 
         }
     };
@@ -73,6 +74,18 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
                     request &&
                     request[field] &&
                     String(request[field]).toLowerCase().includes(value.toLowerCase())
+                );
+            });
+            setSearchResults(results);
+        }
+        else if (places) {
+            const results = places.filter((place) => {
+                return (
+                    value &&
+                    place &&
+                    place.name && place.province &&
+                    (String(place.name).toLowerCase().includes(value.toLowerCase()) || 
+                     String(place.province).toLowerCase().includes(value.toLowerCase()) )
                 );
             });
             setSearchResults(results);
@@ -230,6 +243,11 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
                                     <div>{result.staff_ID}</div>
                                     <div className='italic'>{splitDateTime(result.date)[0]} {splitDateTime(result.date)[1]}</div>
                                 </Link>
+                            );
+                        })}
+                        {places && searchResults.map((place, id) => {
+                            return (
+                                <div>{place.name}</div>
                             );
                         })}
                     </div>

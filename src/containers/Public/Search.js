@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button, Card2, Datepicker, SelectInput, Pagination, RangeSlider, Loading } from '../../components';
 import icons from '../../ultils/icons';
 import { useDispatch, useSelector } from 'react-redux'
-import { useSearchParams } from 'react-router-dom'
 import { getToursCondition, getAllPlaces } from '../../store/actions/tourPlaceAction'
-import { createSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { useSearchParams, createSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { formatVietnameseToString } from '../../ultils/formatVietnameseToString';
 import { provinceObjects } from '../../ultils/objectsToArr';
 
@@ -222,7 +221,7 @@ const Search = () => {
     const indexOfFirstPost = indexOfLastPost - toursPerPage; 
     const currentTours = sortTour.slice(indexOfFirstPost, indexOfLastPost);
     return (
-        <div>
+        <main className='overflow-x-hidden'>
             <section className="flex justify-center relative w-full bg-sea animate-fade bg-center bg-no-repeat bg-cover rounded-b-[20px]">
                 <div className="w-full py-28 px-6 md:py-32 md:max-w-3xl lg:px-2 xl:max-w-7xl xl:py-48 2xl:px-0">
                     <div className="mx-auto flex items-center justify-center pb-[86px] max-w-[242px] md:pb-[37px] md:max-w-[404px] xl:pb-[100px] xl:max-w-[584px]">
@@ -420,7 +419,7 @@ const Search = () => {
                     </div>
                 </div>
             </section>
-        </div>
+        </main>
     )
 }
 
