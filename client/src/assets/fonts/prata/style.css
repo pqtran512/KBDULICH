@@ -1,9 +1,0 @@
-/* font-weight: thin/100 */
-
-/* font-weight: regular/400 */
-@font-face {
-  font-family: 'Prata';
-  font-style: normal;
-  font-weight: 400;
-  src: local('Prata Regular'), url("Prata-Regular.ttf") format('truetype');
-}

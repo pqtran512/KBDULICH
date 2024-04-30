@@ -1,5 +1,0 @@
-export * from './authService'
-export * from './userService'
-export * from './tourPlaceService'
-export * from './orderFeedbackService'
-export * from './requestService'
