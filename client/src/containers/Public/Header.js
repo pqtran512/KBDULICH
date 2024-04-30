@@ -12,7 +12,7 @@ const Header = () => {
     const dispatch = useDispatch()
     const [isOpen, setIsOpen] = useState(false);
     const [isDropdown, setIsDropdown] = useState(false);
-    const {isLoggedIn} = useSelector(state => state.auth)
+    const {isLoggedIn, role} = useSelector(state => state.auth)
     const navigate = useNavigate()
 
     // FUNCTION
@@ -75,17 +75,17 @@ const Header = () => {
                                     </ul>
                                 </div>
                                 <Link to={'/contact'} className='w-full pb-2 xl:w-fit xl:pl-16 xl:pb-0'>Liên hệ</Link>
-                                {isLoggedIn && 
+                                {isLoggedIn && role === 'customer' &&
                                     <button className='h-fit xl:pl-16' onClick={logout}>
                                         <FiLogOut size={28}/>
                                     </button>
                                 }
                             </div>
                         </div>
-                        <Link to={`${isLoggedIn ? '/personal-profile' : '/auth/login'} `} className='h-fit xl:pl-5'>
+                        <Link to={`${isLoggedIn && role === 'customer'? '/personal-profile' : '/auth/login'} `} className='h-fit xl:pl-5'>
                             <FaRegUser size={28}/>
                         </Link>
-                        {isLoggedIn && 
+                        {isLoggedIn && role === 'customer' &&
                         <div className='hidden md:block pl-8'>Xin chào, user1</div>
                         }
                     </div>

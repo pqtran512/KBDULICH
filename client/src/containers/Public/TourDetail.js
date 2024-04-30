@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import icons from '../../ultils/icons';
-import { Button, Card2 } from '../../components';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Button, Card2, Pagination } from '../../components';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
-import { getTour, getTourByName, getToursCondition } from '../../store/actions/tourAction'
+import { getTour, getTourByName, getToursCondition } from '../../store/actions/tourPlaceAction'
+import { getFeedbackByTourType, countByTourType } from '../../store/actions/orderFeedbackAction'
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
-import { splitDate } from '../../ultils/splitDate';
+import { splitDate, splitDateTime } from '../../ultils/splitDateTime';
 
 const { BsThreeDotsVertical, FaRegStar, FaStar, FaStarHalfAlt, MdCalendarToday } = icons
 
@@ -15,15 +16,16 @@ const TourDetail = () => {
     const {tourID} = useParams();
     const dispatch = useDispatch()
     const navigate = useNavigate();
+    const [ searchParams ] = useSearchParams()
     const { tour, tours_name, count_name } = useSelector(state => state.tour)
     let {tours_cond, count_cond } = useSelector(state => state.tour)
+    const { feedbacks } = useSelector(state => state.feedback)
+    const { count_order_tourtype } = useSelector(state => state.order)
     const [relatedTour, setRelatedTour] = useState([]);
     const [countRelatedTour, setCountRelatedTour] = useState(0);
     const [count, setCount] = useState(0);
+    const [feedbacksPerPage] = useState(4);
     const [tourOption, setTourOption] = useState('detail');
-    const [year, setYear] = useState('');
-    const [month, setMonth] = useState('');
-    const [day, setDay] = useState('');
     var settings = {
         dots: true,
         infinite: true,
@@ -36,19 +38,15 @@ const TourDetail = () => {
       };
     useEffect(() => {
         dispatch(getTour({tour_ID: tourID}))
+        const tourType_ID = tourID.split('_')[0];
+        dispatch(getFeedbackByTourType({tour_ID: tourType_ID}))
+        dispatch(countByTourType({tour_ID: tourType_ID}))
     }, [dispatch, tourID])
     useEffect(() => {
         tour.name && dispatch(getTourByName({name: tour.name}))
     }, [tour.name])
     useEffect(() => {
-        if (tour.starting_date) {
-            const [y, m, d] = tour.starting_date.split('-');
-            setYear(y);
-            setMonth(m);
-            setDay(d);
-        }
         if (tours_cond) {
-            console.log('hi')
             tours_cond = []
             count_cond = 0
         }
@@ -122,8 +120,43 @@ const TourDetail = () => {
         }
         return arr
     }
+    const rating_stars = (ratings, s) => {
+        const fullStars = Math.floor(ratings);
+        const hasFraction = ratings % 1 > 0;
+        const emptyStars = 5 - Math.ceil(ratings);
+        // Generate full stars
+        let stars = []
+        if (fullStars) {
+            stars = Array.from({ length: fullStars }, (_, idx) => (
+                <FaStar key={idx} size={s} color='#F8CC1A'/>
+            ));
+        }
+        // Add a regular star if there is a fractional part
+        if (hasFraction) {
+            stars.push(<FaStarHalfAlt key='fractional' size={s} color='#F8CC1A'/>);
+          }
+        for (let i = 0; i < emptyStars; i++) {
+            stars.push(<FaRegStar key={`emptyStar-${i}`} size={s} color='#F8CC1A'/>);
+        }
+        return stars
+    }
+    const getAvRating = () => {
+        let sum = 0
+        if (feedbacks.length) {
+            for (var i = 0; i < feedbacks.length; i++) { 
+                sum = sum + feedbacks[i].ratings
+            }
+            return (sum / feedbacks.length).toFixed(1)
+        }
+        else return 0
+    }
+    // pagination
+    const currentPage = searchParams.get('page') || 1
+    const indexOfLastPost = currentPage * feedbacksPerPage;
+    const indexOfFirstPost = indexOfLastPost - feedbacksPerPage; 
+    const currentFeedbacks = feedbacks.slice(indexOfFirstPost, indexOfLastPost);
     return (
-        <div>
+        <main>
             <section className="flex justify-center relative w-full bg-sea animate-fade bg-center bg-no-repeat bg-cover rounded-b-[20px]">
                 <div className="w-full py-28 px-6 md:py-32 md:max-w-3xl lg:px-2 xl:max-w-7xl xl:py-48 2xl:px-0">
                     <div className="mx-auto flex items-center justify-center pb-[86px] md:pb-[37px] xl:pb-[100px]">
@@ -145,13 +178,13 @@ const TourDetail = () => {
                         </div>
                         <div className="truncate text-body-1 leading-[34px] text-neutral-1-900 xl:text-[20px]">{tour.name}</div>
                     </div>
-                    {/* <div className='flex flex-col justify-between xl:items-center xl:flex-row xl:gap-10'> */}
+                    <div className='flex flex-col justify-between xl:items-center xl:flex-row xl:gap-10'>
                         <div className="pt-[34px] pb-6 text-heading-4 text-neutral-1-900 font-semibold md:pt-8 xl:pb-7 xl:pt-[29px] xl:text-heading-3">{tour.name}</div>
-                        {/* <div className="h-[57px] w-fit min-w-[150px] px-4 shadow-btn rounded-[6px] flex items-center justify-center gap-x-2">
+                        <div className="h-[57px] w-fit min-w-[150px] px-4 shadow-btn rounded-[6px] flex items-center justify-center gap-x-2">
                             <i className="twi-22-heart-fill text-[20px] leading-[18px] text-[#EA2733]"></i>
-                            <div className="text-body-1 text-neutral-1-900">358 lượt đặt</div>
-                        </div> */}
-                    {/* </div> */}
+                            <div className="text-body-1 text-neutral-1-900">{count_order_tourtype} lượt đặt</div>
+                        </div>
+                    </div>
                     <div className="pt-6 md:pt-8 xl:pt-7 xl:grid xl:grid-cols-845 xl:gap-x-6">
                         {/* carousel  */}
                         <Slider {...settings} className='cursor-grabbing'> 
@@ -230,10 +263,10 @@ const TourDetail = () => {
                                             <div className='font-semibold'>Vận chuyển</div>
                                             <div>{tour?.vehicle}</div>
                                             <div className='font-semibold'>Số chỗ còn lại</div>
-                                            {/* <div>{tour?.seat_num - tour?.cus_num}</div> */}
+                                            <div>{tour?.seat_num - tour?.cus_num}</div>
                                         </div>
                                         <p className="pt-4 text-caption-1 leading-5 tracking-wider md:text-[14px] xl:pt-6">
-                                            <span className="font-semibold">{tour.name} ({tour.departure} - {getProvinceTitle(tour).join(' - ')}). </span> {/* data */}
+                                            <span className="font-semibold">{tour.name} ({tour.departure} - {getProvinceTitle(tour).join(' - ')}). </span>
                                             {/* Được mệnh danh là ‘’thành phố đáng đến’’ với dòng sông Hàn thơ mộng với cây cầu Rồng biểu tượng của Thành phố biển du lịch Đà Nẵng 
                                             - nơi mà quý khách có thể cảm nhận được sự pha trộn giữa khí hậu miền Bắc, miền Nam.
                                             Ngoài ra Đà Nẵng còn sở hữu nhiều danh lam thắng cảnh làm say lòng người như: Bà Nà Hills, Bán Đảo Sơn Trà, Ngũ Hành Sơn, Đà Nẵng, phố cổ Hội An…. 
@@ -260,9 +293,9 @@ const TourDetail = () => {
                                                             <div className="w-[14px] h-4 rounded-[50%] bg-primary-2"></div>
                                                         </div>
                                                         {idx === (tour.schedule.length - 1)?
-                                                        <p className="pl-[31px] whitespace-pre-wrap">{splitNote(splitTitle(sched)[1])[0]}</p>
+                                                        <p className="pl-[31px] whitespace-pre-wrap">{splitTitle(sched)[1]}</p>
                                                         :
-                                                        <p className="pl-[31px] whitespace-pre-wrap">{splitLastSentence(splitTitle(sched)[1])[0]}</p>
+                                                        <p className="pl-[31px] whitespace-pre-wrap">{splitTitle(sched)[1]}</p>
                                                         }
                                                     </div>
                                                 </div>
@@ -375,65 +408,31 @@ const TourDetail = () => {
                 <div className="pt-16">
                     <div className="text-heading-2 leading-[42px] text-neutral-1-900 font-comfortaa font-semibold">Bình luận</div>
                     <div className="pt-6 flex items-center gap-1">
-                        <div className="text-body-1 tracking-[0.2px] text-neutral-1-500 border-b border-neutral-1-500 w-fit">4.0</div>
+                        <div className="text-body-1 tracking-[0.2px] text-neutral-1-500 border-b border-neutral-1-500 w-fit">{getAvRating()}</div>
                         <div className="flex gap-x-0.5 px-2">
-                            <FaStar size={24} color='#F8CC1A'/>
-                            <FaStar size={24} color='#F8CC1A'/>
-                            <FaStar size={24} color='#F8CC1A'/>
-                            <FaStarHalfAlt size={24} color='#F8CC1A'/>
-                            <FaRegStar size={24} color='#F8CC1A'/>
+                            {feedbacks? rating_stars(getAvRating(), 24) : <></>}
                         </div>
-                        <div className="text-neutral-1-900 text-body-1 tracking-[0.2px]">(18 đánh giá)</div>
+                        <div className="text-neutral-1-900 text-body-1 tracking-[0.2px]">{feedbacks? feedbacks.length : 0} đánh giá</div>
                     </div>
-                    {/* Comment 1 */}
-                    {/* { feedback.map((item, idx) => {
+                    {/* Comments */}
+                    { currentFeedbacks.length > 0 && currentFeedbacks?.map((item, idx) => {
                         return ( 
                             <div key={idx} className="w-full py-10 border-b border-neutral-2-200">
                                 <div className="w-full flex justify-between items-center">
                                     <div className="flex items-center gap-3">
-                                        <div className="text-title-3 font-semibold text-neutral-1-900">{item.name}</div>
+                                        <div className="text-title-3 font-semibold text-neutral-1-900">{item.customer.username}</div>
                                         <div className="flex gap-x-0.5">
-                                            <FaStar size={20} color='#F8CC1A'/>
-                                            <FaStar size={20} color='#F8CC1A'/>
-                                            <FaStar size={20} color='#F8CC1A'/>
-                                            <FaStarHalfAlt size={20} color='#F8CC1A'/>
-                                            <FaRegStar size={20} color='#F8CC1A'/>
+                                            {rating_stars(item.ratings, 20)}
                                         </div>
                                     </div>
-                                    <div className="text-caption-1 tracking-[0.2px] text-neutral-1-600">18:20, 18/09/2019</div>
+                                    <div className="text-caption-1 tracking-[0.2px] text-neutral-1-600">{splitDateTime(item.datetime)[1] + ', ' + splitDateTime(item.datetime)[0]}</div> {/* 18:20, 18/09/2019 */}
                                 </div>
-                                <p className="pt-2 text-neutral-1-900 text-body-2 tracking-[0.1px]">Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
+                                <p className="pt-2 text-neutral-1-900 text-body-2 tracking-[0.1px]">{item.reviews}</p>
                             </div>
                         );
-                    })} */}
-                    {/* Comment 2 */}
-                    <div className="w-full py-10 ">
-                        <div className="w-full flex justify-between items-center">
-                            <div className="flex items-center gap-3">
-                                <div className="text-title-3 font-semibold text-neutral-1-900">Mỹ Khanh</div>
-                                <div className="flex gap-x-0.5">
-                                    <FaStar size={20} color='#F8CC1A'/>
-                                    <FaStar size={20} color='#F8CC1A'/>
-                                    <FaStar size={20} color='#F8CC1A'/>
-                                    <FaStar size={20} color='#F8CC1A'/>
-                                    <FaRegStar size={20} color='#F8CC1A'/>
-                                </div>
-                            </div>
-                            <div className="text-caption-1 tracking-[0.2px] text-neutral-1-600">18:20, 18/09/2019</div>
-                        </div>
-                        <p className="pt-2 text-neutral-1-900 text-body-2 tracking-[0.1px]">Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
-                    </div>
-                    {/* Comment Pagination */}
-                    <div className="flex gap-3 justify-center pt-10">
-                        <i className="twi-11-arrow-left-fill text-neutral-1-100 text-[16px] leading-4 p-2 rounded-md"></i>
-                        <div className="flex gap-1 text-caption-2 text-neutral-1-600">
-                            <a href="/tour-detail" className="leading-8 w-8 rounded-[20px] text-white bg-primary-1 transition-all text-center">1</a>
-                            <a href="/tour-detail" className="leading-8 w-8 rounded-[20px] bg-white hover:text-white hover:bg-primary-1 transition-all text-center">2</a>
-                            <a href="/tour-detail" className="leading-8 w-8 rounded-[20px] bg-white hover:text-white hover:bg-primary-1 transition-all text-center">3</a>
-                            <a href="/tour-detail" className="leading-8 w-8 rounded-[20px] bg-white hover:text-white hover:bg-primary-1 transition-all text-center">4</a>
-                            <a href="/tour-detail" className="leading-8 w-8 rounded-[20px] bg-white hover:text-white hover:bg-primary-1 transition-all text-center">5</a>
-                        </div>
-                        <i className="twi-11-arrow-right-fill text-neutral-1-500 text-[16px] leading-4 p-2 rounded-md"></i>
+                    })}
+                    <div className='pt-8'>
+                        <Pagination limit={4} count={feedbacks?.length}/> 
                     </div>
                 </div>
             </section>
@@ -451,7 +450,7 @@ const TourDetail = () => {
                     </div>
                 </div>
             </section>
-        </div>
+        </main>
     )
 }
 

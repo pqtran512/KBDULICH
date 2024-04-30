@@ -3,10 +3,10 @@ import { SearchBar, Pagination, Loading } from '../../components';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
 import icons from '../../ultils/icons';
-import { getToursCondition } from '../../store/actions/tourAction';
-import { formatVietnameseToString } from '../../ultils/formatVietnameseToString';
+import { getToursCondition } from '../../store/actions/tourPlaceAction';
 import { ratingClassifier } from '../../ultils/ratingClassifier';
 import * as XLSX from 'xlsx';
+import { sorting } from '../../ultils/sorting';
 
 const { CgArrowsExchangeAltV, FaStar } = icons
 
@@ -19,7 +19,7 @@ const MTourList = () => {
     const [postsPerPage] = useState(20);
     const [searchParams] = useSearchParams()
     const currentPage = searchParams.get('page') || 1
-    const [sortTour, setSortTour] = useState([]);
+    const [sortData, setSortData] = useState([]);
 
     useEffect(() => {
         setLoading(true);
@@ -32,47 +32,12 @@ const MTourList = () => {
                 setLoading(false); // Ensure loading is set to false even if an error occurs
             });
     }, [dispatch])
-    const sorting = (col) => {
-        console.log('leoo')
-        if (typeof tours_cond[0][col] === 'string') {
-            if (order === "asc") {
-                const sorted = [...tours_cond].sort((a, b) => 
-                    formatVietnameseToString(a[col]) > formatVietnameseToString(b[col]) ? 1 : -1
-                );
-                setSortTour(sorted)
-                setOrder('dsc')
-            }
-            if (order === "dsc") {
-                const sorted = [...tours_cond].sort((a, b) => 
-                    formatVietnameseToString(a[col]) < formatVietnameseToString(b[col]) ? 1 : -1
-                );
-                setSortTour(sorted)
-                setOrder('asc')
-            }
-        }
-        else {
-            if (order === "asc") {
-                const sorted = [...tours_cond].sort((a, b) => 
-                    a[col] > b[col] ? 1 : -1
-                );
-                setSortTour(sorted)
-                setOrder('dsc')
-            }
-            if (order === "dsc") {
-                const sorted = [...tours_cond].sort((a, b) => 
-                    a[col] < b[col] ? 1 : -1
-                );
-                setSortTour(sorted)
-                setOrder('asc')
-            }
-        }
-    }
     useEffect(() => {
-        setSortTour(tours_cond)
+        setSortData(tours_cond)
     }, [tours_cond]);
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage; 
-    const currentTours = sortTour.slice(indexOfFirstPost, indexOfLastPost);
+    const currentTours = sortData.slice(indexOfFirstPost, indexOfLastPost);
     const exportToExcel = () => {
         const modifiedData = tours_cond.map(entry => {
             const { places, staff, schedule, service, ...rest } = entry;
@@ -82,15 +47,15 @@ const MTourList = () => {
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.json_to_sheet(data);
         XLSX.utils.book_append_sheet(wb, ws, "Data");
-        XLSX.writeFile(wb, 'table_data.xlsx');
-      };
+        XLSX.writeFile(wb, 'tour_data.xlsx');
+    };
     return (
-        <div className='w-full px-6 pt-20 py-10 xl:pt-7 xl:pb-20 xl:pl-0 xl:pr-10 overflow-x-hidden'>
+        <div className='w-full px-6 pt-20 pb-10 xl:pt-7 xl:pb-20 xl:pl-0 xl:pr-10 overflow-x-hidden'>
             <div className='pb-10 flex flex-col gap-y-5 md:flex-row md:items-center md:justify-between'>
                 <div className='font-prata text-neutral-1-900 font-semibold text-header-1 xl:text-heading-4'>Danh sách Tour</div>
                 <div className='ml-auto xl:ml-0'>
                     <SearchBar placeholder='Nhập ..' newPlaceholder='Nhập tìm kiếm . . .' width='w-10 md:w-24 xl:w-28' change={true} newWidth='w-[380px] xl:w-[650px]' 
-                        optionBar={true} id={true} tour={true} departureDate={true} rating={true} staff={true} path={location.pathname} tours={tours_cond} role={'manager'} setOutput={setSortTour}/>
+                        optionBar={true} id={true} tour={true} departureDate={true} rating={true} staff={true} path={location.pathname} tours={tours_cond} role={'manager'} setOutput={setSortData}/>
                 </div>
             </div>
             <div className='pb-6 flex flex-col gap-2 md:flex-row md:justify-between'>
@@ -108,53 +73,48 @@ const MTourList = () => {
                             <div className='flex items-center'>
                                 <div>ID</div>
                                 <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
-                                    onClick={() => sorting("tour_ID")}/> 
+                                    onClick={() => sorting("tour_ID", tours_cond, setSortData, order, setOrder)}/> 
                             </div>
                         </td>
                         <td><div className='flex items-center gap-2'>
                                 <div>Tên Tour</div>
                                 <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
-                                    onClick={() => sorting("name")}/> 
+                                    onClick={() => sorting("name", tours_cond, setSortData, order, setOrder)}/> 
                         </div></td>
                         <td className="hidden xl:table-cell">
                             <div className='flex items-center'>
                                 <div>Số ghế</div>
                                 <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
-                                    onClick={() => sorting("seat_num")}/> 
+                                    onClick={() => sorting("seat_num", tours_cond, setSortData, order, setOrder)}/> 
                             </div>
                         </td>
                         <td className="hidden xl:table-cell">
                             <div className='flex items-center'>
                                 <div>Số khách</div>
                                 <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
-                                    onClick={() => sorting("cus_num")}/> 
+                                    onClick={() => sorting("cus_num", tours_cond, setSortData, order, setOrder)}/> 
                             </div>
                         </td>
-                        <td className="hidden md:table-cell">
-                            <div className='flex items-center gap-1'>
-                                <div>Phụ trách</div>
-                                {/* <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/>  */}
-                            </div>
-                        </td>
+                        <td className="hidden md:table-cell">Phụ trách</td>
                         <td className="hidden xl:table-cell">
                             <div className='flex items-center'>
                                 <div>Khởi hành</div>
                                 <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
-                                    onClick={() => sorting("starting_date")}/> 
+                                    onClick={() => sorting("starting_date", tours_cond, setSortData, order, setOrder)}/> 
                             </div>
                         </td>
                         <td className="hidden md:table-cell">
                             <div className='flex items-center'>
                                 <div>Rating</div>
                                 <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
-                                    onClick={() => sorting("rating")}/> 
+                                    onClick={() => sorting("rating", tours_cond, setSortData, order, setOrder)}/> 
                             </div>
                         </td>
                         <td className="hidden md:table-cell">
                             <div className='flex items-center'>
                                 <div>Tình trạng</div>
                                 <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
-                                    onClick={() => sorting("isActive")}/> 
+                                    onClick={() => sorting("isActive", tours_cond, setSortData, order, setOrder)}/> 
                             </div>
                         </td>
                     </tr>

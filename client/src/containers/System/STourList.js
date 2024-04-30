@@ -3,8 +3,9 @@ import icons from '../../ultils/icons';
 import { Button2, SearchBar, Pagination, Loading } from '../../components';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { getTourByStaff } from '../../store/actions/tourAction';
+import { getTourByStaff } from '../../store/actions/tourPlaceAction';
 import { formatVietnameseToString } from '../../ultils/formatVietnameseToString';
+import * as XLSX from 'xlsx';
 
 const { CgArrowsExchangeAltV } = icons
 
@@ -15,7 +16,7 @@ const STourList = () => {
     const { tours_staff } = useSelector(state => state.tour) 
     const [loading, setLoading] = useState(false);
     const [order, setOrder] = useState("asc")
-    const [postsPerPage] = useState(20);
+    const [dataPerPage] = useState(20);
     const [searchParams] = useSearchParams()
     const currentPage = searchParams.get('page') || 1
     const [sortTour, setSortTour] = useState([]);
@@ -69,9 +70,20 @@ const STourList = () => {
     useEffect(() => {
         setSortTour(tours_staff)
     }, [tours_staff]);
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage; 
+    const indexOfLastPost = currentPage * dataPerPage;
+    const indexOfFirstPost = indexOfLastPost - dataPerPage; 
     const currentTours = sortTour.slice(indexOfFirstPost, indexOfLastPost);
+    const exportToExcel = () => {
+        const modifiedData = tours_staff.map(entry => {
+            const { places, staff, schedule,  ...rest } = entry;
+            return rest;
+          });
+        const data = [...modifiedData]
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(data);
+        XLSX.utils.book_append_sheet(wb, ws, "Data");
+        XLSX.writeFile(wb, 'tour_data.xlsx');
+    };
     return (
         <div className='w-full px-6 py-20 xl:pt-7 xl:pl-0 xl:pr-10 overflow-x-hidden'>
             <div className='pb-10 flex flex-col gap-y-5 md:flex-row md:items-center md:justify-between'>
@@ -81,13 +93,14 @@ const STourList = () => {
                         optionBar={true} id={true} tour={true} departureDate={true} path={location.pathname} tours={tours_staff} role={'staff'} setOutput={setSortTour}/>
                 </div>
             </div>
-            <div className='pb-4 flex flex-col gap-2 md:flex-row md:justify-between'>
+            <div className='pb-6 flex flex-col gap-2 md:flex-row md:justify-between'>
                 <div className='flex gap-10'>
                     <div className='text-body-2 xl:text-body-1 text-neutral-1-900'>Tổng số: <span className='font-semibold'>{tours_staff?.length}</span></div>
                     <div className='text-body-2 xl:text-body-1 text-neutral-1-900 px-3 h-fit bg-background-7 rounded-xl'>Số Tour đang hoạt động: <span className='font-semibold'>{tours_staff?.filter(item => item.isActive === 1).length}</span></div>
                 </div>
+                <button className="w-fit py-1 px-2 text-body-2 rounded-md bg-accent-7 text-white border-[3px] border-background-8 xl:px-3 xl:text-body-1" onClick={exportToExcel}>Export to Excel</button>
             </div>
-            <table id="tour-xls" className="mb-8 mytable2 w-full text-body-2 xl:text-body-1 tracking-tight">
+            <table id="dataTable" className="mb-8 mytable2 w-full text-body-2 xl:text-body-1 tracking-tight">
                 <thead>
                     <tr className="h-10 font-semibold tracking-wider bg-neutral-3-100">
                         <td><div>#</div></td>
@@ -135,11 +148,11 @@ const STourList = () => {
                 </thead>
                 <tbody>
                     { loading && <tr><td></td>
-                            <td className="hidden xl:table-cell"></td>
-                            <td className="hidden xl:table-cell"></td>
-                            <td><Loading loading={loading}/></td>
-                            <td className="hidden md:table-cell"></td>
-                            <td className="hidden md:table-cell"></td>
+                        <td className="hidden xl:table-cell"></td>
+                        <td className="hidden xl:table-cell"></td>
+                        <td><Loading loading={loading}/></td>
+                        <td className="hidden md:table-cell"></td>
+                        <td className="hidden md:table-cell"></td>
                     </tr> }
                     {!loading && currentTours.map((tour, idx) => {
                         return ( 

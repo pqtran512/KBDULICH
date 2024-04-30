@@ -5,8 +5,8 @@ import CustomerList from './CustomerList';
 import Swal from 'sweetalert2'
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
-import { getTour } from '../../store/actions/tourAction'
-import { splitDate } from '../../ultils/splitDate';
+import { getTour } from '../../store/actions/tourPlaceAction'
+import { splitDate } from '../../ultils/splitDateTime';
 import { ratingClassifier } from '../../ultils/ratingClassifier';
 
 const { FaCheck, FaStar } = icons
@@ -23,19 +23,6 @@ const TourDetail = () => {
     useEffect(() => {
         dispatch(getTour({tour_ID: tourID}))
     }, [dispatch, tourID])
-    const splitLastSentence = (paragraph) => {
-        const lastNewlineIndex = paragraph.lastIndexOf('\n');
-        const firstPart = paragraph.slice(0, lastNewlineIndex);
-        const lastSentence = paragraph.slice(lastNewlineIndex + 1);
-        return [firstPart, lastSentence];
-    }
-    const splitNote = (paragraph) => {
-        const indexOfNote = paragraph.indexOf("Ghi chú:");
-        // Split the paragraph into two parts
-        const beforeNote = paragraph.slice(0, indexOfNote).trim();
-        const afterNote = paragraph.slice(indexOfNote + "Ghi chú:".length).trim();
-        return [beforeNote, afterNote];
-    }
     const goToEditMode = () => {
         if (role === 'staff') {
             navigate('/staff/tour-edit/'+tourID)
@@ -49,10 +36,10 @@ const TourDetail = () => {
         var indents = [];
         for (var i = 0; i < des.length - 1; i++) { {/* data */}
             indents.push(
-                <div className='font-normal'>{des[i]} - </div>
+                <div key={i} className='font-normal'>{des[i]} - </div>
             );
         }
-        indents.push(<div className='font-normal'>{des[des.length-1]}</div>);
+        indents.push(<div key={des.length-1} className='font-normal'>{des[des.length-1]}</div>);
         return indents;
     };
     const handleCancle = () => {
@@ -151,9 +138,9 @@ const TourDetail = () => {
                             return (
                                 <div key={i} className={`${i === 0? '' : 'pt-4'} pl-5 xl:pl-10`}>
                                     {i === (tour.schedule.length - 1)?
-                                        <div className='font-normal text-justify whitespace-pre-wrap'>{splitNote(item)[0]}</div>
+                                        <div className='font-normal text-justify whitespace-pre-wrap'>{item}</div>
                                         :
-                                        <div className='font-normal text-justify whitespace-pre-wrap'>{splitLastSentence(item)[0]}</div>
+                                        <div className='font-normal text-justify whitespace-pre-wrap'>{item}</div>
                                     }
                                 </div>
                             )

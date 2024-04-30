@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CardArticle, SearchBar, Pagination } from '../../components';
 import { useLocation } from 'react-router-dom'
+import { getAllPlaces } from '../../store/actions/tourPlaceAction';
+import { useDispatch, useSelector } from 'react-redux'
 
 const News = () => {
+    const dispatch = useDispatch()
     const location = useLocation()
+    const [loading, setLoading] = useState(false);
+    const { places } = useSelector(state => state.place)
+    useEffect(() => {
+        setLoading(true);
+        dispatch(getAllPlaces())
+            .then(() => {
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+                setLoading(false); // Ensure loading is set to false even if an error occurs
+            });
+    }, [dispatch])
     return (
         <div>
             <section className="flex justify-center relative w-full bg-sea animate-fade bg-center bg-no-repeat bg-cover rounded-b-[20px] md:bg-sea-md xl:bg-sea-xl">

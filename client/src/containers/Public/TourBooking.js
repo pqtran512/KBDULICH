@@ -2,8 +2,8 @@ import React, { useState, useEffect }  from 'react';
 import { InputForm, Button } from '../../components'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { getTour } from '../../store/actions/tourAction'
-import { splitDate } from '../../ultils/splitDate';
+import { getTour } from '../../store/actions/tourPlaceAction'
+import { splitDate } from '../../ultils/splitDateTime';
 
 const TourBooking = () => {
     const [invalidFields, setInvalidFields] = useState([])

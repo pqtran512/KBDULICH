@@ -7,7 +7,8 @@ const Auth = () => {
 
     return (
         <div className='w-full h-screen bg-gradient-to-br from-[#1AAFEA] to-[#0AECB4] brightness-[.98] font-segoe text-neutral-1-900 pb-[18px]'>
-            <div className='w-full h-full flex flex-col items-center justify-center'>
+        <Link to='/auth/login' className='block text-neutral-1-800 text-right tracking-wide pt-2 pr-7 hover:text-neutral-1-900 hover:font-semibold'>Login as a customer ?</Link>
+            <div className='w-full h-[98%] flex flex-col items-center justify-center'>
                 <div className='flex items-center'>
                     <Link to='/*'>
                         <img className='w-[60px] h-[42px] object-contain md:w-[75px] md:h-[52px]' src={whiteLogo} alt='logo'/>

@@ -2,6 +2,10 @@ import authReducer from "./authReducer";
 import userReducer from "./userReducer";
 import tourReducer from "./tourReducer";
 import orderReducer from "./orderReducer";
+import feedbackReducer from "./feebackReducer";
+import placeReducer from "./placeReducer";
+import staffReducer from "./staffReducer";
+import requestReducer from "./requestReducer";
 import { combineReducers } from "redux";
 import storage from 'redux-persist/lib/storage';
 import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
@@ -14,12 +18,16 @@ const commonConfig = {
 const authConfig = {
     ...commonConfig,
     key: 'auth',
-    whitelist: ['isLoggedIn', 'token']
+    whitelist: ['isLoggedIn', 'token', 'role']
 }
 const rootReducer = combineReducers({
     auth: persistReducer(authConfig, authReducer),
     user: userReducer,
     tour: tourReducer,
-    order: orderReducer
+    order: orderReducer,
+    feedback: feedbackReducer,
+    place: placeReducer,
+    staff: staffReducer,
+    request: requestReducer
 })
 export default rootReducer

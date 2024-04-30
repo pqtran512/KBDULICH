@@ -1,18 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import logoBlue from '../../assets/img/header-footer/logo-blue.png'
 import { Datepicker, ButtonRound, Card1, Card2, Card3, CardArticle, SelectInput, Loading } from '../../components'
-import { getToursCondition, getToursRating } from '../../store/actions/tourAction';
+import { getToursCondition, getToursRating, getAllPlaces } from '../../store/actions/tourPlaceAction';
 import { useDispatch, useSelector } from 'react-redux'
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { formatVietnameseToString } from '../../ultils/formatVietnameseToString';
-
-const places = [
-    { value: '', label: 'Chọn ...' },
-    { value: 'An Giang', label: 'An Giang' },
-    { value: 'Đồng Tháp', label: 'Đồng Tháp' },
-    { value: 'Phan Thiết', label: 'Phan Thiết' },
-    { value: 'Quảng Bình', label: 'Quảng Bình' }
-  ]
+import { provinceObjects } from '../../ultils/objectsToArr';
   
 const Homepage = () => {
     const dispatch = useDispatch()
@@ -23,8 +16,13 @@ const Homepage = () => {
         starting_date: '',
     })
     const [loading, setLoading] = useState(false);
+    const { tours_cond, count_cond, tours_rating } = useSelector(state => state.tour)
+    const { places } = useSelector(state => state.place)
+    const [newPlaces, setNewPlaces] = useState([]);
+    // Functions
     useEffect(() => {
         setLoading(true);
+        dispatch(getAllPlaces())
         dispatch(getToursRating())
         dispatch(getToursCondition({ isActive: 1 }))
             .then(() => {
@@ -35,7 +33,12 @@ const Homepage = () => {
                 setLoading(false); // Ensure loading is set to false even if an error occurs
             });
     }, [dispatch])
-    const { tours_cond, count_cond, tours_rating } = useSelector(state => state.tour)
+    useEffect(() => {
+        if (places) {
+            const place_arr = provinceObjects(places, true)
+            setNewPlaces(place_arr)
+        }
+    }, [places])
     const handleSearch = () => {
         let params = {}
         if (searchOption.departure !== '') {
@@ -69,11 +72,14 @@ const Homepage = () => {
                                 <div className="flex justify-between pb-6 md:pb-0 md:gap-x-[18px] xl:gap-x-[75px]">
                                     <div className="md:w-[156px]">
                                         <div className='text-[14px] h-[31px] text-neutral-1-900 font-semibold xl:text-[18px]'>Nhập điểm đi</div>
-                                        <SelectInput options={places} keyPayload='departure' setValue={setSearchOption} myStyle='w-[148px] text-body-2 md:w-[130px] xl:text-body-1 xl:w-[148px]'/>
+                                        { newPlaces?.length > 0?
+                                            <SelectInput options={newPlaces} keyPayload='departure' setValue={setSearchOption} myStyle='w-[148px] text-body-2 md:w-[130px] xl:text-body-1 xl:w-[148px]'/>
+                                        : <SelectInput myStyle='w-[148px] text-body-2 md:w-[130px] xl:text-body-1 xl:w-[148px]'/>
+                                        }
                                     </div>
                                     <div className="md:w-[163px]">
                                         <div className='text-[14px] h-[31px] text-neutral-1-900 font-semibold xl:text-[18px]'>Nhập điểm đến</div>
-                                        <SelectInput options={places} keyPayload='destination' setValue={setSearchOption} myStyle='w-[148px] text-body-2 md:w-[130px] xl:text-body-1 xl:w-[148px]'/>
+                                        <SelectInput options={newPlaces} keyPayload='destination' setValue={setSearchOption} myStyle='w-[148px] text-body-2 md:w-[130px] xl:text-body-1 xl:w-[148px]'/>
                                     </div>
                                 </div>
                                 <div className="flex justify-between items-end md:items-center md:gap-x-[37px] xl:gap-x-[104px]">
@@ -88,8 +94,14 @@ const Homepage = () => {
                             <div className="absolute -z-10 bg-grad2 rounded-[20px] backdrop-blur-md shadow-[20px_20px_59px_11px_rgba(0,0,0,0.07)] w-full top-28 pt-[95px] px-6 pb-6 md:pt-[43px] md:top-20 xl:pt-16 xl:px-[85px] xl:pb-[83px] xl:top-[63px]">
                                 <div className="pb-4 text-[18px] text-neutral-1-900 leading-[31px] font-semibold md:pb-6 md:text-[20px] xl:text-[24px]">Tour giờ chót</div>
                                 <div className="grid grid-cols-1 gap-y-10 md:grid-cols-2 md:gap-x-20 xl:grid-cols-3 xl:gap-x-36">
-                                    {tours_cond.length > 0 &&
-                                        (() => {
+                                    { loading?
+                                    <>
+                                        <div className="animate-pulse rounded-md outline outline-slate-300 outline-offset-4 bg-slate-200 h-[125px] w-[265px]"></div>
+                                        <div className="animate-pulse rounded-md outline outline-slate-300 outline-offset-4 bg-slate-200 h-[125px] w-[265px]"></div>
+                                        <div className="animate-pulse rounded-md outline outline-slate-300 outline-offset-4 bg-slate-200 h-[125px] w-[265px]"></div>
+                                    </>
+                                    :
+                                    tours_cond.length > 0 && (() => {
                                             const sorted = [...tours_cond].sort((a, b) => 
                                                 a['bookingDeadline'] > b['bookingDeadline'] ? 1 : -1
                                             );
@@ -224,10 +236,10 @@ const Homepage = () => {
                             Sự lựa chọn hoàn hảo và được yêu thích nhất dựa trên đánh giá từ du khách.
                         </div>
                         <div className="grid gap-y-8 md:grid-cols-2 md:gap-x-6 xl:grid-cols-3">
-                            <CardArticle pb='pb-[15px] md:pb-0 xl:pb-[19px]' animation='animate-fade-down md:animate-fade-right xl:animate-fade-down'/>
-                            <CardArticle pb='pb-[15px] md:pb-0 xl:pb-[19px]' animation='animate-fade-down md:animate-fade-left xl:animate-fade-down'/>
-                            <CardArticle pb='xl:pb-[19px]' animation='md:animate-fade-right xl:animate-fade-down' hidden='hidden md:block'/>
-                            <CardArticle hidden='hidden md:block xl:hidden' animation='md:animate-fade-left xl:animate-fade-down'/>
+                            {places?.[10] && <CardArticle key={10} pb='pb-[15px] md:pb-0 xl:pb-[19px]' animation='animate-fade-down md:animate-fade-right xl:animate-fade-down' place={places[10]}/>}
+                            {places?.[11] && <CardArticle key={11} pb='pb-[15px] md:pb-0 xl:pb-[19px]' animation='animate-fade-down md:animate-fade-left xl:animate-fade-down' place={places[11]}/>}
+                            {places?.[12] && <CardArticle pb='xl:pb-[19px]' animation='md:animate-fade-right xl:animate-fade-down' hidden='hidden md:block' place={places[12]}/>}
+                            {places?.[13] && <CardArticle hidden='hidden md:block xl:hidden' animation='md:animate-fade-left xl:animate-fade-down' place={places[13]}/>}
                         </div>
                         <div className="pt-6 w-full flex items-center justify-center xl:pt-8">
                             <a href="tintuc.html" className="relative py-3 px-8 text-button1 font-semibold text-neutral-1-900 border-[2px] border-primary-2 rounded-[99px] shadow-shad1 btn-light btn3 hover-filled-slide-right xl:text-black xl:text-button">

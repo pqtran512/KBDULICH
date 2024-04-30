@@ -24,3 +24,18 @@ export const getCurrent = () => async (dispatch) => {
         })
     }
 }
+
+export const getAllStaff = () => async (dispatch) => { 
+    try {
+        const response = await apis.apiGetAllStaff()
+        dispatch({
+            type: actionTypes.GET_ALL_STAFF,
+            staffs: response.data
+        })
+    } catch (error) {
+        dispatch({
+            type: actionTypes.GET_ALL_STAFF,
+            staffs: null
+        })
+    }
+}

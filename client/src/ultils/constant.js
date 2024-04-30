@@ -26,11 +26,11 @@ export const path = {
     TOUR_NEW: 'tour-new',
     TOUR_EDIT: 'tour-edit/:tourID',
 
-    CUSTOMER_DETAIL: 'customer-detail',
+    CUSTOMER_DETAIL: 'customer-detail/:orderID',
     
     REQUEST_LIST: 'request',
-    REQUEST_DETAIL: 'request-detail',
-    REQUEST_DUP: 'create',
+    REQUEST_DETAIL: 'request-detail/:requestID',
+    REQUEST_DUP: 'dup',
     
     STAFF_LIST: 'staff',
     STAFF_DETAIL: 'staff-detail',

@@ -1,14 +1,15 @@
-import React, {memo, useState, useEffect, useRef} from 'react';
+import React, {memo, useState, useRef} from 'react';
 import icons from '../ultils/icons'
 import { createSearchParams, useNavigate, Link } from "react-router-dom";
 import { formatVietnameseToString } from '../ultils/formatVietnameseToString';
+import { splitDateTime } from '../ultils/splitDateTime';
 
 const { FaRegUser, MdOutlineLocalPhone, MdCalendarToday, MdOutlineStickyNote2, LuFlagTriangleRight, FaRegStar, MdFingerprint } = icons
 
-const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, optionBar, id, person, staff, tour, phone, email, bookDate, departureDate, rating, note, sendDate, replyDate, path, place, tours, role, setOutput}) => {
+const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, optionBar, id, tour_id, person, staff, tour, phone, email, bookDate, departureDate, rating, note, sendDate, replyDate, path, place, tours, role, setOutput, requests}) => {
     const [changeWidth, setChangeWidth] = useState(false)
     const [searchText, setSearchText] = useState('')
-    const [searchTerm, setSearchTerm] = useState('Tên Tour')
+    const [searchTerm, setSearchTerm] = useState(id? 'Mã' : 'Họ Tên')
     const [searchResults, setSearchResults] = useState([]);
     const divRef = useRef(null);
     const navigate = useNavigate()
@@ -17,7 +18,7 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
         // Do something with the input value
         if (place) setSearchTerm('Địa điểm')
         const formattedSearchTerms = formatVietnameseToString(searchTerm);
-        if (searchText != '') {
+        if (searchText !== '') {
             setOutput(searchResults)
             navigate({
                 pathname: path,
@@ -61,6 +62,21 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
                 setSearchResults(results);
             }
         }
+        else if (requests) {
+            if (searchTerm === 'Mã') field = "request_ID"
+            else if (searchTerm === 'Mã Tour') field = "tour_ID"
+            else if (searchTerm === 'Ngày gửi') field = "date"
+            else field = "date"     // data reply date
+            const results = requests.filter((request) => {
+                return (
+                    value &&
+                    request &&
+                    request[field] &&
+                    String(request[field]).toLowerCase().includes(value.toLowerCase())
+                );
+            });
+            setSearchResults(results);
+        }
     };
     return (
         <div ref={divRef} action="" className={`${(changeWidth || searchText !== '')? newWidth : width} transition-all duration-500 relative`}
@@ -81,7 +97,9 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
                         if (e.key === 'Enter') {
                             handleEnterKeyPress(e.target.value);
                         }
-                    }}/>
+                    }}
+                    spellCheck={false}
+                    />
             </div>
             <div className={`${changeWidth? 'opacity-100 z-10' : 'opacity-0 -z-10'} p-4 absolute top-11 ${newWidth} ${searchResults && searchResults.length > 0? 'max-h-60' : ''} bg-white border-b-2 border-r-2 border-neutral-2-200 rounded-xl shadow-shad3 overflow-y-scroll scrollbar-width-thin`}>
                 <div className='uppercase text-caption-2 font-semibold text-black/40 tracking-tight xl:text-caption-1'>Bạn đang tìm kiếm...</div>
@@ -93,6 +111,14 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
                         >
                             <MdFingerprint className='text-title-2 md:text-title-1'/>
                             <div className='text-caption-1 xl:text-body-2 font-semibold'>Mã</div>
+                        </button>
+                    : <></>}
+                    {tour_id? 
+                        <button className={`${searchTerm === "Mã Tour"? 'text-white bg-black/60' : 'text-neutral-1-600 bg-neutral-3-100'} flex items-center gap-1 text-neutral-1-600 rounded-lg w-fit px-2 py-1 xl:gap-2`}
+                            onClick={() => setSearchTerm("Mã Tour")} 
+                        >
+                            <MdFingerprint className='text-title-2 md:text-title-1'/>
+                            <div className='text-caption-1 xl:text-body-2 font-semibold'>Mã Tour</div>
                         </button>
                     : <></>}
                     {person? 
@@ -188,12 +214,22 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
                 }
                 {searchResults && searchResults.length > 0 && (
                     <div className={`${optionBar ? 'pt-5' : 'pt-2'} flex flex-col gap-1 text-neutral-1-900 text-caption-1 md:text-body-2`}>
-                        {searchResults.map((result, id) => {
+                        {tours && searchResults.map((result, id) => {
                             return (
-                                <div className='flex justify-between px-3 py-1 cursor-pointer w-full rounded-md hover:bg-neutral-3-100'>
+                                <Link to={`/${role}/tour-detail/${result.tour_ID}`} key={id} className='flex justify-between px-3 py-1 cursor-pointer w-full rounded-md hover:bg-neutral-3-100'>
                                     <div className='w-1/4 italic'>{result.tour_ID}</div>
-                                    <Link to={`/${role}/tour-detail/T-001_2024-02-20`} key={id} className='w-[70%]'>{result.name}</Link>
-                                </div>
+                                    <div className='w-[70%]'>{result.name}</div> 
+                                </Link>
+                            );
+                        })}
+                        {requests && searchResults.map((result, id) => {
+                            return (
+                                <Link to={`/${role}/request-detail/${result.request_ID}`} key={id} className='flex justify-between px-3 py-1 cursor-pointer w-full rounded-md hover:bg-neutral-3-100'>
+                                    <div>{result.request_ID}</div>
+                                    <div>{result.tour_ID}</div>
+                                    <div>{result.staff_ID}</div>
+                                    <div className='italic'>{splitDateTime(result.date)[0]} {splitDateTime(result.date)[1]}</div>
+                                </Link>
                             );
                         })}
                     </div>

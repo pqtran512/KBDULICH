@@ -41,7 +41,7 @@ function App() {
           <Route path={path.CUSTOMER_DETAIL} element={<CustomerDetail/>} />
           <Route path={path.REQUEST_LIST} element={<RequestList/>} />
           <Route path={path.REQUEST_DETAIL} element={<RequestDetail/>}>
-            <Route path={path.REQUEST_DUP} element={<RequestList/>} />
+            <Route path={path.REQUEST_DUP} element={<RequestDetail/>} />
           </Route>
           <Route path={path.ACCOUNT} element={<Account/>} />
         </Route>

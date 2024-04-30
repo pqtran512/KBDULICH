@@ -2,11 +2,16 @@ import React, { useState } from 'react'
 import { Button2, InputForm, Datepicker } from '../../components';
 import Swal from 'sweetalert2'
 import icons from '../../ultils/icons';
+import { useNavigate, useParams} from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux'
 
 const { FaStar } = icons
 
 const CustomerDetail = () => {
     // PARAMS
+    const {orderID} = useParams();
+    const dispatch = useDispatch()
+    const navigate = useNavigate();
     const [invalidFields, setInvalidFields] = useState([])
     const [payload, setPayload] = useState({
         id: 1, 
@@ -21,6 +26,9 @@ const CustomerDetail = () => {
     })
     const [isEdit, setIsEdit] = useState(false)
     // FUNCTIONS
+    // useEffect(() => {
+    //     dispatch(({order_ID: orderID}))
+    // }, [dispatch])
     const changeToEditMode = () => {
         window.scrollTo(0, 0);
         setIsEdit(true);

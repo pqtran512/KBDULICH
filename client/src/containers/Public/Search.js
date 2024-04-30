@@ -1,20 +1,14 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Card2, Datepicker, SelectInput, Pagination, RangeSlider, Loading } from '../../components';
 import icons from '../../ultils/icons';
 import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
-import { getToursCondition } from '../../store/actions/tourAction'
+import { getToursCondition, getAllPlaces } from '../../store/actions/tourPlaceAction'
 import { createSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { formatVietnameseToString } from '../../ultils/formatVietnameseToString';
- 
+import { provinceObjects } from '../../ultils/objectsToArr';
+
 const { MdSort } = icons
-const places = [
-    { value: '', label: 'Chọn điểm đến' },
-    { value: 'An Giang', label: 'An Giang' },
-    { value: 'Đồng Tháp', label: 'Đồng Tháp' },
-    { value: 'Phan Thiết', label: 'Phan Thiết' },
-    { value: 'Quảng Bình', label: 'Quảng Bình' }
-  ]
 
 const Search = () => {
     // PARAMETERS
@@ -25,6 +19,7 @@ const Search = () => {
     const [openFilter, setOpenFilter] = useState(false);
     const currentPage = searchParams.get('page') || 1
     const { tours_cond, count_cond } = useSelector(state => state.tour)
+    const { places } = useSelector(state => state.place)
     const [prices, setPrices] = useState([1000000, 20000000]);
     const [searchOption, setSearchOption] = useState({ 
         departure: '',
@@ -45,15 +40,22 @@ const Search = () => {
         { value: 'starting_date', label: 'Ngày khởi hành' }, // ngày gần nhất
     ];
     const [sortTour, setSortTour] = useState([]);
-    const [postsPerPage] = useState(8);
+    const [toursPerPage] = useState(8);
     const searchRef = useRef()
     const [loading, setLoading] = useState(false);
+    const [newPlaces, setNewPlaces] = useState([]);
     // FUNCTION
+    useEffect(() => {
+        if (places) {
+            const place_arr = provinceObjects(places, true)
+            setNewPlaces(place_arr)
+        }
+    }, [places])
     const getDefaultDeparture = () => { 
         const entries = searchParams.entries()
         for (let entry of entries) {
             if (entry[0] === 'departure') {
-                const defaultValue= places.find(place => formatVietnameseToString(place.value) === searchParams.get('departure'));
+                const defaultValue= newPlaces.find(place => formatVietnameseToString(place.value) === searchParams.get('departure'));
                 return defaultValue
             }
         }
@@ -63,7 +65,7 @@ const Search = () => {
         const entries = searchParams.entries()
         for (let entry of entries) {
             if (entry[0] === 'destination') {
-                const defaultValue= places.find(place => formatVietnameseToString(place.value) === searchParams.get('destination'));
+                const defaultValue= newPlaces.find(place => formatVietnameseToString(place.value) === searchParams.get('destination'));
                 return defaultValue
             }
         }
@@ -145,46 +147,50 @@ const Search = () => {
         searchOption.page = searchParams.get('page')
     }, [searchParams, searchOption])
     useEffect(() => {
-        const departure = getDefaultDeparture()
-        const destination = getDefaultDestination()
-        const search_date = searchParams.get('starting_date')
-        const price_lower = searchParams.get('price_lower')
-        const price_upper = searchParams.get('price_upper')
-        const daynum = searchParams.get('day_num')
-        const ticketnum = searchParams.get('ticket_num')
-        const seatnum = searchParams.get('seat_num')
-        const vehicle = searchParams.get('vehicle')
-        const updatedOptions = {};
-        if (departure) { updatedOptions.departure = departure.value;}
-        if (destination) { updatedOptions.destination = destination.value;}
-        if (search_date) { updatedOptions.starting_date = search_date;}
-        if (price_lower) { updatedOptions.price = 'F'+price_lower+'T'+price_upper;}
-        if (search_date) { updatedOptions.starting_date = search_date;}
-        if (daynum) { updatedOptions.day_num = daynum;}
-        if (ticketnum) { updatedOptions.ticket_num = ticketnum;}
-        if (seatnum) { updatedOptions.seat_num = seatnum;}
-        if (vehicle) { updatedOptions.vehicle = vehicle;}
-        setSearchOption(prev => ({ ...prev, ...updatedOptions }));
-        console.log(daynum)
-        setLoading(true);
-        dispatch(getToursCondition({
-            departure: (departure && departure.value) || '',
-            destination: (destination && destination.value) || '',
-            starting_date: search_date || '',
-            price: (price_lower && ('F'+price_lower+'T'+price_upper)) || 'F1000000T20000000',
-            day_num: daynum || '',
-            ticket_num: ticketnum || '',
-            seat_num: seatnum || '',
-            vehicle: vehicle || '',
-            isActive: 1,
-        })).then(() => {
-            setLoading(false);
-        })
-        .catch((error) => {
-            console.error("Error fetching data:", error);
-            setLoading(false); // Ensure loading is set to false even if an error occurs
-        });
-    }, [dispatch]);
+        dispatch(getAllPlaces())
+    }, [dispatch])
+    useEffect(() => {
+        if (newPlaces.length > 0) {
+            setLoading(true);
+            const departure = getDefaultDeparture()
+            const destination = getDefaultDestination()
+            const search_date = searchParams.get('starting_date')
+            const price_lower = searchParams.get('price_lower')
+            const price_upper = searchParams.get('price_upper')
+            const daynum = searchParams.get('day_num')
+            const ticketnum = searchParams.get('ticket_num')
+            const seatnum = searchParams.get('seat_num')
+            const vehicle = searchParams.get('vehicle')
+            const updatedOptions = {};
+            if (departure) { updatedOptions.departure = departure.value;}
+            if (destination) { updatedOptions.destination = destination.value;}
+            if (search_date) { updatedOptions.starting_date = search_date;}
+            if (price_lower) { updatedOptions.price = 'F'+price_lower+'T'+price_upper;}
+            if (search_date) { updatedOptions.starting_date = search_date;}
+            if (daynum) { updatedOptions.day_num = daynum;}
+            if (ticketnum) { updatedOptions.ticket_num = ticketnum;}
+            if (seatnum) { updatedOptions.seat_num = seatnum;}
+            if (vehicle) { updatedOptions.vehicle = vehicle;}
+            setSearchOption(prev => ({ ...prev, ...updatedOptions }));
+            dispatch(getToursCondition({
+                departure: (departure && departure.value) || '',
+                destination: (destination && destination.value) || '',
+                starting_date: search_date || '',
+                price: (price_lower && ('F'+price_lower+'T'+price_upper)) || 'F1000000T20000000',
+                day_num: daynum || '',
+                ticket_num: ticketnum || '',
+                seat_num: seatnum || '',
+                vehicle: vehicle || '',
+                isActive: 1,
+            })).then(() => {
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching data:", error);
+                setLoading(false); // Ensure loading is set to false even if an error occurs
+            });
+        }
+    }, [dispatch, newPlaces]);
     // sort
     const sorting = (col) => {
         if (col === null) {
@@ -212,8 +218,8 @@ const Search = () => {
         sorting(searchParams.get('sort'));
     }, [tours_cond, filter]);
     // pagination
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage; 
+    const indexOfLastPost = currentPage * toursPerPage;
+    const indexOfFirstPost = indexOfLastPost - toursPerPage; 
     const currentTours = sortTour.slice(indexOfFirstPost, indexOfLastPost);
     return (
         <div>
@@ -248,13 +254,17 @@ const Search = () => {
                                     <div className="pt-[10px] pr-[10px] pb-2 xl:pb-[14px]">
                                         <div className="text-title-1 font-semibold text-neutral-1-900">Điểm đi</div>
                                     </div>
-                                    <SelectInput options={places} myStyle='w-[200px] text-body-2 xl:w-full xl:text-body-1' placeholder='--- Chọn điểm đi ---' keyPayload='departure' setValue={setSearchOption} defaultValue={() => getDefaultDeparture()} />
+                                    { newPlaces.length > 0 &&
+                                        <SelectInput options={newPlaces} myStyle='w-[200px] text-body-2 xl:w-full xl:text-body-1' placeholder='--- Chọn điểm đi ---' keyPayload='departure' setValue={setSearchOption} defaultValue={() => getDefaultDeparture()} />
+                                    }
                                 </div>
                                 <div>
                                     <div className="pt-[10px] pr-[10px] pb-2 xl:pb-[14px]">
                                         <div className="text-title-1 font-semibold text-neutral-1-900">Điểm đến</div>
                                     </div>
-                                    <SelectInput options={places} myStyle='w-[200px] text-body-2 xl:w-full xl:text-body-1' placeholder='--- Chọn điểm đến ---' keyPayload='destination' setValue={setSearchOption} defaultValue={() => getDefaultDestination()} />
+                                    { newPlaces.length > 0 &&
+                                    <   SelectInput options={newPlaces} myStyle='w-[200px] text-body-2 xl:w-full xl:text-body-1' placeholder='--- Chọn điểm đến ---' keyPayload='destination' setValue={setSearchOption} defaultValue={() => getDefaultDestination()} />
+                                    }
                                 </div>
                             </div>
                             <div>

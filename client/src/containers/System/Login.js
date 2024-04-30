@@ -14,7 +14,7 @@ const Login = () => {
         password: ''
     })
     const dispatch = useDispatch()
-    const { isLoggedIn, msg, update } = useSelector(state => state.auth) // auth in rootReducer
+    const { isLoggedIn, msg, update, role } = useSelector(state => state.auth) // auth in rootReducer
     const navigate = useNavigate()
 
     // FUNCTIONS
@@ -22,7 +22,7 @@ const Login = () => {
     const handleSubmit = async () => {
         let invalids = validate(payload)
         if (invalids === 0)
-            dispatch(actions.login(payload))
+            dispatch(actions.staffLogin(payload))
     }
     // validate inputs function
     const validate = (payload) => {
@@ -47,10 +47,10 @@ const Login = () => {
                         }])
                         invalids++
                     } else {
-                        if (item[1].length < 6) {
+                        if (item[1].length < 5) {
                             setInvalidFields(prev => [...prev, {
                                 name: item[0],
-                                message: 'Mật khẩu phải có tối thiểu 6 kí tự !'
+                                message: 'Mật khẩu phải có tối thiểu 5 kí tự !'
                             }])
                             invalids++
                         }
@@ -64,8 +64,8 @@ const Login = () => {
     } 
     // if isLoggedIn is true -> go to homepage
     useEffect(() => {
-        isLoggedIn && navigate('/')
-    }, [isLoggedIn, navigate])
+        isLoggedIn && role !== 'customer' && navigate('/'+role)
+    }, [isLoggedIn, role, navigate])
     // Popup msg when login failed
     useEffect(() => {
         msg && Swal.fire('Oops !', msg, 'error')

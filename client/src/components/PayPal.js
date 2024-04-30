@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, memo } from "react";
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
-import { splitDate } from '../ultils/splitDate';
+import { splitDate } from '../ultils/splitDateTime';
 import emailjs from '@emailjs/browser';
 
 const Paypal = ({payload, tour}) => {

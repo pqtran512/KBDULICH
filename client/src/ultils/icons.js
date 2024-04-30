@@ -1,7 +1,7 @@
 import { FiLogOut, FiGrid } from 'react-icons/fi'
 import { FaRegUser, FaStar, FaEyeSlash, FaRegStar, FaStarHalfAlt, FaKey, FaCheck, FaHome  } from 'react-icons/fa'
 import { BsThreeDotsVertical, BsEyeFill, BsClockFill } from 'react-icons/bs'
-import { MdEmail, MdContentCopy, MdOutlineLocalPhone, MdCalendarToday, MdOutlineStickyNote2, MdFingerprint, MdSort } from "react-icons/md";
+import { MdEmail, MdContentCopy, MdOutlineLocalPhone, MdCalendarToday, MdOutlineStickyNote2, MdFingerprint, MdSort, MdTour } from "react-icons/md";
 import { IoClose, IoNotifications, IoBarChartOutline, IoPersonOutline, IoAddCircle, IoLogOut   } from "react-icons/io5";
 import { VscTriangleLeft } from "react-icons/vsc";
 import { PiFlagPennantFill, PiGitPullRequestLight } from "react-icons/pi";
@@ -48,6 +48,7 @@ const icons = {
     FaArrowUpRightFromSquare, // expand icon
     FaClockRotateLeft,
     MdSort, 
+    MdTour 
 }
 
 export default icons

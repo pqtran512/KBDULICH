@@ -4,20 +4,24 @@ import CustomerList from './CustomerList';
 import Swal from 'sweetalert2'
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
-import { getTour } from '../../store/actions/tourAction'
+import { getTour, getAllPlaces } from '../../store/actions/tourPlaceAction'
+import { provinceObjects, placeObjects, staffObjects } from '../../ultils/objectsToArr';
+import { getAllStaff } from '../../store/actions/userAction';
 
 const EditTour = () => {
     // PARAMS
     const {tourID} = useParams();
     const dispatch = useDispatch()
-    const { tour } = useSelector(state => state.tour)
     const navigate = useNavigate()
+    const { tour } = useSelector(state => state.tour)
+    const { places } = useSelector(state => state.place)
+    const { staffs } = useSelector(state => state.staff) 
     const [invalidFields, setInvalidFields] = useState([])
     const [tourSchedule, setTourSchedule] = useState([])
     const [tourService, setTourService] = useState([])
     const services = ['Bảo hiểm', 'Bữa ăn', 'Xe đưa đón', 'Hướng dẫn viên', 'Vé tham quan'] // available services
     const vehicles = ['Xe 4 chỗ', 'Xe 7 chỗ', 'Xe khách', 'Máy bay'] // available vehicles
-    const [destination, setDestination] = useState(['Bà Nà Hills', 'Cầu Rồng', 'Bán Đảo Sơn Trà'])
+    const [destination, setDestination] = useState(['Bà Nà Hills'])
     const [payload, setPayload] = useState({ 
         name: '',
         price: 0,
@@ -32,41 +36,52 @@ const EditTour = () => {
         schedule: [],
         note: '',
         service: [],
-        staff: 'Nguyễn Thị Anh'
+        staff: ''
     })
     const [maxDay, setMaxDay] = useState(0)
     const [defaultDate, setDefaultDate] = useState('')
-    const staffList = [
-        { value: 'Nguyễn Thị Anh', label: 'Nguyễn Thị Anh' },
-        { value: 'Trần Thị Bình', label: 'Trần Thị Bình' },
-        { value: 'Phan Thanh Vy', label: 'Phan Thanh Vy' },
-        { value: 'Lê Ngọc Ý', label: 'Lê Ngọc Ý' }
-    ]
-    const placeDaNang = [
-        { value: 'Bà Nà Hills', label: 'Bà Nà Hills'},
-        { value: 'Cầu Rồng', label: 'Cầu Rồng'},
-        { value: 'Bán Đảo Sơn Trà', label: 'Bán Đảo Sơn Trà'}
-    ]
-    const provinceOption = [
-        { value: 'An Giang', label: 'An Giang' },
-        { value: 'Bình Thuận', label: 'Bình Thuận'},
-        { value: 'Đà Nẵng', label: 'Đà Nẵng'},
-        { value: 'Thành phố Hồ Chí Minh', label: 'Thành phố Hồ Chí Minh'}
-    ]
+    const [defaultBookingDl, setBookingDl] = useState('')
     const [role, setRole] = useState('')
-    // FUNCTIONS
+    const [newProvinces, setNewProvinces] = useState([]);
+    const [newPlaces, setNewPlaces] = useState([]);
+    const [staffList, setStaffList] = useState([]);
+    // FUNCTION
+    useEffect(() => {
+        dispatch(getAllPlaces())
+        dispatch(getAllStaff())
+        if (window.location.pathname.includes("manager")){
+            setRole('manager');
+        }
+        else if (window.location.pathname.includes("/staff/tour-edit")) {
+            setRole('staff');
+        }
+    }, [dispatch]);
+    useEffect(() => {
+        if (places) {
+            const province_arr = provinceObjects(places)
+            setNewProvinces(province_arr)
+            const place_arr = placeObjects(places)
+            setNewPlaces(place_arr)
+            const staffArr = staffObjects(staffs)
+            setStaffList(staffArr)
+        }
+    }, [places, staffs])
     useEffect(() => {
         if (tour.name) { setPayload(prev => ({...prev, name: tour.name})) }
         if (tour.price) { setPayload(prev => ({...prev, price: tour.price})) }
         if (tour.departure) { setPayload(prev => ({...prev, departure: tour.departure})) }
         if (tour.vehicle) { setPayload(prev => ({...prev, vehicle: tour.vehicle})) }
-        if (tour.schedule) { setTourSchedule(tour.schedule) }
+        if (tour.schedule) { 
+            setTourSchedule(tour.schedule)
+            setPayload(prev => ({...prev, schedule: tour.schedule})) 
+        }
         if (tour.service) { setTourService(tour.service) }
         if (tour.seat_num) { setPayload(prev => ({...prev, seat_num: tour.seat_num})) }
+        if (tour.note) { setPayload(prev => ({...prev, note: tour.note})) }
         if (tour.night_num) { setPayload(prev => ({...prev, night_num: tour.night_num})) }
         if (tour.day_num) { 
             setPayload(prev => ({...prev, day_num: tour.day_num})) 
-            setMaxDay(Math.max(payload.day_num, payload.night_num))
+            setMaxDay(Math.max(tour.day_num, tour.night_num))
         }
         if (tour.starting_date) { 
             setPayload(prev => ({...prev, starting_date: tour.starting_date}))
@@ -74,6 +89,13 @@ const EditTour = () => {
             const myDate = new Date(Date.UTC(year, month - 1, day)); 
             setDefaultDate(myDate)
         }
+        if (tour.bookingDeadline) { 
+            setPayload(prev => ({...prev, bookingDeadline: tour.bookingDeadline}))
+            const [year, month, day] = tour.bookingDeadline.split('-');
+            const myDate = new Date(Date.UTC(year, month - 1, day)); 
+            setBookingDl(myDate)
+        }
+        if (tour.staff) { setPayload(prev => ({...prev, staff: tour.staff.staff_ID})) }
     }, [tour])
     useEffect(() => {
         dispatch(getTour({tour_ID: tourID}))
@@ -96,20 +118,6 @@ const EditTour = () => {
         setTourSchedule(newSchedule);
         setPayload(prev => ({...prev, schedule: tourSchedule}))
     };
-    const splitNote = (paragraph) => {
-        const indexOfNote = paragraph.indexOf("Ghi chú:");
-        // Split the paragraph into two parts
-        const beforeNote = paragraph.slice(0, indexOfNote).trim();
-        const afterNote = paragraph.slice(indexOfNote + "Ghi chú:".length).trim();
-        return [beforeNote, afterNote];
-    }
-    useEffect(() => {
-        if (tour.schedule?.length > 0) {
-            const afterNote = tour && splitNote(tour.schedule[tour.schedule.length - 1])[1]
-            const newNote = tour.note === 'No note'? afterNote : `${tour.note}\n- ${afterNote}`;
-            setPayload(prev => ({...prev, note: newNote}))
-        }
-    }, [tour])
     const showSchedule = () => {
         var indents = [];
         for (var i = 0; i < maxDay; i++) {
@@ -134,7 +142,7 @@ const EditTour = () => {
         return indents;
     };
     const handle_addDestination = () => {
-        const newDes = [...destination, placeDaNang[0].value];
+        const newDes = [...destination, newPlaces[0].value];
         setDestination(newDes)
     }
     const handle_delDestination = (i) => {
@@ -174,6 +182,15 @@ const EditTour = () => {
                         invalids++
                     }
                     break;
+                case 'bookingDeadline':
+                    if (item[1] === '') { // item[1] is the value field
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Bạn chưa chọn ngày hạn chót đặt tour !'
+                        }])
+                        invalids++
+                    }
+                    break;
                 case 'departure':
                     if (item[1] === '') { // item[1] is the value field
                         setInvalidFields(prev => [...prev, {
@@ -200,32 +217,26 @@ const EditTour = () => {
         })
         return invalids
     }
+    useEffect(() => {
+        setPayload(prev => ({...prev, service: tourService}))
+    }, [tourService])
     const submitEdit = async () => {
         setPayload(prev => ({...prev, tour_destination: destination}))
-        setPayload(prev => ({...prev, service: tourService}))
         let invalids = validate(payload)
         console.log(payload)
         if (invalids === 0){
             if (role === 'staff') {
                 Swal.fire('Gửi thành công', '', 'success').then((result) => {
-                    navigate('/staff/tour-detail')
+                    // navigate('/staff/tour-detail')
                 })
             }
             else {
                 Swal.fire('Đã cập nhật thông tin mới', '', 'success').then((result) => {
-                    navigate('/manager/tour-detail')
+                    // navigate('/manager/tour-detail')
                 })
             }
         }
     };
-    useEffect(() => {
-        if (window.location.pathname.includes("manager")){
-            setRole('manager');
-        }
-        else if (window.location.pathname.includes("/staff/tour-edit")) {
-            setRole('staff');
-        }
-    }, []);
     return (
         <div className='w-full px-6 pt-20 pb-10 xl:pt-7 xl:pb-20 lg:px-2 xl:pl-0 xl:pr-10 overflow-x-hidden'>
             <div className='pb-16'>
@@ -253,7 +264,7 @@ const EditTour = () => {
                         }
                     </div>  
                 </div>
-                <div className='flex flex-wrap justify-between items-center'>
+                <div className='flex flex-wrap gap-2 items-center'>
                     <div className='font-semibold'>Tên chương trình: </div>
                     <InputForm 
                         invalidFields={invalidFields} 
@@ -261,7 +272,7 @@ const EditTour = () => {
                         value={payload.name}
                         setValue={setPayload} 
                         keyPayload={'name'}
-                        width='w-52 md:w-[550px] xl:w-[1000px]'
+                        width='w-52 md:w-[550px] xl:w-[980px]'
                         style2={true}
                     />
                 </div>
@@ -286,12 +297,12 @@ const EditTour = () => {
                     </div>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Hạn chót đặt tour:</div>
-                        <Datepicker width='w-[148px]' height='h-7' top='top-[6px]' outline min={true} defaultValue={defaultDate} keyPayload='bookingDeadline' setValue={setPayload} />
+                        <Datepicker width='w-[148px]' height='h-7' top='top-[6px]' outline min={true} defaultValue={defaultBookingDl} keyPayload='bookingDeadline' setValue={setPayload} />
                     </div>
                 </div>
                 <div className='flex gap-2 items-center'>
                     <div className='font-semibold'>Xuất phát:</div>
-                    <SelectInput options={provinceOption} myStyle='w-40 xl:w-52' style2={true} placeholder={payload.departure} keyPayload='departure' setValue={setPayload} />
+                    <SelectInput options={newProvinces} myStyle='w-40 xl:w-52' style2={true} placeholder={payload.departure} keyPayload='departure' setValue={setPayload} />
                 </div>
                 <div className='flex flex-wrap gap-2 items-center'>
                     <div className='font-semibold'>Điểm đến:</div>
@@ -299,10 +310,12 @@ const EditTour = () => {
                         if (item !== '') {
                             return (
                             <div className='relative' key={i + 1}>
-                                <SelectInput options={placeDaNang} myStyle='w-28 xl:w-40' style2={true} placeholder={item} />
-                                <div className="bg-white flex items-center justify-center cursor-pointer absolute -top-2 -right-2" onClick={() => handle_delDestination(i)}>
-                                    <i className="twi-22-x-circle-fill text-[17px] text-accent-3 text-center"></i>
-                                </div>
+                                {newPlaces.length > 0 && <SelectInput options={newPlaces} myStyle='w-28 xl:w-52' style2={true} placeholder={item} />}
+                                {i > 0 && 
+                                    <div className="bg-white flex items-center justify-center cursor-pointer absolute -top-2 -right-2" onClick={() => handle_delDestination(i)}>
+                                        <i className="twi-22-x-circle-fill text-[17px] text-accent-3 text-center"></i>
+                                    </div>
+                                }
                             </div>
                             )
                         }
@@ -384,15 +397,15 @@ const EditTour = () => {
                         value={payload.note}
                         setValue={setPayload} 
                         keyPayload={'note'}
-                        width='w-[275px] md:w-[615px] xl:w-[1075px]'
+                        width='w-[275px] md:w-[615px] xl:w-[980px]'
                         style2={true}
                     />
                 </div>
                 <div className='flex gap-2 md:gap-5 xl:gap-8'>
                     <div className='font-semibold'>Dịch vụ bao gồm:</div>
                     <div className='flex flex-wrap justify-between gap-y-2 md:gap-5 xl:gap-16'>
-                        { tourService.length > 0 && services?.map((item, i) => {
-                                if (tourService.includes(item)) {
+                        { services?.map((item, i) => {
+                                if (tourService?.includes(item)) {
                                     return (
                                         <CheckedBox key={i} value={item} label={item} setValue={setTourService} keyValue={tourService} color={'accent-black'}/>
                                     )
@@ -414,8 +427,7 @@ const EditTour = () => {
                     : 
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Nhân viên đảm nhận:</div>
-                        {/* data */}
-                        {/* <SelectInput options={staffList} myStyle='w-64' placeholder={payload.staff}/>  */}
+                        <SelectInput options={staffList} myStyle='w-60' placeholder={tour?.staff?.lastName + ' ' + tour?.staff?.firstName} keyPayload='staff' setValue={setPayload} /> 
                     </div>
                 }
                 <div className='flex gap-2 items-center'>

@@ -1,5 +1,5 @@
 import actionTypes from './actionTypes'
-import { apiRegister, apiLogin, apiForgotPassword, apiChangePassword } from '../../services/authService'
+import { apiRegister, apiLogin, apiForgotPassword, apiChangePassword, apiStaffLogin } from '../../services/authService'
 
 export const register = (payload) => async (dispatch) => { // register func. returns a func
     try {
@@ -7,12 +7,12 @@ export const register = (payload) => async (dispatch) => { // register func. ret
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.REGISTER_SUCESS,
-                data: response.data.token
+                msg: response.data.msg
             })
         } else {
             dispatch({
                 type: actionTypes.REGISTER_FAIL,
-                data: response.data.msg
+                msg: response.data.msg
             })
         }
     } catch (error) {
@@ -29,18 +29,24 @@ export const login = (payload) => async (dispatch) => { // register func. return
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.LOGIN_SUCESS,
-                data: response.data.token
+                token: response.data.token,
+                refresh_token: response.data.refresh_token,
+                msg: response.data.msg
             })
         } else {
             dispatch({
                 type: actionTypes.LOGIN_FAIL,
-                data: response.data.msg
+                token: null,
+                refresh_token: null,
+                msg: response.data.msg
             })
         }
     } catch (error) {
         dispatch({
             type: actionTypes.LOGIN_FAIL,
-            data: null
+            token: null,
+            refresh_token: null,
+            msg: ''
         })
     }
 }
@@ -92,3 +98,32 @@ export const changePassword = (payload) => async (dispatch) => { // register fun
 export const logout = () => ({
     type: actionTypes.LOGOUT
 })
+
+// Staff
+export const staffLogin = (payload) => async (dispatch) => { // register func. returns a func
+    try {
+        const response = await apiStaffLogin(payload)
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.STAFF_LOGIN_SUCESS,
+                token: response.data.token,
+                refresh_token: response.data.refresh_token,
+                msg: response.data.msg
+            })
+        } else {
+            dispatch({
+                type: actionTypes.LOGIN_FAIL,
+                token: null,
+                refresh_token: null,
+                msg: response.data.msg
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.LOGIN_FAIL,
+            token: null,
+            refresh_token: null,
+            msg: ''
+        })
+    }
+}

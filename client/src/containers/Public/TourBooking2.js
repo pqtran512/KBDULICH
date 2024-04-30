@@ -3,8 +3,8 @@ import { PayPal } from '../../components'
 import icons from '../../ultils/icons';
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useParams } from 'react-router-dom'
-import { getTour } from '../../store/actions/tourAction'
-import { splitDate } from '../../ultils/splitDate';
+import { getTour } from '../../store/actions/tourPlaceAction'
+import { splitDate } from '../../ultils/splitDateTime';
 
 const { FaCheck } = icons
 

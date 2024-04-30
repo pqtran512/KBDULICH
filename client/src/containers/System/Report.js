@@ -3,7 +3,7 @@ import { Chart as ChartJS, defaults } from "chart.js/auto";
 import { SelectInput, Datepicker } from '../../components'
 import { Bar, Line } from "react-chartjs-2";
 import icons from '../../ultils/icons';
-import { getToursRating } from '../../store/actions/tourAction';
+import { getToursRating } from '../../store/actions/tourPlaceAction';
 import { useDispatch, useSelector } from 'react-redux'
 import { ratingClassifier } from '../../ultils/ratingClassifier';
 

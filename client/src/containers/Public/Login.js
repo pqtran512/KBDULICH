@@ -14,7 +14,7 @@ const Login = () => {
         password: ''
     })
     const dispatch = useDispatch()
-    const { isLoggedIn, msg, update } = useSelector(state => state.auth) // auth in rootReducer
+    const { isLoggedIn, msg, update, role } = useSelector(state => state.auth) // auth in rootReducer
     const navigate = useNavigate()
 
     // FUNCTIONS
@@ -34,9 +34,18 @@ const Login = () => {
                     if (item[1] === '') { // item[1] is the value field
                         setInvalidFields(prev => [...prev, {
                             name: item[0],
-                            message: 'Bạn chưa nhập email hoặc tên người dùng !'
+                            message: 'Bạn chưa nhập email !'
                         }])
                         invalids++
+                    } 
+                    else {
+                        if (!(/\S+@\S+\.\S+/.test(item[1]))) {
+                            setInvalidFields(prev => [...prev, {
+                                name: item[0],
+                                message: 'Email không hợp lệ !'
+                            }])
+                            invalids++
+                        }
                     }
                     break;
                 case 'password':
@@ -64,8 +73,8 @@ const Login = () => {
     } 
     // if isLoggedIn is true -> go to homepage
     useEffect(() => {
-        isLoggedIn && navigate('/')
-    }, [isLoggedIn, navigate])
+        isLoggedIn && role === 'customer' && navigate('/')
+    }, [isLoggedIn, role, navigate])
     // Popup msg when login failed
     useEffect(() => {
         msg && Swal.fire('Oops !', msg, 'error')
@@ -77,9 +86,9 @@ const Login = () => {
             <InputForm 
                 invalidFields={invalidFields} 
                 setInvalidFields={setInvalidFields} 
-                label='Email/ Tên' 
+                label='Email' 
                 placeholder='Nhập email hoặc tên người dùng' 
-                value={payload.email} 
+                value={payload.username} 
                 setValue={setPayload} 
                 keyPayload={'username'}
                 width='w-full'

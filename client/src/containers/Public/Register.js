@@ -15,12 +15,11 @@ const Register = () => {
         username: '',
         phone_no: '', 
         email: '',
-        password: '',
-        password2: ''
+        password: ''
     })
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { isLoggedIn, msg, update } = useSelector(state => state.auth) // auth in rootReducer
+    const { isLoggedIn, msg, update, role } = useSelector(state => state.auth) // auth in rootReducer
 
     // FUNCTIONS
     // validate inputs and call API
@@ -51,10 +50,10 @@ const Register = () => {
                         invalids++
                     }
                     else {
-                        if (!(/^([a-zA-Z0-9]+(_)*)+$/.test(item[1]))) {
+                        if (!(/^([a-z0-9ỳọáầảấờễàạằệếýộậốũứĩõúữịỗìềểẩớặòùồợãụủíỹắẫựỉỏừỷởóéửỵẳẹèẽổẵẻỡơôưăêâđ ]+(_)*)+$/.test(item[1].toLowerCase()))) {
                             setInvalidFields(prev => [...prev, {
                                 name: item[0],
-                                message: 'Tên chỉ chứa ký tự, số và gạch chân (_) !'
+                                message: 'Tên chỉ chứa ký tự, số và khoảng trắng !'
                             }])
                             invalids++
                         }
@@ -120,6 +119,13 @@ const Register = () => {
                             message: 'Bạn chưa nhập lại mật khẩu !'
                         }])
                         invalids++
+                    }
+                    else if (item[1] !== payload.password) {
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Vui lòng nhập lại chính xác mật khẩu !'
+                        }])
+                        invalids++
                     } 
                     break;
                 default:
@@ -130,15 +136,15 @@ const Register = () => {
     } 
     /// if isLoggedIn is true -> go to homepage
     useEffect(() => {
-        isLoggedIn && navigate('/')
-    }, [isLoggedIn])
+        isLoggedIn && navigate('/auth/login')
+    }, [isLoggedIn, role])
     // Popup msg when login failed
     useEffect(() => {
         msg && Swal.fire('Oops !', msg, 'error')
     }, [msg, update]) // variable in [] -> dependency -> run when 1 of them changes
 
     return (
-        <div className='mt-4 flex flex-col gap-3 bg-white w-[550px] rounded-xl p-8'>
+        <div className='mt-4 flex flex-col gap-3 bg-white w-[560px] rounded-xl p-8'>
             <div className='text-header-1 font-bold'>ĐĂNG KÝ THÀNH VIÊN</div>
             <div className='flex gap-4'>
                 <InputForm 

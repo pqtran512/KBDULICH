@@ -1,10 +1,13 @@
 import React from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useSelector } from 'react-redux'
 import '../../index.scss';
 
 const SystemHome = () => {
+    const { isLoggedIn, role } = useSelector(state => state.auth)
+    // if (!isLoggedIn || role === 'customer') return <Navigate to='/system-auth/login' replace={true} />
     return (
         <div className='font-segoe'>
             <Header/>

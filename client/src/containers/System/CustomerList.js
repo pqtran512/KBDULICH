@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Button2, SearchBar, InputForm,  Datepicker } from '../../components';
+import { Button2, InputForm,  Datepicker } from '../../components';
 import Swal from 'sweetalert2'
 import icons from '../../ultils/icons';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import { getOrderOfTour } from '../../store/actions/orderAction';
+import { getOrderOfTour } from '../../store/actions/orderFeedbackAction';
 import { useDispatch, useSelector } from 'react-redux'
+import { splitDateTime } from '../../ultils/splitDateTime';
+import { ratingClassifier } from '../../ultils/ratingClassifier';
 
 const { CgArrowsExchangeAltV, FaStar, FaArrowUpRightFromSquare } = icons
 
@@ -15,7 +17,7 @@ const CustomerList = () => {
     const {tourID} = useParams();
     const [invalidFields, setInvalidFields] = useState([])
     const [addMode, setAddMode] = useState(false)
-    const { orders } = useSelector(state => state.order)
+    const { orders, count_order } = useSelector(state => state.order)
     // Register API
     const date = new Date()
     const initialValue = {
@@ -123,11 +125,7 @@ const CustomerList = () => {
         <div className='w-full xl:pt-10 overflow-hidden'>
             {/* Customer list */}
             <div className='mt-16 pb-1 font-prata text-neutral-1-900 font-semibold text-header-1 border-b-2 border-neutral-2-200 w-full px-4 rounded-xl shadow-title xl:text-heading-4'>Danh sách khách hàng</div>
-            <div className='pt-10 w-full flex justify-end'>
-                <SearchBar placeholder='Nhập ..' newPlaceholder='Nhập tìm kiếm . . .' width='w-12 md:w-24 xl:w-28' change={true} newWidth='w-[380px] md:w-[380px] xl:w-[620px]' 
-                    optionBar={true} person={true} phone={true} email={true} bookDate={true} note={true} path={location.pathname} />
-            </div>
-            <div className='pb-3 text-body-1 text-neutral-1-900'>Tổng số: {orders.length}</div>
+            <div className='pt-10 pb-3 text-body-1 text-neutral-1-900'>Tổng số: {count_order}</div>
             <table className="mb-8 mytable2 w-full text-caption-1 xl:text-body-2">
                 <thead>
                     <tr className="h-10 text-body-2 font-semibold tracking-wider bg-neutral-3-200 xl:text-body-1">
@@ -171,22 +169,22 @@ const CustomerList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {orders.length > 0 && orders.map((order, idx) => {
+                    {orders?.map((order, idx) => {
                         return ( 
-                        <tr className='h-12 border-b-2 border-neutral-2-200'>
-                            <td>{order.order_ID}</td>
-                            <td>{order.name}</td>
-                            <td className="hidden md:table-cell">{order.phone_no}</td>
-                            <td className='hidden md:table-cell'>{order.email}</td>
-                            <td className="hidden md:table-cell">09/09/2024</td>
-                            <td className="hidden md:table-cell">{order.ticket_num}</td>
+                        <tr key={idx} className='h-12 border-b-2 border-neutral-2-200'>
+                            <td>{order.order.order_ID}</td>
+                            <td>{order.order.name}</td>
+                            <td className="hidden md:table-cell">0{order.order.phone_no}</td>
+                            <td className='hidden md:table-cell'>{order.order.email}</td>
+                            <td className="hidden md:table-cell">{splitDateTime(order.order.date_time)[0]}</td>
+                            <td className="hidden md:table-cell">{order.order.ticket_num}</td>
                             <td className='hidden xl:table-cell'>
-                                <div className='flex items-center gap-1 bg-[#1ABB9C] w-fit px-2 rounded-full'>
-                                    <div className='text-white'>4</div>
+                                <div className={`${ratingClassifier(order.feedback.ratings) < 3? 'bg-[#1ABB9C]' : 'bg-accent-3'} flex items-center gap-1 w-fit px-2 rounded-full`}>
+                                    <div className='text-white'>{order.feedback.ratings}</div>
                                     <FaStar size={15} className='text-secondary-2'/> 
                                 </div>
                             </td>
-                            <td><FaArrowUpRightFromSquare onClick={() => (navigate('/staff/customer-detail'))} className='ml-5 text-[12px] text-neutral-1-600 hover:text-neutral-1-500 cursor-pointer xl:text-[14px]'/></td>
+                            <td><FaArrowUpRightFromSquare onClick={() => (navigate('/staff/customer-detail/'+order.order.order_ID))} className='ml-5 text-[12px] text-neutral-1-600 hover:text-neutral-1-500 cursor-pointer xl:text-[14px]'/></td>
                         </tr> 
                         )
                     })}
