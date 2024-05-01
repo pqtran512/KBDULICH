@@ -15,7 +15,7 @@ const authReducer = (state = initState, action) => {
             return {
                 ...state,
                 isRegister: true,
-                msg: 'Đăng ký thành công'
+                msg: action.msg
             }
         case actionTypes.LOGIN_SUCESS:
             return {
@@ -58,9 +58,16 @@ const authReducer = (state = initState, action) => {
                 ...state,
                 isLoggedIn: true,
                 role:'staff',
-                token: action.data,
+                token: action.token,
                 refresh_token: action.refresh_token,
                 msg: ''
+            }
+        case actionTypes.REFRESH_TOKEN:
+            return {
+                ...state,
+                token: action.token,
+                refresh_token: action.refresh_token,
+                msg: action.msg
             }
         default:
             return state;

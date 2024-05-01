@@ -3,7 +3,8 @@ import actionTypes from "../actions/actionTypes";
 const initState = {
     requests: [],
     request: {},
-    requests_staff:[]
+    requests_staff: [],
+    msg: ''
 }
 const requestReducer = (state = initState, action) => {
     switch (action.type) {
@@ -17,6 +18,11 @@ const requestReducer = (state = initState, action) => {
             return {
                 ...state,
                 request: action.request || {},
+        }
+        case actionTypes.REQUEST_ADD:
+            return {
+                ...state,
+                msg: action.msg,
             }
         default:
             return state;

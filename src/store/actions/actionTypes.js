@@ -1,4 +1,5 @@
 const actionTypes = {
+    // AUTH
     LOGIN_SUCESS: 'LOGIN_SUCESS',
     LOGIN_FAIL: 'LOGIN_FAIL',
     STAFF_LOGIN_SUCESS: 'STAFF_LOGIN_SUCESS',
@@ -9,6 +10,7 @@ const actionTypes = {
     MAIL_SUCESS: 'CHANGEPASS_SUCESS',
     MAIL_FAIL: 'CHANGEPASS_FAIL',
     LOGOUT: 'LOGOUT',
+    REFRESH_TOKEN: 'REFRESH_TOKEN',
 
     // USER
         // Customer
@@ -33,5 +35,6 @@ const actionTypes = {
     GET_ALL_REQUESTS: 'GET_ALL_REQUESTS',
     GET_REQUEST: 'GET_REQUEST',
     GET_REQUESTS_STAFF: 'GET_REQUESTS_STAFF',
+    REQUEST_ADD: 'REQUEST_ADD'
 }
 export default actionTypes

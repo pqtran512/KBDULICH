@@ -24,7 +24,7 @@ const PersonalProfile = () => {
     const [ feedbackOfTour, setFeedbackOfTour] = useState(''); // which tour user choose to feedback
     // FUNCTION
     useEffect(() => {
-        dispatch(getOrderOfCustomer({customer_id: 'U_050'}))
+        dispatch(getOrderOfCustomer())
     }, [dispatch])
     const handleCancelBooking = async () => {
         Swal.fire({

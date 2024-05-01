@@ -174,17 +174,20 @@ const CustomerList = () => {
                         <tr key={idx} className='h-12 border-b-2 border-neutral-2-200'>
                             <td>{order.order.order_ID}</td>
                             <td>{order.order.name}</td>
-                            <td className="hidden md:table-cell">0{order.order.phone_no}</td>
-                            <td className='hidden md:table-cell'>{order.order.email}</td>
-                            <td className="hidden md:table-cell">{splitDateTime(order.order.date_time)[0]}</td>
-                            <td className="hidden md:table-cell">{order.order.ticket_num}</td>
-                            <td className='hidden xl:table-cell'>
-                                <div className={`${ratingClassifier(order.feedback.ratings) < 3? 'bg-[#1ABB9C]' : 'bg-accent-3'} flex items-center gap-1 w-fit px-2 rounded-full`}>
-                                    <div className='text-white'>{order.feedback.ratings}</div>
-                                    <FaStar size={15} className='text-secondary-2'/> 
-                                </div>
-                            </td>
-                            <td><FaArrowUpRightFromSquare onClick={() => (navigate('/staff/customer-detail/'+order.order.order_ID))} className='ml-5 text-[12px] text-neutral-1-600 hover:text-neutral-1-500 cursor-pointer xl:text-[14px]'/></td>
+                            <td className="hidden md:table-cell">0{order.order?.phone_no}</td>
+                            <td className='hidden md:table-cell'>{order.order?.email}</td>
+                            <td className="hidden md:table-cell">{splitDateTime(order.order?.date_time)[0]}</td>
+                            <td className="hidden md:table-cell">{order.order?.ticket_num}</td>
+                            { order.feedback?.ratings?
+                                <td className='hidden xl:table-cell'>
+                                    <div className={`${ratingClassifier(order.feedback.ratings) < 3? 'bg-[#1ABB9C]' : 'bg-accent-3'} flex items-center gap-1 w-fit px-2 rounded-full`}>
+                                        <div className='text-white'>{order.feedback.ratings}</div>
+                                        <FaStar size={15} className='text-secondary-2'/> 
+                                    </div>
+                                </td>
+                                : <td>Chưa đánh giá</td>
+                            }
+                            <td><FaArrowUpRightFromSquare onClick={() => (navigate('/staff/customer-detail/'+order.order?.order_ID))} className='ml-5 text-[12px] text-neutral-1-600 hover:text-neutral-1-500 cursor-pointer xl:text-[14px]'/></td>
                         </tr> 
                         )
                     })}

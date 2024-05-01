@@ -39,6 +39,19 @@ export const apiStaffLogin = (payload) => new Promise(async(resolve, reject) => 
     }
 })
 
+export const apiRefreshToken = (refresh_token) => new Promise(async(resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/auth/refreshToken',
+            data: refresh_token
+        })
+        resolve(response)
+    } catch (error) {
+        reject(error)
+    }
+})
+
 export const apiForgotPassword = (payload) => new Promise(async(resolve, reject) => {
     try {
         const response = await axiosConfig({

@@ -2,7 +2,7 @@ import React, {memo, useState } from 'react';
 import Select from 'react-select';
 import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
 
-const SelectInput = ({myStyle, style2, style3, placeholder, options, defaultValue, setValue, setVar, keyPayload, invalidFields, setInvalidFields, path}) => {
+const SelectInput = ({myStyle, style2, style3, placeholder, options, defaultValue, setValue, setVar, keyPayload, invalidFields, setInvalidFields, path, arr, setArr, idx}) => {
   const [selectedOption, setSelectedOption] = useState(defaultValue);
   const navigate = useNavigate()
   const [paramsSeach] = useSearchParams()
@@ -17,6 +17,11 @@ const SelectInput = ({myStyle, style2, style3, placeholder, options, defaultValu
     params?.map(i => {searchParamsObject = {...searchParamsObject, [i[0]]: i[1]}})
     return searchParamsObject
   }
+  const handleInputChange = (value) => {
+      let newArr = arr;
+      newArr[idx] = value;
+      setArr(newArr);
+  };
   return (
     <>
       <Select
@@ -118,6 +123,7 @@ const SelectInput = ({myStyle, style2, style3, placeholder, options, defaultValu
             setSelectedOption(e);
             setValue && setValue(prev => ({...prev, [keyPayload]: e.value}))
             setVar && setVar(e.value)
+            setArr && handleInputChange(e.value)
             path && navigate({
                 pathname: path,
                 search: createSearchParams(append(entries, e.value)).toString()

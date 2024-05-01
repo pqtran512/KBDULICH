@@ -13,7 +13,7 @@ const STourList = () => {
     const location = useLocation()
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { tours_staff } = useSelector(state => state.tour) 
+    const { tours_staff } = useSelector(state => state.tour)
     const [loading, setLoading] = useState(false);
     const [order, setOrder] = useState("asc")
     const [dataPerPage] = useState(20);
@@ -23,14 +23,16 @@ const STourList = () => {
 
     useEffect(() => {
         setLoading(true);
-        dispatch(getTourByStaff({staff: 'S_001'}))
-            .then(() => {
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-                setLoading(false); // Ensure loading is set to false even if an error occurs
-            });
+        setTimeout(() => {
+            dispatch(getTourByStaff())
+                .then(() => {
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                    setLoading(false); // Ensure loading is set to false even if an error occurs
+                });
+          }, 300)
     }, [dispatch])
     // pagination
     const sorting = (col) => {

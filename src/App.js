@@ -2,8 +2,20 @@ import {Routes,Route} from "react-router-dom";
 import { Auth, Login, ResetPass1, ResetPass2, Register, Home, Homepage, Search, TourDetail, TourBooking, TourBooking2, TourBooking3, News, NewsDetail, PersonalProfile, Contact} from "./containers/Public";
 import { SystemLogin, SystemResetPass1, SystemResetPass2, SystemHome, STourList, SysTourDetail, TourNew, RequestList, RequestDetail, MTourList, StaffDetail, StaffList, StaffNew, Report, Account, CustomerDetail, TourEdit, StaffEdit, SystemAuth } from "./containers/System";
 import { path } from "./ultils/constant";
+import * as actions from './store/actions'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect } from 'react'
 
 function App() {
+  const dispatch = useDispatch()
+  const { isLoggedIn, refresh_token } = useSelector(state => state.auth)
+  useEffect(() => {
+    let fourMinutes = 1000 * 60 * 4
+    setTimeout(() => {
+      isLoggedIn && dispatch(actions.refreshToken({refresh_token: 'Bearer ' + refresh_token}))
+    }, fourMinutes)
+  }, [isLoggedIn])
+
   return (
     <div>
       <Routes>

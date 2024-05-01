@@ -1,3 +1,5 @@
+import { formatVietnameseToString } from "./formatVietnameseToString";
+
 export const provinceObjects = (places, customer) => {
     const provinceNames = places.map(place => place.province); // transform the array of objects into an array of province names
     const uniqueProvinces = new Set(provinceNames); // extract unique names
@@ -11,14 +13,13 @@ export const provinceObjects = (places, customer) => {
 }
 
 export const placeObjects = (places) => {
-    const placeNames = places.map(place => place.name); // transform the array of objects into an array of place names
-    const uniquePlaces = new Set(placeNames); // extract unique names
-    const uniqueStaffArray = Array.from(uniquePlaces).sort();
-    let arr = uniqueStaffArray.map(p => ({
-        value: p,
-        label: p
+    const placeNames = places.sort((a, b) => 
+            formatVietnameseToString(a['name']) > formatVietnameseToString(b['name']) ? 1 : -1
+        ).map(place => ({
+        value: place.place_ID,
+        label: place.name,
     }));
-    return arr
+    return placeNames
 }
 
 export const staffObjects = (staffs) => {

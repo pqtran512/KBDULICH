@@ -168,7 +168,7 @@ const Homepage = () => {
                         <div className="grid gap-y-8 xl:grid-cols-3 xl:gap-x-8 xl:animate-fade-right">
                             <div className="w-[257px] min-h-[94px] flex items-center justify-center bg-white/60 rounded-[50px] backdrop-blur-sm md:bg-white/80">
                                 <div className="w-fit">
-                                    <div className="font-prata text-[28px] leading-[50px] text-primary-2 text-center">+1200</div>
+                                    <div className="font-prata text-[28px] leading-[50px] text-primary-2 text-center">+119</div>
                                     <div className="text-body-1 text-neutral-1-900/80 text-center">Địa điểm trên cả nước</div>
                                 </div>
                             </div>
@@ -180,7 +180,7 @@ const Homepage = () => {
                             </div>
                             <div className="w-[257px] min-h-[94px] flex items-center justify-center bg-white/60 rounded-[50px] backdrop-blur-sm md:bg-white/80">
                                 <div className="w-fit">
-                                    <div className="font-prata text-[28px] leading-[50px] text-primary-2 text-center">+1200</div>
+                                    <div className="font-prata text-[28px] leading-[50px] text-primary-2 text-center">+174</div>
                                     <div className="text-body-1 text-neutral-1-900/80 text-center">Khách hàng</div>
                                 </div>
                             </div>

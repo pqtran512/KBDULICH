@@ -1,5 +1,5 @@
 import actionTypes from './actionTypes'
-import { apiGetAllRequests, apiGetRequest, apiGetRequestsByStaff } from '../../services/requestService'
+import { apiGetAllRequests, apiGetRequest, apiGetRequestsByStaff, apiRequestAdd } from '../../services/requestService'
 
 // Tour
 export const getAllRequests = () => async (dispatch) => { // register func. returns a func
@@ -44,6 +44,21 @@ export const getRequestsByStaff = (id) => async (dispatch) => {
         dispatch({
             type: actionTypes.GET_REQUESTS_STAFF,
             requests: null
+        })
+    }
+}
+
+export const requestAdd = (payload) => async (dispatch) => {
+    try {
+        const response = await apiRequestAdd(payload)
+        dispatch({
+            type: actionTypes.REQUEST_ADD,
+            msg: response.data.msg
+        })
+    } catch (error) {
+        dispatch({
+            type: actionTypes.REQUEST_ADD,
+            msg: ''
         })
     }
 }

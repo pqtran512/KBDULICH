@@ -1,5 +1,5 @@
 import actionTypes from './actionTypes'
-import { apiRegister, apiLogin, apiForgotPassword, apiChangePassword, apiStaffLogin } from '../../services/authService'
+import { apiRegister, apiLogin, apiForgotPassword, apiChangePassword, apiStaffLogin, apiRefreshToken } from '../../services/authService'
 
 export const register = (payload) => async (dispatch) => { // register func. returns a func
     try {
@@ -7,7 +7,7 @@ export const register = (payload) => async (dispatch) => { // register func. ret
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.REGISTER_SUCESS,
-                msg: response.data.msg
+                msg: 'Đăng ký thành công'
             })
         } else {
             dispatch({
@@ -18,7 +18,7 @@ export const register = (payload) => async (dispatch) => { // register func. ret
     } catch (error) {
         dispatch({
             type: actionTypes.REGISTER_FAIL,
-            data: null
+            msg: null
         })
     }
 }
@@ -47,6 +47,34 @@ export const login = (payload) => async (dispatch) => { // register func. return
             token: null,
             refresh_token: null,
             msg: ''
+        })
+    }
+}
+
+export const refreshToken = (refresh_token) => async (dispatch) => { // register func. returns a func
+    try {
+        const response = await apiRefreshToken(refresh_token)
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.LOGIN_SUCESS,
+                token: response.data.token,
+                refresh_token: response.data.refresh_token,
+                msg: ''
+            })
+        } else {
+            dispatch({
+                type: actionTypes.LOGIN_FAIL,
+                token: null,
+                refresh_token: null,
+                msg: response.data.msg
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.LOGIN_FAIL,
+            token: null,
+            refresh_token: null,
+            msg: 'Token đã hết hạn !'
         })
     }
 }
