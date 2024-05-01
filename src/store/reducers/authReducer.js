@@ -58,7 +58,7 @@ const authReducer = (state = initState, action) => {
                 ...state,
                 isLoggedIn: true,
                 role:'staff',
-                token: action.data,
+                token: action.token,
                 refresh_token: action.refresh_token,
                 msg: ''
             }
