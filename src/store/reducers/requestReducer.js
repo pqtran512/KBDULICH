@@ -20,6 +20,8 @@ const requestReducer = (state = initState, action) => {
                 request: action.request || {},
         }
         case actionTypes.REQUEST_ADD:
+        case actionTypes.REQUEST_EDIT:
+        case actionTypes.REQUEST_CANCEL:
             return {
                 ...state,
                 msg: action.msg,

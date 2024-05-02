@@ -54,3 +54,31 @@ export const apiRequestAdd = (payload) => new Promise(async (resolve, reject) =>
         reject(error)
     }
 })
+
+export const apiRequestEdit = (payload) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/request/edit/add',
+            data: payload
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
+
+export const apiRequestCancel = (payload) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/request/cancel/add',
+            data: payload
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})

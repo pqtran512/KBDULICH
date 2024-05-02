@@ -29,11 +29,11 @@ const RequestList = () => {
         else if (window.location.pathname === "/staff/request") {
             setRole('staff');
         }
-    }, []);
+    }, [window.location.pathname]);
     useEffect(() => {
         setLoading(true);
         if (role === 'staff') {
-            dispatch(getRequestsByStaff({staff_ID: 'S_002'}))
+            dispatch(getRequestsByStaff({staff_ID: 'S_010'}))
                 .then(() => {
                     setLoading(false);
                 })

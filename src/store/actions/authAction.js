@@ -63,7 +63,7 @@ export const refreshToken = (refresh_token) => async (dispatch) => { // register
             })
         } else {
             dispatch({
-                type: actionTypes.LOGIN_FAIL,
+                type: actionTypes.LOGOUT,
                 token: null,
                 refresh_token: null,
                 msg: response.data.msg
@@ -71,7 +71,7 @@ export const refreshToken = (refresh_token) => async (dispatch) => { // register
         }
     } catch (error) {
         dispatch({
-            type: actionTypes.LOGIN_FAIL,
+            type: actionTypes.LOGOUT,
             token: null,
             refresh_token: null,
             msg: 'Token đã hết hạn !'
@@ -124,7 +124,8 @@ export const changePassword = (payload) => async (dispatch) => { // register fun
 }
 
 export const logout = () => ({
-    type: actionTypes.LOGOUT
+    type: actionTypes.LOGOUT,
+    msg: ''
 })
 
 // Staff

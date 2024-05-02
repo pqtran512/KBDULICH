@@ -8,13 +8,16 @@ import { useEffect } from 'react'
 
 function App() {
   const dispatch = useDispatch()
-  const { isLoggedIn, refresh_token } = useSelector(state => state.auth)
+  const { isLoggedIn, refresh_token, token, msg } = useSelector(state => state.auth)
   useEffect(() => {
     let fourMinutes = 1000 * 60 * 4
     setTimeout(() => {
       isLoggedIn && dispatch(actions.refreshToken({refresh_token: 'Bearer ' + refresh_token}))
     }, fourMinutes)
-  }, [isLoggedIn])
+  }, [token])
+  useEffect(() => {
+    if (msg !== '') alert(msg);
+  }, [msg])
 
   return (
     <div>

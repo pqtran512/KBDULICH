@@ -1,5 +1,5 @@
 import actionTypes from './actionTypes'
-import { apiGetAllRequests, apiGetRequest, apiGetRequestsByStaff, apiRequestAdd } from '../../services/requestService'
+import { apiGetAllRequests, apiGetRequest, apiGetRequestsByStaff, apiRequestAdd, apiRequestCancel, apiRequestEdit } from '../../services/requestService'
 
 // Tour
 export const getAllRequests = () => async (dispatch) => { // register func. returns a func
@@ -51,6 +51,36 @@ export const getRequestsByStaff = (id) => async (dispatch) => {
 export const requestAdd = (payload) => async (dispatch) => {
     try {
         const response = await apiRequestAdd(payload)
+        dispatch({
+            type: actionTypes.REQUEST_ADD,
+            msg: response.data.msg
+        })
+    } catch (error) {
+        dispatch({
+            type: actionTypes.REQUEST_ADD,
+            msg: ''
+        })
+    }
+}
+
+export const requestEdit = (payload) => async (dispatch) => {
+    try {
+        const response = await apiRequestEdit(payload)
+        dispatch({
+            type: actionTypes.REQUEST_ADD,
+            msg: response.data.msg
+        })
+    } catch (error) {
+        dispatch({
+            type: actionTypes.REQUEST_ADD,
+            msg: ''
+        })
+    }
+}
+
+export const requestCancel = (payload) => async (dispatch) => {
+    try {
+        const response = await apiRequestCancel(payload)
         dispatch({
             type: actionTypes.REQUEST_ADD,
             msg: response.data.msg

@@ -51,7 +51,7 @@ const authReducer = (state = initState, action) => {
                 role: '',
                 token: null,
                 refresh_token: null,
-                msg: ''
+                msg: action.msg,
             }
         case actionTypes.STAFF_LOGIN_SUCESS:
             return {
@@ -65,6 +65,7 @@ const authReducer = (state = initState, action) => {
         case actionTypes.REFRESH_TOKEN:
             return {
                 ...state,
+                isLoggedIn: true,
                 token: action.token,
                 refresh_token: action.refresh_token,
                 msg: action.msg

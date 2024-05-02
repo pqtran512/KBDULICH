@@ -21,14 +21,14 @@ const EditTour = () => {
     const [tourService, setTourService] = useState([])
     const services = ['Bảo hiểm', 'Bữa ăn', 'Xe đưa đón', 'Hướng dẫn viên', 'Vé tham quan'] // available services
     const vehicles = ['Xe 4 chỗ', 'Xe 7 chỗ', 'Xe khách', 'Máy bay'] // available vehicles
-    const [destination, setDestination] = useState(['Bà Nà Hills'])
+    const [destination, setDestination] = useState(['P_107'])
     const [payload, setPayload] = useState({ 
         name: '',
         price: 0,
         starting_date: '',
         bookingDeadline: '',
         departure: '',
-        tour_destination: destination, //'Bà Nà Hills - Cầu Rồng - Bán Đảo Sơn Trà',
+        place: destination, //'Bà Nà Hills - Cầu Rồng - Bán Đảo Sơn Trà',
         vehicle: '',
         seat_num: 0,
         night_num: 0,
@@ -36,6 +36,7 @@ const EditTour = () => {
         schedule: [],
         note: '',
         service: [],
+        tour_ID: tourID,
         staff: ''
     })
     const [maxDay, setMaxDay] = useState(0)
@@ -84,14 +85,14 @@ const EditTour = () => {
             setMaxDay(Math.max(tour.day_num, tour.night_num))
         }
         if (tour.starting_date) { 
-            setPayload(prev => ({...prev, starting_date: tour.starting_date}))
             const [year, month, day] = tour.starting_date.split('-');
+            setPayload(prev => ({...prev, starting_date: year+'_'+month+'_'+day}))
             const myDate = new Date(Date.UTC(year, month - 1, day)); 
             setDefaultDate(myDate)
         }
         if (tour.bookingDeadline) { 
-            setPayload(prev => ({...prev, bookingDeadline: tour.bookingDeadline}))
             const [year, month, day] = tour.bookingDeadline.split('-');
+            setPayload(prev => ({...prev, bookingDeadline: year+'_'+month+'_'+day}))
             const myDate = new Date(Date.UTC(year, month - 1, day)); 
             setBookingDl(myDate)
         }
@@ -220,11 +221,13 @@ const EditTour = () => {
     useEffect(() => {
         setPayload(prev => ({...prev, service: tourService}))
     }, [tourService])
+    useEffect(() => {
+        setPayload(prev => ({...prev, place: destination}))
+    }, [destination])
     const submitEdit = async () => {
-        setPayload(prev => ({...prev, tour_destination: destination}))
         let invalids = validate(payload)
-        console.log(payload)
         if (invalids === 0){
+            console.log(payload)
             if (role === 'staff') {
                 Swal.fire('Gửi thành công', '', 'success').then((result) => {
                     // navigate('/staff/tour-detail')
@@ -310,7 +313,7 @@ const EditTour = () => {
                         if (item !== '') {
                             return (
                             <div className='relative' key={i + 1}>
-                                {newPlaces.length > 0 && <SelectInput options={newPlaces} myStyle='w-28 xl:w-52' style2={true} placeholder={item} />}
+                                {newPlaces.length > 0 && <SelectInput options={newPlaces} myStyle='w-28 xl:w-52' style2={true} defaultValue={newPlaces[0]} idx={i} arr={destination} setArr={setDestination}/>}
                                 {i > 0 && 
                                     <div className="bg-white flex items-center justify-center cursor-pointer absolute -top-2 -right-2" onClick={() => handle_delDestination(i)}>
                                         <i className="twi-22-x-circle-fill text-[17px] text-accent-3 text-center"></i>

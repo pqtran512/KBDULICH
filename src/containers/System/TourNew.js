@@ -104,9 +104,9 @@ const TourNew = () => {
         setDestination(delDes)
     }
     const handleSubmit = async () => {
-        console.log(payload)
         let invalids = validate(payload)
         if (invalids === 0) {
+            console.log(payload)
             dispatch(requestAdd(payload))
             // Swal.fire('Gửi thành công', '', 'success').then((result) => {
                 // navigate('/staff/request')
@@ -167,7 +167,7 @@ const TourNew = () => {
             <div className='font-prata text-neutral-1-900 font-semibold text-header-1 border-b-2 border-neutral-2-200 pb-1 w-full px-4 rounded-xl shadow-title xl:text-heading-4'>Thêm Tour mới</div>
             <div className='relative mt-16 text-body-2 text-neutral-1-900 flex flex-col gap-6 mx-auto px-4 py-6 border-[3px] border-secondary-2 rounded-b-2xl rounded-tr-2xl xl:text-body-1'>
                 <div className='absolute -top-6 left-0.5 bg-gradient-to-tr from-secondary-2 to-accent-4 border border-white outline-offset-2 outline outline-[3px] outline-secondary-2 rounded-t-xl w-[100px] h-5'></div>
-                <div className='flex flex-col gap-6 xl:flex-row xl:justify-between'>
+                <div className='grid grid-rows-2 gap-6 md:grid-rows-1 md:grid-cols-2'>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Tên chương trình: </div>
                         <InputForm 

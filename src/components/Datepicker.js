@@ -7,14 +7,6 @@ const { MdCalendarToday } = icons
 
 const Datepicker = ({width, height, top, defaultValue, setValue, keyPayload, bgColor, textColor, outline, min, format}) => {
     const [startDate, setStartDate] = useState(null);
-    // const day = startDate.getDate();
-    // const month = startDate.getMonth() + 1; // Months are zero-based, so add 1
-    // const year = startDate.getFullYear();
-    // const parsedDate = initialDate ? new Date(initialDate) : null;
-  // useEffect(() => {
-  //     startDate
-  //     defaultValue && startDate -> startDate
-  // }, [])
   return (
     <div className='relative'>
       <DatePicker
