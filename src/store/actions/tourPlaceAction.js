@@ -1,5 +1,5 @@
 import actionTypes from './actionTypes'
-import { apiGetToursRating, apiGetToursCondition, apiGetTour, apiGetByName, apiGetByStaff, apiGetAllPlaces } from '../../services/tourPlaceService'
+import { apiGetToursRating, apiGetToursCondition, apiGetTour, apiGetByName, apiGetTourByStaffID, apiGetTourByStaff, apiGetAllPlaces, apiGetPlaceCond } from '../../services/tourPlaceService'
 
 // Tour
 export const getToursRating = () => async (dispatch) => { // register func. returns a func
@@ -65,9 +65,24 @@ export const getTourByName = (name) => async (dispatch) => {
     }
 }
 
-export const getTourByStaff = (id) => async (dispatch) => {
+export const getTourByStaff = () => async (dispatch) => {
     try {
-        const response = await apiGetByStaff(id)
+        const response = await apiGetTourByStaff()
+        dispatch({
+            type: actionTypes.GET_TOURS_STAFF,
+            tours_staff: response.data
+        })
+    } catch (error) {
+        dispatch({
+            type: actionTypes.GET_TOURS_STAFF,
+            tours_staff: null
+        })
+    }
+}
+
+export const getTourByStaffID = (id) => async (dispatch) => {
+    try {
+        const response = await apiGetTourByStaffID(id)
         dispatch({
             type: actionTypes.GET_TOURS_STAFF,
             tours_staff: response.data
@@ -92,6 +107,22 @@ export const getAllPlaces = () => async (dispatch) => {
         dispatch({
             type: actionTypes.GET_PLACES,
             places: null
+        })
+    }
+}
+
+export const getPlaceCond = (payload) => async (dispatch) => {
+    try {
+        const response = await apiGetPlaceCond(payload)
+        dispatch({
+            type: actionTypes.GET_PLACE_COND,
+            place_cond: response.data.row,
+            count_cond: response.data.count
+        })
+    } catch (error) {
+        dispatch({
+            type: actionTypes.GET_PLACE_COND,
+            place_cond: null
         })
     }
 }

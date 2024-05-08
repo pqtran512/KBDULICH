@@ -82,3 +82,17 @@ export const apiRequestCancel = (payload) => new Promise(async (resolve, reject)
         reject(error)
     }
 })
+
+export const apiRequestReply = (payload) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/request/reply',
+            data: payload
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})

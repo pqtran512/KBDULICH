@@ -9,6 +9,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import { splitDate, splitDateTime } from '../../ultils/splitDateTime';
+import { getProvinceTitle } from '../../ultils/objectsToArr';
 
 const { BsThreeDotsVertical, FaRegStar, FaStar, FaStarHalfAlt, MdCalendarToday } = icons
 
@@ -95,30 +96,6 @@ const TourDetail = () => {
         const firstSentence = paragraph.slice(0, firstNewlineIndex);
         const restOfParagraph = paragraph.slice(firstNewlineIndex + 1);
         return [firstSentence, restOfParagraph];
-    }
-    const splitLastSentence = (paragraph) => {
-        const lastNewlineIndex = paragraph.lastIndexOf('\n');
-        const firstPart = paragraph.slice(0, lastNewlineIndex);
-        const lastSentence = paragraph.slice(lastNewlineIndex + 1);
-        return [firstPart, lastSentence];
-    }
-    const splitNote = (paragraph) => {
-        const indexOfNote = paragraph.indexOf("Ghi chú:");
-        const beforeNote = paragraph.slice(0, indexOfNote).trim();
-        if (indexOfNote !== -1) {
-            const afterNote = paragraph.slice(indexOfNote + "Ghi chú:".length).trim();
-            return [beforeNote, afterNote];
-        }
-        return [beforeNote]
-    }
-    const getProvinceTitle = (t) => {
-        let arr = []
-        for (var i = 0; i < t?.places?.length; i++) {
-            if (!arr.includes(t.places[i].province)) {
-                arr = [...arr, t.places[i].province]
-            }
-        }
-        return arr
     }
     const rating_stars = (ratings, s) => {
         const fullStars = Math.floor(ratings);
@@ -322,7 +299,6 @@ const TourDetail = () => {
                                 </div>
                                 <div className='pb-8 pl-12 tracking-wider'>
                                     {tour.note === 'No note'? <></> : <div className='text-caption-1 text-neutral-1-900 md:text-body-2'>- {tour.note}</div>}
-                                    {tour.schedule && splitNote(tour.schedule[tour.schedule.length - 1])[1] && <div className='text-caption-1 text-neutral-1-900 md:text-body-2'>{ splitNote(tour.schedule[tour.schedule.length - 1])[1] }</div>}
                                 </div>
                                 {/* Ngày khởi hành khác  */}
                                 {count_name > 1?

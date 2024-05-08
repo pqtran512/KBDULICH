@@ -63,7 +63,7 @@ const ResetPass1 = () => {
                 textColor='text-white' bgColor='bg-[#363837]' 
                 onClick={handleSubmit}
             />
-            <Link to={'/auth/login'} className='pl-1 text-black hover:text-secondary-1 cursor-pointer'>
+            <Link to={'/system-auth/login'} className='pl-1 text-black hover:text-secondary-1 cursor-pointer'>
                 Quay lại
             </Link>
         </div>

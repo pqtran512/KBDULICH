@@ -1,12 +1,32 @@
-import React, { useRef, useEffect, memo } from "react";
+import React, { useState, useRef, useEffect, memo } from "react";
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
 import { splitDate } from '../ultils/splitDateTime';
 import emailjs from '@emailjs/browser';
+import { orderAdd } from "../store/actions";
+import { useDispatch, useSelector } from 'react-redux'
+
 
 const Paypal = ({payload, tour}) => {
   const paypal = useRef();
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const [newPayload, setNewPayload] = useState({});
+  const { msg } = useSelector(state => state.order)
+  useEffect(() => {
+      if (msg === 'success') {
+        Swal.fire({
+          title: "Thanh toán thành công",
+          icon: "success",
+          confirmButtonText: "Tiếp tục"
+        }).then((result) => {
+          if (result.isConfirmed) {
+              navigate('/tour-booking3/'+ tour.tour_ID, { state: { newPayload } })
+          }
+        })
+      }
+      else alert(msg)
+  }, [msg])
   useEffect(() => {
     window.paypal
       .Buttons({
@@ -26,11 +46,11 @@ const Paypal = ({payload, tour}) => {
         },
         onApprove: async (data, actions) => {
             return actions.order.capture().then(function (details) {
-              const new_payload = {
+              setNewPayload({
                   ...payload,
-                  payment: 'PayPal',
+                  pay_method: 'PayPal',
                   total_bill: tour.price*payload.ticket_num
-              }
+              })
               // Your EmailJS service ID, template ID, and Public Key
               const serviceId = 'service_xkshgih';
               const templateId = 'template_ook7ttp';
@@ -49,7 +69,7 @@ const Paypal = ({payload, tour}) => {
                   tour_order_id: 'O_001', // data
                   start_date: splitDate(tour.starting_date)[0] + '/' + splitDate(tour.starting_date)[1] + '/' + splitDate(tour.starting_date)[2],
                   num_passenger: payload.ticket_num,
-                  amount_money: Number(new_payload.total_bill).toLocaleString() + ' VND',
+                  amount_money: Number(newPayload.total_bill).toLocaleString() + ' VND',
               };
       
               // Send the email using EmailJS
@@ -60,15 +80,7 @@ const Paypal = ({payload, tour}) => {
               //     .catch((error) => {
               //         console.error('Error sending email:', error);
               //     });
-                Swal.fire({
-                  title: "Thanh toán thành công",
-                  icon: "success",
-                  confirmButtonText: "Tiếp tục"
-              }).then((result) => {
-                if (result.isConfirmed) {
-                    navigate('/tour-booking3/'+ tour.tour_ID, { state: { new_payload } })
-                }
-              })
+                dispatch(orderAdd(newPayload))
             });
         },
         onError: (err) => {

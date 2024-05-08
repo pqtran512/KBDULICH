@@ -58,10 +58,10 @@ const MTourList = () => {
                         optionBar={true} id={true} tour={true} departureDate={true} rating={true} staff={true} path={location.pathname} tours={tours_cond} role={'manager'} setOutput={setSortData}/>
                 </div>
             </div>
-            <div className='pb-6 flex flex-col gap-2 md:flex-row md:justify-between'>
+            <div className='pb-6 flex flex-col gap-2 md:flex-row md:justify-between md:items-end'>
                 <div className='flex gap-10'>
                     <div className='text-body-2 xl:text-body-1 text-neutral-1-900'>Tổng số: <span className='font-semibold'>{count_cond}</span></div>
-                    <div className='text-body-2 xl:text-body-1 h-fit text-neutral-1-900 px-3 bg-background-7 rounded-xl'>Số Tour đang hoạt động: <span className='font-semibold'>{tours_cond.filter(item => item.isActive === 1).length}</span></div>
+                    <div className='text-body-2 xl:text-body-1 h-fit text-neutral-1-900 px-3 bg-background-7 rounded-xl'>Số Tour đang hoạt động: <span className='font-semibold'>{tours_cond.filter(item => item.isActive === true).length}</span></div>
                 </div>
                 <button className="w-fit py-1 px-2 text-body-2 rounded-md bg-accent-7 text-white border-[3px] border-background-8 xl:px-3 xl:text-body-1" onClick={exportToExcel}>Export to Excel</button>
             </div>
@@ -140,7 +140,7 @@ const MTourList = () => {
                                 <td><Link to={`/manager/tour-detail/${tour.tour_ID}`} className='md:w-[300px] block text-accent-10 hover:text-accent-9 xl:w-[370px]'>{tour.name}</Link></td>
                                 <td className='hidden xl:table-cell xl:pl-6'>{tour.seat_num}</td>
                                 <td className='hidden xl:table-cell xl:pl-6'>{tour.cus_num}</td>
-                                <td className='hidden md:table-cell'><Link to={'/manager/staff-detail'} className='text-accent-10 hover:text-accent-9'>{tour.staff.lastName} {tour.staff.firstName}</Link></td>
+                                <td className='hidden md:table-cell'><Link to={`/manager/staff-detail/${tour.staff.staff_ID}`} className='text-accent-10 hover:text-accent-9'>{tour.staff.lastName} {tour.staff.firstName}</Link></td>
                                 <td className='hidden xl:table-cell'>{tour.starting_date}</td>
                                 <td className='hidden md:table-cell'><div className={`${ratingClassifier(tour.rating) < 3? 'bg-[#1ABB9C]' : 'bg-accent-3'} flex items-center gap-1 w-fit px-2 rounded-full`}>
                                     <div className='text-white'>{tour.rating.toFixed(1)}</div>
@@ -166,7 +166,7 @@ const MTourList = () => {
                 </tbody>
             </table>
             {/* Pagination  */}
-            <Pagination limit={20} blackStyle={true} count={count_cond}/> 
+            <Pagination limit={20} blackStyle={true} count={sortData.length}/> 
         </div>
     )
 }

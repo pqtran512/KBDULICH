@@ -62,30 +62,30 @@ const TourBooking2 = () => {
                         <div className='w-full p-6 bg-neutral-3-100 rounded-3xl max-w-[450px] mx-auto xl:w-1/2'>
                             <div className='text-body-2 font-semibold text-neutral-900 pb-2 md:text-header-1'>Thông tin đặt tour</div>
                             <div className='py-3 flex gap-5 border-b-[3px] border-white'>
-                                <img className='h-16 w-24 rounded-md' src='../img/home/sec2-img2.png' alt='' />
-                                <div className="text-neutral-1-900 text-title-2 font-semibold xl:text-title-1">{tour.name} | {tour.day_num}N{tour.night_num}Đ</div>
+                                {tour.places && <img className='h-16 w-24 rounded-md' src={tour.places[0].images[0].images} alt='' />}
+                                <div className="text-neutral-1-900 text-title-2 font-semibold xl:text-title-1">{tour?.name} | {tour?.day_num}N{tour?.night_num}Đ</div>
                             </div>
                             <div className="pt-5 flex flex-col gap-6 text-body-2">
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Mã tour</div>
-                                    <div className='text-neutral-1-900'>{tour.tour_ID}</div>
+                                    <div className='text-neutral-1-900'>{tour?.tour_ID}</div>
                                 </div>
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Ngày khởi hành</div>
-                                    <div className='text-neutral-1-900'>{splitDate(tour.starting_date)[0]}/{splitDate(tour.starting_date)[1]}/{splitDate(tour.starting_date)[2]}</div>
+                                    <div className='text-neutral-1-900'>{splitDate(tour?.starting_date)[0]}/{splitDate(tour?.starting_date)[1]}/{splitDate(tour?.starting_date)[2]}</div>
                                 </div>
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Số khách</div>
-                                    <div className='text-neutral-1-900'>{payload.ticket_num} khách</div>
+                                    <div className='text-neutral-1-900'>{payload?.ticket_num} khách</div>
                                 </div>
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Giá 1 khách</div>
-                                    <div className='text-neutral-1-900'>{Number(tour.price).toLocaleString()} VND</div>
+                                    <div className='text-neutral-1-900'>{Number(tour?.price).toLocaleString()} VND</div>
                                 </div>
                                 <div className='w-full h-[2px] mb-2 bg-white'></div>
                                 <div className='flex font-semibold justify-between text-body-1'>
                                     <div className='text-neutral-1-900'>Tổng tiền</div>
-                                    <div className='text-secondary-1'>{Number(tour.price*payload.ticket_num).toLocaleString()} VND</div>
+                                    <div className='text-secondary-1'>{Number(tour?.price*payload?.ticket_num).toLocaleString()} VND</div>
                                 </div>
                             </div>
                         </div>

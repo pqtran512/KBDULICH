@@ -4,11 +4,11 @@ import { Button2, InputForm, CheckedBox, Datepicker, SelectInput } from '../../c
 import Swal from 'sweetalert2'
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
-import { getRequest } from '../../store/actions/requestAction'
+import { getRequest, requestReply } from '../../store/actions/requestAction'
 import { getAllPlaces } from '../../store/actions/tourPlaceAction'
 import { splitDate, splitDateTime } from '../../ultils/splitDateTime';
-import { ratingClassifier } from '../../ultils/ratingClassifier';
 import { provinceObjects, placeObjects } from '../../ultils/objectsToArr';
+import { requestStatus, requestStatusBg } from '../../ultils/requestStatus';
 
 const { FaCheck, FaClockRotateLeft } = icons
 
@@ -17,14 +17,16 @@ const RequestDetail = () => {
     const {requestID} = useParams();
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { request } = useSelector(state => state.request)
+    const { request, replyFail, msg } = useSelector(state => state.request)
     const { places } = useSelector(state => state.place)
+    const { role } = useSelector(state => state.auth)
     const [invalidFields, setInvalidFields] = useState([])
     const [requestSchedule, setRequestSchedule] = useState([])
     const [requestService, setRequestService] = useState([])
     const services = ['Bảo hiểm', 'Bữa ăn', 'Xe đưa đón', 'Hướng dẫn viên', 'Vé tham quan'] // available services
     const vehicles = ['Xe 4 chỗ', 'Xe 7 chỗ', 'Xe khách', 'Máy bay'] // available vehicles
     const [destination, setDestination] = useState(['Bà Nà Hills'])
+    const [isEdit, setIsEdit] = useState(false)
     const [payload, setPayload] = useState({ 
         name: '',
         price: 0,
@@ -42,8 +44,6 @@ const RequestDetail = () => {
         staff: '',
         reason: 'Số lượng khách hàng đặt tour < 50% (10/50 khách).'
     })
-    const [isEdit, setIsEdit] = useState(false)
-    const [role, setRole] = useState('')
     const types = [
         { value: 'Add', label: 'Add'},
         { value: 'Edit', label: 'Edit' },
@@ -68,15 +68,8 @@ const RequestDetail = () => {
         }
     }, [places])
     useEffect(() => {
-        if (window.location.pathname.includes("staff") && window.location.pathname.includes("dup")){
-            setRole('staff');
+        if (window.location.pathname.includes("dup")){
             setIsEdit(true);
-        }
-        if (window.location.pathname.includes("/staff/request-detail")) {
-            setRole('staff');
-        }
-        else if (window.location.pathname.includes("/manager/request-detail")){
-            setRole('manager');    
         }
     }, []);
     useEffect(() => {
@@ -151,7 +144,7 @@ const RequestDetail = () => {
     const showDestination= () => {
         let des = destination;
         var indents = [];
-        for (var i = 0; i < des.length - 1; i++) { {/* data */}
+        for (var i = 0; i < des.length - 1; i++) {  /* data */
             indents.push(
                 <div key={i} className='font-normal'>{des[i]} - </div>
             );
@@ -188,17 +181,30 @@ const RequestDetail = () => {
             allowOutsideClick: () => !Swal.isLoading()
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log(payload)
-                console.log(result)
-                Swal.fire('Phản hồi thành công', '', 'success')
+                dispatch(requestReply({
+                    status: -1,
+                    reply: result,
+                    request_ID: requestID
+                }))
                 // navigate('/manager/request')
             }
         })
     }
     const handleAccept = () => {
-        Swal.fire('Đã cập nhật thay đổi mới', '', 'success')
-        navigate('/manager/request')
+        dispatch(requestReply({
+            status: 1,
+            reply: '',
+            request_ID: requestID
+        }))
     }
+    useEffect(() => {
+        msg && role === 'manager' && !replyFail &&
+            Swal.fire(msg, '', 'success').then((result) => {
+                if (result.isConfirmed) {
+                    navigate(`/manager/request`)
+                }
+            })
+    }, [msg])
     const getEditFields = (field) => {
         if (field === 'name') return 'Tên Tour'
         else if (field === 'departure') return 'Điểm xuất phát'
@@ -229,13 +235,11 @@ const RequestDetail = () => {
             { isEdit ? <></>
             : 
             <>
-            {/* <div className='mb-3 ml-auto px-2 py-1 w-fit flex items-center gap-4 rounded-md bg-gradient-to-l from-background-7 to-background-6 text-caption-1 xl:text-body-2'>
-                <div className='flex gap-2 items-center text-accent-8'>
-                    <FaCheck className='text-[14px] ' />
-                    <div className='font-semibold whitespace-pre-wrap'>{request?.status}</div>
+            <div className={`mb-3 ml-auto px-2 py-1 w-fit flex items-center gap-4 rounded-md bg-gradient-to-l ${requestStatusBg(request?.status)} text-caption-1 xl:text-body-2`}>
+                <div className='flex gap-2 items-center'>
+                    <div className='font-semibold whitespace-pre-wrap'>{requestStatus(request?.status)}</div>
                 </div>
-                <div className='italic text-accent-8'>{splitDateTime(request?.date)[0]} {splitDateTime(request?.date)[1]}</div>
-            </div> */}
+            </div>
             <div className='ml-auto px-2 py-1 w-fit flex items-center gap-4 rounded-md bg-gradient-to-l from-neutral-3-200 to-neutral-3-50 text-caption-1 xl:text-body-2'>
                 <div className='flex gap-2 items-center text-neutral-1-500'>
                     <FaClockRotateLeft className='text-[14px]' />
@@ -266,42 +270,44 @@ const RequestDetail = () => {
                         }
                     </div>  
                 </div>
-                <div className='flex flex-wrap gap-2 items-center'>
-                    <div className='font-semibold'>Tên chương trình: </div>
-                    {isEdit? 
-                        <InputForm 
-                            invalidFields={invalidFields} 
-                            setInvalidFields={setInvalidFields}  
-                            value={payload.name}
-                            setValue={setPayload} 
-                            keyPayload={'name'}
-                            width='w-52 md:w-[550px] xl:w-[980px]'
-                            style2={true}
-                        />
-                        :
-                        <div className='font-normal'>{request?.tour_info?.name}</div>
-                    }
-                </div>
-                <div className='flex gap-2 items-center'>
-                    <div className='font-semibold'>Giá: </div>
-                    {isEdit? 
-                        <>
-                        <InputForm 
-                            invalidFields={invalidFields} 
-                            setInvalidFields={setInvalidFields}  
-                            value={payload.price}
-                            setValue={setPayload} 
-                            keyPayload={'price'}
-                            width='w-28'
-                            type='number'
-                            style2={true}
-                        />
-                        <div className='font-semibold'>{Number(payload.price).toLocaleString()} </div>
-                        VNĐ
-                        </>
-                        :
-                        <div className='font-norma'>{Number(request?.tour_info?.price).toLocaleString()} VNĐ</div>
-                    }
+                <div className={`grid grid-rows-2 gap-6 ${isEdit? 'md:grid-rows-1 md:grid-cols-2' : ''}`}>
+                    <div className='flex flex-wrap gap-2 items-center w-'>
+                        <div className='font-semibold'>Tên chương trình: </div>
+                        {isEdit? 
+                            <InputForm 
+                                invalidFields={invalidFields} 
+                                setInvalidFields={setInvalidFields}  
+                                value={payload.name}
+                                setValue={setPayload} 
+                                keyPayload={'name'}
+                                width='w-52 md:w-40 xl:w-96'
+                                style2={true}
+                            />
+                            :
+                            <div className='font-normal'>{request?.tour_info?.name}</div>
+                        }
+                    </div>
+                    <div className='flex gap-2 items-center'>
+                        <div className='font-semibold'>Giá: </div>
+                        {isEdit? 
+                            <>
+                            <InputForm 
+                                invalidFields={invalidFields} 
+                                setInvalidFields={setInvalidFields}  
+                                value={payload.price}
+                                setValue={setPayload} 
+                                keyPayload={'price'}
+                                width='w-28'
+                                type='number'
+                                style2={true}
+                            />
+                            <div className='font-semibold'>{Number(payload.price).toLocaleString()} </div>
+                            VNĐ
+                            </>
+                            :
+                            <div className='font-norma'>{Number(request?.tour_info?.price).toLocaleString()} VNĐ</div>
+                        }
+                    </div>
                 </div>
                 <div className='grid grid-rows-2 gap-6 md:grid-rows-1 md:grid-cols-2'>
                     <div className='flex gap-2 items-center'>

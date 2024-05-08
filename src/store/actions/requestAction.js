@@ -1,5 +1,5 @@
 import actionTypes from './actionTypes'
-import { apiGetAllRequests, apiGetRequest, apiGetRequestsByStaff, apiRequestAdd, apiRequestCancel, apiRequestEdit } from '../../services/requestService'
+import { apiGetAllRequests, apiGetRequest, apiGetRequestsByStaff, apiRequestAdd, apiRequestCancel, apiRequestEdit, apiRequestReply } from '../../services/requestService'
 
 // Tour
 export const getAllRequests = () => async (dispatch) => { // register func. returns a func
@@ -66,10 +66,18 @@ export const requestAdd = (payload) => async (dispatch) => {
 export const requestEdit = (payload) => async (dispatch) => {
     try {
         const response = await apiRequestEdit(payload)
-        dispatch({
-            type: actionTypes.REQUEST_ADD,
-            msg: response.data.msg
-        })
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.REQUEST_ADD,
+                msg: 'success'
+            })
+        }
+        else {
+            dispatch({
+                type: actionTypes.REQUEST_ADD,
+                msg: response.data.msg
+            })
+        }
     } catch (error) {
         dispatch({
             type: actionTypes.REQUEST_ADD,
@@ -88,6 +96,37 @@ export const requestCancel = (payload) => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: actionTypes.REQUEST_ADD,
+            msg: ''
+        })
+    }
+}
+
+
+export const requestReply = (payload) => async (dispatch) => {
+    try {
+        const response = await apiRequestReply(payload)
+        if (response?.data.err === 0) {
+            if (payload.status === 1)
+                dispatch({
+                    type: actionTypes.REQUEST_REPLY,
+                    msg: 'Đã cập nhật thay đổi mới'
+                })
+            else {
+                dispatch({
+                    type: actionTypes.REQUEST_REPLY,
+                    msg: 'Phản hồi thành công'
+                })
+            }
+        }
+        else {
+            dispatch({
+                type: actionTypes.REQUEST_REPLY_FAIL,
+                msg: 'response.data.msg'
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.REQUEST_REPLY_FAIL,
             msg: ''
         })
     }

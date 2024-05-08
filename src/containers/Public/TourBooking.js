@@ -9,14 +9,15 @@ const TourBooking = () => {
     const [invalidFields, setInvalidFields] = useState([])
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const {tourID} = useParams();
     const [payload, setPayload] = useState({
         username: '',
         phone: '', 
         email: '',
         note: '',
         ticket_num: 1,
+        tour_ID: tourID,
     })
-    const {tourID} = useParams();
     const { tour } = useSelector(state => state.tour)
     useEffect(() => {
         dispatch(getTour({tour_ID: tourID}))
@@ -152,21 +153,21 @@ const TourBooking = () => {
                         <div className='w-full h-fit p-6 bg-neutral-3-100 rounded-3xl max-w-[450px] mx-auto xl:w-1/2'>
                             <div className='text-body-2 font-semibold text-neutral-900 pb-2 md:text-header-1'>Thông tin đặt tour</div>
                             <div className='py-3 flex gap-5 border-b-[3px] border-white'>
-                                <img className='h-16 w-24 rounded-md' src='../img/home/sec2-img2.png' alt='' />
-                                <div className="text-neutral-1-900 text-title-2 font-semibold xl:text-title-1">{tour.name} | {tour.day_num}N{tour.night_num}Đ</div>
+                                <img className='h-16 w-24 rounded-md' src={tour?.places[0].images[0].images} alt='' />
+                                <div className="text-neutral-1-900 text-title-2 font-semibold xl:text-title-1">{tour?.name} | {tour?.day_num}N{tour?.night_num}Đ</div>
                             </div>
                             <div className="pt-5 flex flex-col gap-6 text-body-2">
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Mã tour</div>
-                                    <div className='text-neutral-1-900'>{tour.tour_ID}</div>
+                                    <div className='text-neutral-1-900'>{tour?.tour_ID}</div>
                                 </div>
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Ngày khởi hành</div>
-                                    <div className='text-neutral-1-900'>{splitDate(tour.starting_date)[0]}/{splitDate(tour.starting_date)[1]}/{splitDate(tour.starting_date)[2]}</div>
+                                    <div className='text-neutral-1-900'>{splitDate(tour?.starting_date)[0]}/{splitDate(tour?.starting_date)[1]}/{splitDate(tour?.starting_date)[2]}</div>
                                 </div>
                                 <div className='flex justify-between'>
                                     <div className="text-neutral-1-500">Giá 1 khách</div>
-                                    <div className='text-neutral-1-900'>{Number(tour.price).toLocaleString()} VND</div>
+                                    <div className='text-neutral-1-900'>{Number(tour?.price).toLocaleString()} VND</div>
                                 </div>
                             </div>
                         </div>

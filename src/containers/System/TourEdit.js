@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getTour, getAllPlaces } from '../../store/actions/tourPlaceAction'
 import { provinceObjects, placeObjects, staffObjects } from '../../ultils/objectsToArr';
 import { getAllStaff } from '../../store/actions/userAction';
+import { requestEdit } from '../../store/actions/requestAction';
 
 const EditTour = () => {
     // PARAMS
@@ -16,13 +17,16 @@ const EditTour = () => {
     const { tour } = useSelector(state => state.tour)
     const { places } = useSelector(state => state.place)
     const { staffs } = useSelector(state => state.staff) 
+    const { role } = useSelector(state => state.auth)
+    const { msg } = useSelector(state => state.request)  
     const [invalidFields, setInvalidFields] = useState([])
     const [tourSchedule, setTourSchedule] = useState([])
     const [tourService, setTourService] = useState([])
     const services = ['Bảo hiểm', 'Bữa ăn', 'Xe đưa đón', 'Hướng dẫn viên', 'Vé tham quan'] // available services
     const vehicles = ['Xe 4 chỗ', 'Xe 7 chỗ', 'Xe khách', 'Máy bay'] // available vehicles
-    const [destination, setDestination] = useState(['P_107'])
+    const [destination, setDestination] = useState([])
     const [payload, setPayload] = useState({ 
+        tour_ID: tourID,
         name: '',
         price: 0,
         starting_date: '',
@@ -36,13 +40,11 @@ const EditTour = () => {
         schedule: [],
         note: '',
         service: [],
-        tour_ID: tourID,
         staff: ''
     })
     const [maxDay, setMaxDay] = useState(0)
     const [defaultDate, setDefaultDate] = useState('')
     const [defaultBookingDl, setBookingDl] = useState('')
-    const [role, setRole] = useState('')
     const [newProvinces, setNewProvinces] = useState([]);
     const [newPlaces, setNewPlaces] = useState([]);
     const [staffList, setStaffList] = useState([]);
@@ -50,12 +52,6 @@ const EditTour = () => {
     useEffect(() => {
         dispatch(getAllPlaces())
         dispatch(getAllStaff())
-        if (window.location.pathname.includes("manager")){
-            setRole('manager');
-        }
-        else if (window.location.pathname.includes("/staff/tour-edit")) {
-            setRole('staff');
-        }
     }, [dispatch]);
     useEffect(() => {
         if (places) {
@@ -97,6 +93,17 @@ const EditTour = () => {
             setBookingDl(myDate)
         }
         if (tour.staff) { setPayload(prev => ({...prev, staff: tour.staff.staff_ID})) }
+        if (tour.places) { 
+            let arr = []
+            for (var i = 0; i < tour.places.length; i++) {
+                arr = [...arr, 
+                    {   label: tour.places[i].name,
+                        value: tour.places[i].place_ID
+                    }
+                ]
+            }
+            setDestination(arr)
+        }
     }, [tour])
     useEffect(() => {
         dispatch(getTour({tour_ID: tourID}))
@@ -224,14 +231,19 @@ const EditTour = () => {
     useEffect(() => {
         setPayload(prev => ({...prev, place: destination}))
     }, [destination])
+    useEffect(() => {
+        if (msg === 'success') {
+            Swal.fire('Gửi yêu cầu thành công !', '', 'success').then((result) => {
+                navigate(`/staff/tour-detail/${tourID}`)
+            })
+        }
+    }, [msg])
     const submitEdit = async () => {
         let invalids = validate(payload)
         if (invalids === 0){
             console.log(payload)
             if (role === 'staff') {
-                Swal.fire('Gửi thành công', '', 'success').then((result) => {
-                    // navigate('/staff/tour-detail')
-                })
+                dispatch(requestEdit(payload))
             }
             else {
                 Swal.fire('Đã cập nhật thông tin mới', '', 'success').then((result) => {
@@ -250,7 +262,7 @@ const EditTour = () => {
                 <div className='grid grid-rows-2 gap-6 md:grid-rows-1 md:grid-cols-2'>
                     <div className='flex flex-wrap gap-2 items-center'>
                         <div className='font-semibold'>Mã tour: </div>
-                        <div className='font-normal'>{tour.tour_ID}</div>
+                        <div className='font-normal'>{tourID}</div>
                     </div>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold whitespace-nowrap'>Tình trạng:</div>
@@ -267,31 +279,33 @@ const EditTour = () => {
                         }
                     </div>  
                 </div>
-                <div className='flex flex-wrap gap-2 items-center'>
-                    <div className='font-semibold'>Tên chương trình: </div>
-                    <InputForm 
-                        invalidFields={invalidFields} 
-                        setInvalidFields={setInvalidFields}  
-                        value={payload.name}
-                        setValue={setPayload} 
-                        keyPayload={'name'}
-                        width='w-52 md:w-[550px] xl:w-[980px]'
-                        style2={true}
-                    />
-                </div>
-                <div className='flex gap-2 items-center'>
-                    <div className='font-semibold'>Giá: </div>
-                    <InputForm 
-                        invalidFields={invalidFields} 
-                        setInvalidFields={setInvalidFields}  
-                        value={payload.price}
-                        setValue={setPayload} 
-                        keyPayload={'price'}
-                        width='w-28'
-                        type='number'
-                        style2={true}
-                    /> 
-                    <div className='font-semibold'>{Number(payload.price).toLocaleString()} </div>VNĐ
+                <div className='grid grid-rows-2 gap-6 md:grid-rows-1 md:grid-cols-2'>
+                    <div className='flex flex-wrap gap-2 items-center'>
+                        <div className='font-semibold'>Tên chương trình: </div>
+                        <InputForm 
+                            invalidFields={invalidFields} 
+                            setInvalidFields={setInvalidFields}  
+                            value={payload.name}
+                            setValue={setPayload} 
+                            keyPayload={'name'}
+                            width='w-52 md:w-40 xl:w-96'
+                            style2={true}
+                        />
+                    </div>
+                    <div className='flex gap-2 items-center'>
+                        <div className='font-semibold'>Giá: </div>
+                        <InputForm 
+                            invalidFields={invalidFields} 
+                            setInvalidFields={setInvalidFields}  
+                            value={payload.price}
+                            setValue={setPayload} 
+                            keyPayload={'price'}
+                            width='w-28'
+                            type='number'
+                            style2={true}
+                        /> 
+                        <div className='font-semibold'>{Number(payload.price).toLocaleString()} </div>VNĐ
+                    </div>
                 </div>
                 <div className='grid grid-rows-2 gap-6 md:grid-rows-1 md:grid-cols-2'>
                     <div className='flex gap-2 items-center'>
@@ -310,19 +324,16 @@ const EditTour = () => {
                 <div className='flex flex-wrap gap-2 items-center'>
                     <div className='font-semibold'>Điểm đến:</div>
                     {destination?.map((item, i) => {
-                        if (item !== '') {
-                            return (
-                            <div className='relative' key={i + 1}>
-                                {newPlaces.length > 0 && <SelectInput options={newPlaces} myStyle='w-28 xl:w-52' style2={true} defaultValue={newPlaces[0]} idx={i} arr={destination} setArr={setDestination}/>}
-                                {i > 0 && 
-                                    <div className="bg-white flex items-center justify-center cursor-pointer absolute -top-2 -right-2" onClick={() => handle_delDestination(i)}>
-                                        <i className="twi-22-x-circle-fill text-[17px] text-accent-3 text-center"></i>
-                                    </div>
-                                }
-                            </div>
-                            )
-                        }
-                        return null;
+                        return (
+                        <div className='relative' key={i + 1}>
+                            {newPlaces.length > 0 && <SelectInput options={newPlaces} myStyle='w-28 xl:w-52' style2={true} defaultValue={item} idx={i} arr={destination} setArr={setDestination}/>}
+                            {i > 0 && 
+                                <div className="bg-white flex items-center justify-center cursor-pointer absolute -top-2 -right-2" onClick={() => handle_delDestination(i)}>
+                                    <i className="twi-22-x-circle-fill text-[17px] text-accent-3 text-center"></i>
+                                </div>
+                            }
+                        </div>
+                        )
                     })}
                     <div className='cursor-pointer rounded-md bg-black text-white text-[20px] text-center w-5 pb-1 ml-2 hover:bg-accent-5 hover:text-black'
                         onClick={handle_addDestination}>+</div>    
@@ -442,9 +453,7 @@ const EditTour = () => {
             <div className='flex gap-10 justify-center items-center pt-6 xl:pt-10'>
                 <Button2 text={`${role === 'staff' ? 'Gửi đề xuất' : 'Xác nhận'} `} textColor='text-white' bgColor='bg-[#363837]' onClick={submitEdit}/>
                 <Button2 text='Hủy' textColor='text-white' bgColor='bg-accent-3' onClick={() => {
-                    if (role === 'staff')
-                        navigate('/staff/tour')
-                    else navigate('/manager/tour')
+                        navigate(`/${role}/tour-detail/${tourID}`)
                 }}/>
             </div>
             { role === 'staff' ? <CustomerList /> : <></> }

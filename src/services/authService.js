@@ -26,25 +26,12 @@ export const apiLogin = (payload) => new Promise(async(resolve, reject) => {
     }
 })
 
-export const apiStaffLogin = (payload) => new Promise(async(resolve, reject) => {
-    try {
-        const response = await axiosConfig({
-            method: 'post',
-            url: '/api/staff/login',
-            data: payload // payload: email, password
-        })
-        resolve(response)
-    } catch (error) {
-        reject(error)
-    }
-})
-
-export const apiRefreshToken = (refresh_token) => new Promise(async(resolve, reject) => {
+export const apiRefreshToken = (payload) => new Promise(async(resolve, reject) => {
     try {
         const response = await axiosConfig({
             method: 'post',
             url: '/api/auth/refreshToken',
-            data: refresh_token
+            data: payload
         })
         resolve(response)
     } catch (error) {
@@ -71,6 +58,34 @@ export const apiChangePassword = (payload) => new Promise(async(resolve, reject)
             method: 'post',
             url: '/api/customer/forgot-password',
             data: payload // payload: email
+        })
+        resolve(response)
+    } catch (error) {
+        reject(error)
+    }
+})
+
+// STAFF
+export const apiStaffLogin = (payload) => new Promise(async(resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/staff/login',
+            data: payload // payload: email, password
+        })
+        resolve(response)
+    } catch (error) {
+        reject(error)
+    }
+})
+
+// MANAGER
+export const apiManagerLogin = (payload) => new Promise(async(resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/manager/login',
+            data: payload // payload: email, password
         })
         resolve(response)
     } catch (error) {

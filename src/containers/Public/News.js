@@ -3,6 +3,7 @@ import { CardArticle, SearchBar, Pagination, Loading } from '../../components';
 import { useLocation, useSearchParams } from 'react-router-dom'
 import { getAllPlaces } from '../../store/actions/tourPlaceAction';
 import { useDispatch, useSelector } from 'react-redux'
+import { placeUniqueProvince } from '../../ultils/objectsToArr';
 
 const News = () => {
     const dispatch = useDispatch()
@@ -26,7 +27,7 @@ const News = () => {
             });
     }, [dispatch])
     useEffect(() => {
-        setSortData(places)
+        setSortData(placeUniqueProvince(places))
     }, [places]);
     // pagination
     const indexOfLastPost = currentPage * dataPerPage;
@@ -54,7 +55,7 @@ const News = () => {
                             <div className="text-neutral-1-900 text-body-1 leading-[34px] md:text-[20px]">Tin tức</div>
                         </div>
                         <div className='ml-auto xl:ml-0'>
-                            <SearchBar width='w-12 md:w-24 xl:w-28' change={true} newWidth='w-[380px] md:w-[380px] xl:w-[620px]' placeholder='Nhập ..' newPlaceholde='Nhập địa điểm . . .' 
+                            <SearchBar width='w-12 md:w-24 xl:w-28' change={true} newWidth='w-[360px] xl:w-[450px]' placeholder='Nhập ..' newPlaceholde='Nhập địa điểm . . .' 
                                 path={location.pathname} places={places} setOutput={setSortData}/>
                         </div>
                     </div>
@@ -76,7 +77,7 @@ const News = () => {
                     </div>
                     {/* pagination */}
                     <div className='pt-8'>
-                        <Pagination limit={6} count={places.length}/>
+                        <Pagination limit={6} count={sortData.length}/>
                     </div> 
                 </div>      
             </section>

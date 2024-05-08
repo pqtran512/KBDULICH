@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getTour } from '../../store/actions/tourPlaceAction'
 import { splitDate } from '../../ultils/splitDateTime';
 import { ratingClassifier } from '../../ultils/ratingClassifier';
+import { requestCancel } from '../../store/actions/requestAction';
 
 const { FaCheck, FaStar } = icons
 
@@ -16,30 +17,24 @@ const TourDetail = () => {
     const {tourID} = useParams();
     const dispatch = useDispatch()
     const { tour } = useSelector(state => state.tour)
+    const { role } = useSelector(state => state.auth)
     const navigate = useNavigate()
-    const [destination, setDestination] = useState(['Bà Nà Hills', 'Cầu Rồng', 'Bán Đảo Sơn Trà'])
-    const [role, setRole] = useState('')
     // FUNCTIONS
     useEffect(() => {
         dispatch(getTour({tour_ID: tourID}))
     }, [dispatch, tourID])
     const goToEditMode = () => {
-        if (role === 'staff') {
-            navigate('/staff/tour-edit/'+tourID)
-        }
-        else {
-            navigate('/manager/tour-edit/'+tourID)
-        }
+        navigate('/'+role+'/tour-edit/'+tourID)
     };
     const showDestination= () => {
-        let des = destination;
+        let des = tour.places;
         var indents = [];
-        for (var i = 0; i < des.length - 1; i++) { {/* data */}
+        for (var i = 0; i < des.length - 1; i++) {
             indents.push(
-                <div key={i} className='font-normal'>{des[i]} - </div>
+                <div key={i} className='font-normal'>{des[i].name} - </div>
             );
         }
-        indents.push(<div key={des.length-1} className='font-normal'>{des[des.length-1]}</div>);
+        indents.push(<div key={des.length-1} className='font-normal'>{des[des.length-1].name}</div>);
         return indents;
     };
     const handleCancle = () => {
@@ -47,6 +42,9 @@ const TourDetail = () => {
             Swal.fire({
                 title: "Lí do hủy Tour",
                 input: "text",
+                inputAttributes: {
+                  spellcheck: "false"
+                },
                 showCancelButton: true,
                 confirmButtonText: "Gửi",
                 cancelButtonText: "Hủy",
@@ -59,6 +57,11 @@ const TourDetail = () => {
                   }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    console.log('reason', result.value)
+                    requestCancel({
+                        reason: result.value,
+                        tour_ID: tourID
+                    })
                     Swal.fire('Gửi thành công', '', 'success')
                 }
             })
@@ -67,14 +70,6 @@ const TourDetail = () => {
             Swal.fire('Hủy Tour thành công', '', 'success') 
         }  
     }
-    useEffect(() => {
-        if (window.location.pathname.includes('manager')){
-            setRole('manager');
-        }
-        else if (window.location.pathname.includes('staff')) {
-            setRole('staff');
-        }
-    }, []);
     return (
         <div className='w-full px-6 pt-20 pb-10 xl:pt-7 lg:px-2 xl:pl-0 xl:pr-10 overflow-x-hidden'>
             <div className='pb-16'>
@@ -117,7 +112,7 @@ const TourDetail = () => {
                 </div>
                 <div className='flex flex-wrap gap-2 items-center'>
                     <div className='font-semibold'>Điểm đến:</div>
-                    <>{showDestination()}</> 
+                    <>{tour?.places && showDestination()}</> 
                 </div>
                 <div className='flex gap-2 items-center'>
                     <div className='font-semibold whitespace-nowrap'>Phương tiện:</div>
@@ -172,11 +167,10 @@ const TourDetail = () => {
                         <div className='font-normal'>{tour?.staff?.lastName} {tour?.staff?.firstName}</div> 
                     </div>
                 }
-                {/* data */}
                 <div className='flex gap-2 items-center'>
                     <div className='font-semibold'>Rating: </div>
-                    <div className={`${ratingClassifier(4.0) < 3? 'bg-[#1ABB9C]' : 'bg-accent-3'} flex items-center gap-1 w-fit px-2 rounded-full`}>
-                        <div className='text-white'>4.0</div>
+                    <div className={`${ratingClassifier(tour?.rating) < 3? 'bg-[#1ABB9C]' : 'bg-accent-3'} flex items-center gap-1 w-fit px-2 rounded-full`}>
+                        <div className='text-white'>{tour?.rating?.toFixed(1)}</div>
                         <FaStar size={14} className='text-secondary-2'/> 
                     </div>
                 </div>

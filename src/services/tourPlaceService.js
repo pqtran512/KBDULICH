@@ -56,7 +56,22 @@ export const apiGetByName = (name) => new Promise(async (resolve, reject) => {
     }
 })
 
-export const apiGetByStaff = (id) => new Promise(async (resolve, reject) => {
+export const apiGetTourByStaff = (id) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/tour/get_by_staff',
+            data: id 
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
+
+
+export const apiGetTourByStaffID = (id) => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosConfig({
             method: 'post',
@@ -75,7 +90,7 @@ export const apiGetAllPlaces = () => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/place/get_all',
+            url: '/api/place/get_all'
         })
         resolve(response)
 
@@ -83,3 +98,18 @@ export const apiGetAllPlaces = () => new Promise(async (resolve, reject) => {
         reject(error)
     }
 })
+
+export const apiGetPlaceCond = (payload) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/place/get_by_condition',
+            data: payload 
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
+

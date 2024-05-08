@@ -4,7 +4,9 @@ const initState = {
     requests: [],
     request: {},
     requests_staff: [],
-    msg: ''
+    msg: '',
+    replyFail: false,
+    update: false // in case same msg is received
 }
 const requestReducer = (state = initState, action) => {
     switch (action.type) {
@@ -20,11 +22,18 @@ const requestReducer = (state = initState, action) => {
                 request: action.request || {},
         }
         case actionTypes.REQUEST_ADD:
-        case actionTypes.REQUEST_EDIT:
-        case actionTypes.REQUEST_CANCEL:
+        case actionTypes.REQUEST_REPLY:
             return {
                 ...state,
                 msg: action.msg,
+                update: !state.update
+            }
+        case actionTypes.REQUEST_REPLY_FAIL:
+            return {
+                ...state,
+                msg: action.msg,
+                replyFail: true,
+                update: !state.update
             }
         default:
             return state;

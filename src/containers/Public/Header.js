@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import blueLogo from '../../assets/img/header-footer/logo-blue.png'
 import icons from '../../ultils/icons';
 import { Link, useNavigate } from 'react-router-dom'
@@ -13,8 +13,11 @@ const Header = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isDropdown, setIsDropdown] = useState(false);
     const {isLoggedIn, role} = useSelector(state => state.auth)
+    const {currentData} = useSelector(state => state.user)
     const navigate = useNavigate()
-
+    useEffect(() => {
+        console.log(currentData)
+      }, [currentData])
     // FUNCTION
     // onclick navbar-menu function on mobile/ tablet screen
     const handleOpen = event => {
@@ -86,7 +89,7 @@ const Header = () => {
                             <FaRegUser size={28}/>
                         </Link>
                         {isLoggedIn && role === 'customer' &&
-                        <div className='hidden md:block pl-8'>Xin chào, user1</div>
+                            <div className='hidden md:block pl-8'>Xin chào, {currentData.username}</div>
                         }
                     </div>
                 </div>

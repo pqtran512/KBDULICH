@@ -1,40 +1,44 @@
 import React, { useState, useEffect } from 'react'
-import { Button2, InputForm,  Datepicker } from '../../components';
+import { Button2, InputForm } from '../../components';
 import Swal from 'sweetalert2'
 import icons from '../../ultils/icons';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import { getOrderOfTour } from '../../store/actions/orderFeedbackAction';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getOrderOfTour, orderAdd } from '../../store/actions/orderFeedbackAction';
 import { useDispatch, useSelector } from 'react-redux'
 import { splitDateTime } from '../../ultils/splitDateTime';
 import { ratingClassifier } from '../../ultils/ratingClassifier';
+import { sorting } from '../../ultils/sorting';
 
 const { CgArrowsExchangeAltV, FaStar, FaArrowUpRightFromSquare } = icons
 
 const CustomerList = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const location = useLocation()
     const {tourID} = useParams();
     const [invalidFields, setInvalidFields] = useState([])
     const [addMode, setAddMode] = useState(false)
     const { orders, count_order } = useSelector(state => state.order)
-    // Register API
-    const date = new Date()
-    const initialValue = {
-        name: '',
+    const [sortData, setSortData] = useState([]);
+    const [order, setOrder] = useState("asc")
+    useEffect(() => {
+        setSortData(orders)
+    }, [orders]);
+    const [payload, setPayload] = useState({
+        username: '',
         phone: '', 
         email: '',
-        departureDate: date.getFullYear() + '_' + (date.getMonth() + 1).toString().padStart(2, '0') + '_' + date.getDate().toString().padStart(2, '0'),
-        quantity: 0,
-        note: ''
-    };
-    const [payload, setPayload] = useState(initialValue)
+        ticket_num: 0,
+        note: '',
+        tour_ID: tourID,
+        pay_method: 'Tiền mặt'
+    })
     const handleSubmit = async () => {
         console.log(payload)
         let invalids = validate(payload)
         if (invalids === 0) {
-            Swal.fire('Thêm thành công', '', 'success')
-            setAddMode(false)
+            dispatch(orderAdd(payload))
+            // Swal.fire('Thêm thành công', '', 'success')
+            // setAddMode(false)
         }
     };
     const validate = (payload) => {
@@ -42,7 +46,7 @@ const CustomerList = () => {
         let fields = Object.entries(payload) // tranform an object {key: value} to array [key, value]
         fields.forEach(item => {
             switch (item[0]) {
-                case 'name':
+                case 'username':
                     if (item[1] === '') { // item[1] is the value field
                         setInvalidFields(prev => [...prev, {
                             name: item[0],
@@ -58,10 +62,10 @@ const CustomerList = () => {
                         invalids++
                     }
                     else {
-                        if (!(/^([a-zA-Z0-9]+(_)*)+$/.test(item[1]))) {
+                        if (!(/^([a-z0-9ỳọáầảấờễàạằệếýộậốũứĩõúữịỗìềểẩớặòùồợãụủíỹắẫựỉỏừỷởóéửỵẳẹèẽổẵẻỡơôưăêâđ ]+(_)*)+$/.test(item[1].toLowerCase()))) {
                             setInvalidFields(prev => [...prev, {
                                 name: item[0],
-                                message: 'Tên chỉ chứa ký tự, số và gạch chân (_) !'
+                                message: 'Tên chỉ chứa ký tự, số và khoảng trắng !'
                             }])
                             invalids++
                         }
@@ -124,34 +128,40 @@ const CustomerList = () => {
     return (
         <div className='w-full xl:pt-10 overflow-hidden'>
             {/* Customer list */}
-            <div className='mt-16 pb-1 font-prata text-neutral-1-900 font-semibold text-header-1 border-b-2 border-neutral-2-200 w-full px-4 rounded-xl shadow-title xl:text-heading-4'>Danh sách khách hàng</div>
+            <div className='mt-16 pb-1 font-prata text-neutral-1-900 font-semibold text-header-1 border-b-2 border-neutral-2-200 w-full px-4 rounded-xl shadow-title xl:text-heading-4'>Danh sách đơn hàng</div>
             <div className='pt-10 pb-3 text-body-1 text-neutral-1-900'>Tổng số: {count_order}</div>
             <table className="mb-8 mytable2 w-full text-caption-1 xl:text-body-2">
                 <thead>
                     <tr className="h-10 text-body-2 font-semibold tracking-wider bg-neutral-3-200 xl:text-body-1">
                         <td><div className='flex items-center'>
-                            <div>#</div>
-                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/> 
+                            <div>ID</div>
+                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
+                                onClick={() => sorting("order_ID", orders, setSortData, order, setOrder)}/> 
                         </div></td>
                         <td><div className='flex items-center gap-2'>
                             <div>Họ và tên</div>
-                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/> 
+                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
+                                onClick={() => sorting("name", orders, setSortData, order, setOrder)}/> 
                         </div></td>
                         <td className="hidden md:table-cell"><div className='flex items-center gap-2'>
                             <div>SĐT</div>
-                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/> 
+                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
+                                onClick={() => sorting("phone_no", orders, setSortData, order, setOrder)}/> 
                         </div></td>
                         <td className="hidden md:table-cell"><div className='flex items-center gap-2'>
                             <div>Email</div>
-                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/> 
+                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
+                                onClick={() => sorting("email", orders, setSortData, order, setOrder)}/> 
                         </div></td>
                         <td className="hidden md:table-cell"><div className='flex items-center gap-1'>
                             <div>Ngày đặt</div>
-                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/> 
+                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
+                                onClick={() => sorting("date_time", orders, setSortData, order, setOrder)}/> 
                         </div></td>
                         <td className="hidden md:table-cell"><div className='flex items-center'>
                             <div>SL</div>
-                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/> 
+                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
+                                onClick={() => sorting("ticket_num", orders, setSortData, order, setOrder)}/> 
                         </div></td>
                         {/* <td className="hidden xl:table-cell"><div className='flex items-center gap-1'>
                             <div>Ghi chú</div>
@@ -169,7 +179,7 @@ const CustomerList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {orders?.map((order, idx) => {
+                    {sortData?.map((order, idx) => {
                         return ( 
                         <tr key={idx} className='h-12 border-b-2 border-neutral-2-200'>
                             <td>{order.order.order_ID}</td>
@@ -185,7 +195,7 @@ const CustomerList = () => {
                                         <FaStar size={15} className='text-secondary-2'/> 
                                     </div>
                                 </td>
-                                : <td>Chưa đánh giá</td>
+                                : <td className="hidden xl:table-cell">Chưa đánh giá</td>
                             }
                             <td><FaArrowUpRightFromSquare onClick={() => (navigate('/staff/customer-detail/'+order.order?.order_ID))} className='ml-5 text-[12px] text-neutral-1-600 hover:text-neutral-1-500 cursor-pointer xl:text-[14px]'/></td>
                         </tr> 
@@ -196,11 +206,8 @@ const CustomerList = () => {
             { addMode? 
                 <Button2 text='Hủy' textColor='text-white' bgColor='bg-accent-3' redBtn onClick={() => setAddMode(false)}/>
             :
-                <Button2 text='+ Thêm khách hàng' textColor='text-white' bgColor='bg-[#363837]' btn3={true}
-                    onClick={() => {
-                        setAddMode(true)
-                        setPayload(initialValue)
-                    }}/>
+                <Button2 text='+ Thêm đơn mới' textColor='text-white' bgColor='bg-[#363837]' btn3={true}
+                    onClick={() => { setAddMode(true) }}/>
             }
             <div className={`max-h-0 overflow-hidden ${addMode? 'max-h-[500px] overflow-auto pb-24' : ''} transition-all duration-500`}>
                 <div className='pt-4 pb-8 flex flex-col gap-4 xl:gap-5 xl:py-8'>
@@ -211,9 +218,9 @@ const CustomerList = () => {
                                 invalidFields={invalidFields} 
                                 setInvalidFields={setInvalidFields}
                                 placeholder='Nhập tên khách hàng' 
-                                value={payload.name} 
+                                value={payload.username} 
                                 setValue={setPayload} 
-                                keyPayload='name'
+                                keyPayload='username'
                                 width='w-60'
                                 style2={true}
                             />
@@ -246,23 +253,19 @@ const CustomerList = () => {
                                 style2={true}
                             />
                         </div>
-                        <div className='flex gap-9 xl:gap-11 items-center'>
-                            <div>Ngày đặt:</div>
-                            <Datepicker width='w-40' height='h-7' top='top-[6px]' outline min={true} keyPayload='departure_date' setValue={setPayload}/>
+                        <div className='flex gap-4 items-center'>
+                            <div>Số lượng vé:</div>
+                            <InputForm 
+                                invalidFields={invalidFields} 
+                                setInvalidFields={setInvalidFields} 
+                                value={payload.ticket_num} 
+                                setValue={setPayload} 
+                                keyPayload='ticket_num'
+                                type='number'
+                                width='w-16'
+                                style2={true}
+                            />
                         </div>
-                    </div>
-                    <div className='flex gap-4 items-center'>
-                        <div>Số lượng vé:</div>
-                        <InputForm 
-                            invalidFields={invalidFields} 
-                            setInvalidFields={setInvalidFields} 
-                            value={payload.quantity} 
-                            setValue={setPayload} 
-                            keyPayload='quantity'
-                            type='number'
-                            width='w-16'
-                            style2={true}
-                        />
                     </div>
                     <div className='flex gap-[46px] items-center'>
                         <div>Ghi chú:</div>

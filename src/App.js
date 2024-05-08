@@ -4,21 +4,44 @@ import { SystemLogin, SystemResetPass1, SystemResetPass2, SystemHome, STourList,
 import { path } from "./ultils/constant";
 import * as actions from './store/actions'
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 function App() {
   const dispatch = useDispatch()
-  const { isLoggedIn, refresh_token, token, msg } = useSelector(state => state.auth)
-  useEffect(() => {
+  let [loading, setLoading] = useState(true)
+  const { isLoggedIn, refresh_token, role, refresh_msg } = useSelector(state => state.auth)
+  useEffect(()=> {
+    if(loading){
+      dispatch(actions.refreshToken({
+        refresh_token: 'Bearer ' + refresh_token,
+        role: role,
+      }))
+      if(loading){
+          setLoading(false)
+      }
+    }
     let fourMinutes = 1000 * 60 * 4
-    setTimeout(() => {
-      isLoggedIn && dispatch(actions.refreshToken({refresh_token: 'Bearer ' + refresh_token}))
+    let interval =  setInterval(()=> {
+        if(isLoggedIn){
+          dispatch(actions.refreshToken({
+            refresh_token: 'Bearer ' + refresh_token,
+            role: role,
+          }))
+          if(loading){
+              setLoading(false)
+          }
+        }
     }, fourMinutes)
-  }, [token])
+    return () => clearInterval(interval)
+  }, [isLoggedIn, loading]) 
   useEffect(() => {
-    if (msg !== '') alert(msg);
-  }, [msg])
-
+    if (refresh_msg !== '') alert(refresh_msg);
+  }, [refresh_msg])
+  useEffect(() => {
+    setTimeout(() => {
+      isLoggedIn && dispatch(actions.getCurrent())
+    }, 1000)
+  }, [isLoggedIn])
   return (
     <div>
       <Routes>

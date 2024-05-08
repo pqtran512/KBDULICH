@@ -29,3 +29,39 @@ export const staffObjects = (staffs) => {
     }));
     return staffNames
 }
+
+export const placeUniqueProvince = (places) => {
+    const uniqueProvinces = [];
+    const seenProvinces = new Set(); // Create a Set to track unique provinces
+    // Iterate over the array of places
+    places.forEach(place => {
+        if (!seenProvinces.has(place.province)) {
+            seenProvinces.add(place.province);
+            uniqueProvinces.push(place);
+        }
+    });
+    return uniqueProvinces
+}
+
+export const tourUniqueName = (tours) => {
+    const uniqueNames = [];
+    const seenNames = new Set(); // Create a Set to track unique provinces
+    // Iterate over the array of places
+    tours.forEach(t => {
+        if (!seenNames.has(t.name)) {
+            seenNames.add(t.name);
+            uniqueNames.push(t);
+        }
+    });
+    return uniqueNames
+}
+
+export const getProvinceTitle = (tour) => {
+    let arr = []
+    for (var i = 0; i < tour?.places?.length; i++) {
+        if (!arr.includes(tour.places[i].province)) {
+            arr = [...arr, tour.places[i].province]
+        }
+    }
+    return arr
+}

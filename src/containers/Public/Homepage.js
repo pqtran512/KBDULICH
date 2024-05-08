@@ -3,7 +3,7 @@ import logoBlue from '../../assets/img/header-footer/logo-blue.png'
 import { Datepicker, ButtonRound, Card1, Card2, Card3, CardArticle, SelectInput, Loading } from '../../components'
 import { getToursCondition, getToursRating, getAllPlaces } from '../../store/actions/tourPlaceAction';
 import { useDispatch, useSelector } from 'react-redux'
-import { createSearchParams, useNavigate } from "react-router-dom";
+import { createSearchParams, useNavigate, Link } from "react-router-dom";
 import { formatVietnameseToString } from '../../ultils/formatVietnameseToString';
 import { provinceObjects } from '../../ultils/objectsToArr';
   
@@ -242,8 +242,8 @@ const Homepage = () => {
                             {places?.[13] && <CardArticle hidden='hidden md:block xl:hidden' animation='md:animate-fade-left xl:animate-fade-down' place={places[13]}/>}
                         </div>
                         <div className="pt-6 w-full flex items-center justify-center xl:pt-8">
-                            <a href="tintuc.html" className="relative py-3 px-8 text-button1 font-semibold text-neutral-1-900 border-[2px] border-primary-2 rounded-[99px] shadow-shad1 btn-light btn3 hover-filled-slide-right xl:text-black xl:text-button">
-                                <span className="relative z-10">Xem thêm</span></a>
+                            <Link to={'/news'} className="relative py-3 px-8 text-button1 font-semibold text-neutral-1-900 border-[2px] border-primary-2 rounded-[99px] shadow-shad1 btn-light btn3 hover-filled-slide-right xl:text-black xl:text-button">
+                                <span className="relative z-10">Xem thêm</span></Link>
                         </div>
                     </div>
                 </div>

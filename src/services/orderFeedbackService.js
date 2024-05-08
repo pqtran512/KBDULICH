@@ -14,12 +14,25 @@ export const apiGetOrderOfTour = (id) => new Promise(async (resolve, reject) => 
     }
 })
 
-export const apiGetOrderOfCustomer = (id) => new Promise(async (resolve, reject) => {
+export const apiGetOrderOfCustomer = () => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: `/api/order/get_by_customer`,
-            data: id
+            url: `/api/order/get_by_customer`
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
+
+export const apiGetOrder = (id) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/order/get_by_id',
+            data: id 
         })
         resolve(response)
 
@@ -42,6 +55,21 @@ export const apiCountByTourType = (id) => new Promise(async (resolve, reject) =>
     }
 })
 
+export const apiOrderAdd = (payload) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/order/add',
+            data: payload
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
+
+// Feedback
 export const apiGetFeedbackByTourType = (type_id) => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosConfig({
@@ -56,4 +84,17 @@ export const apiGetFeedbackByTourType = (type_id) => new Promise(async (resolve,
     }
 })
 
+export const apiFeedbackAdd = (payload) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/feedback/add',
+            data: payload
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
 

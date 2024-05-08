@@ -7,6 +7,7 @@ const initState = {
     token: null,
     refresh_token: null,
     msg: '',
+    refresh_msg: '',
     update: false // in case same msg is received
 }
 const authReducer = (state = initState, action) => {
@@ -51,7 +52,6 @@ const authReducer = (state = initState, action) => {
                 role: '',
                 token: null,
                 refresh_token: null,
-                msg: action.msg,
             }
         case actionTypes.STAFF_LOGIN_SUCESS:
             return {
@@ -62,13 +62,23 @@ const authReducer = (state = initState, action) => {
                 refresh_token: action.refresh_token,
                 msg: ''
             }
+        case actionTypes.MANAGER_LOGIN_SUCESS:
+            return {
+                ...state,
+                isLoggedIn: true,
+                role:'manager',
+                token: action.token,
+                refresh_token: action.refresh_token,
+                msg: ''
+            }
         case actionTypes.REFRESH_TOKEN:
             return {
                 ...state,
                 isLoggedIn: true,
                 token: action.token,
                 refresh_token: action.refresh_token,
-                msg: action.msg
+                refresh_msg: action.refresh_msg,
+                role: action.role
             }
         default:
             return state;

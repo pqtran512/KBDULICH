@@ -1,5 +1,5 @@
 import actionTypes from './actionTypes'
-import { apiGetOrderOfTour, apiGetFeedbackByTourType, apiCountByTourType, apiGetOrderOfCustomer } from '../../services/orderFeedbackService'
+import { apiGetOrderOfTour, apiGetFeedbackByTourType, apiCountByTourType, apiGetOrderOfCustomer, apiGetOrder, apiOrderAdd, apiFeedbackAdd } from '../../services/orderFeedbackService'
 
 export const getOrderOfTour = (id) => async (dispatch) => {
     try {
@@ -41,9 +41,9 @@ export const countByTourType = (tourType_ID) => async (dispatch) => {
     }
 }
 
-export const getOrderOfCustomer = (id) => async (dispatch) => {
+export const getOrderOfCustomer = () => async (dispatch) => {
     try {
-        const response = await apiGetOrderOfCustomer(id)
+        const response = await apiGetOrderOfCustomer()
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.GET_ORDER_OF_CUSTOMER,
@@ -66,6 +66,43 @@ export const getOrderOfCustomer = (id) => async (dispatch) => {
     }
 }
 
+export const getOrder = (id) => async (dispatch) => {
+    try {
+        const response = await apiGetOrder(id)
+        dispatch({
+            type: actionTypes.GET_ORDER,
+            order: response.data
+        })
+    } catch (error) {
+        dispatch({
+            type: actionTypes.GET_ORDER,
+            order: null
+        })
+    }
+}
+
+export const orderAdd = (payload) => async (dispatch) => {
+    try {
+        const response = await apiOrderAdd(payload)
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.ADD_ORDER,
+                msg: 'success'
+            })
+        }
+        else {
+            dispatch({
+                type: actionTypes.ADD_ORDER,
+                msg: response.data.msg
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.ADD_ORDER,
+            msg: 'Lỗi hệ thống !'
+        })
+    }
+}
 // Feedback
 export const getFeedbackByTourType = (type_id) => async (dispatch) => {
     try {
@@ -78,6 +115,29 @@ export const getFeedbackByTourType = (type_id) => async (dispatch) => {
         dispatch({
             type: actionTypes.GET_FEEDBACK_OF_TOURTYPE,
             feedbacks: null
+        })
+    }
+}
+
+export const feedbackAdd = (payload) => async (dispatch) => {
+    try {
+        const response = await apiFeedbackAdd(payload)
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.ADD_FEEDBACK,
+                msg: ''
+            })
+        }
+        else {
+            dispatch({
+                type: actionTypes.ADD_FEEDBACK,
+                msg: 'Lỗi hệ thống ! Vui lòng thử lại !'
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.ADD_FEEDBACK,
+            msg: 'Lỗi hệ thống ! Vui lòng thử lại !'
         })
     }
 }

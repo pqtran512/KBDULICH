@@ -3,10 +3,11 @@ import icons from '../ultils/icons'
 import { createSearchParams, useNavigate, Link } from "react-router-dom";
 import { formatVietnameseToString } from '../ultils/formatVietnameseToString';
 import { splitDateTime } from '../ultils/splitDateTime';
+import { placeUniqueProvince } from '../ultils/objectsToArr';
 
 const { FaRegUser, MdOutlineLocalPhone, MdCalendarToday, MdOutlineStickyNote2, LuFlagTriangleRight, FaRegStar, MdFingerprint } = icons
 
-const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, optionBar, id, tour_id, person, staff, tour, phone, email, bookDate, departureDate, rating, note, sendDate, replyDate, path, role, setOutput, tours, requests, places}) => {
+const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, optionBar, id, tour_id, person, staff, tour, phone, email, bookDate, departureDate, rating, note, sendDate, replyDate, path, role, setOutput, tours, requests, places, staffs}) => {
     const [changeWidth, setChangeWidth] = useState(false)
     const [searchText, setSearchText] = useState('')
     const [searchTerm, setSearchTerm] = useState(id? 'Mã' : places? 'Địa điểm' : 'Họ Tên')
@@ -18,7 +19,9 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
         // Do something with the input value
         const formattedSearchTerms = formatVietnameseToString(searchTerm);
         if (searchText !== '') {
-            setOutput(searchResults)
+            if (places) 
+                setOutput(placeUniqueProvince(searchResults))
+            else setOutput(searchResults)
             navigate({
                 pathname: path,
                 search: createSearchParams({
@@ -28,8 +31,9 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
         }
         else { 
             tours && setOutput(tours)
-            places && setOutput(places)
+            places && setOutput(placeUniqueProvince(places))
             requests && setOutput(requests)
+            staffs && setOutput(staffs)
             navigate(path) 
         }
     };
@@ -88,6 +92,31 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
                      String(place.province).toLowerCase().includes(value.toLowerCase()) )
                 );
             });
+            setSearchResults(results);
+        }
+        else { // staff
+            let results
+            if (searchTerm === 'Họ Tên') {
+                results = staffs.filter((staff) => {
+                    return (
+                        value &&
+                        staff &&
+                        staff.firstName &&
+                        (String(staff.firstName).toLowerCase().includes(value.toLowerCase())
+                            || String(staff.lastName).toLowerCase().includes(value.toLowerCase()))
+                    );
+                });
+            }
+            else {
+                results = staffs.filter((staff) => {
+                    return (
+                        value &&
+                        staff &&
+                        staff.email &&
+                        String(staff.email).toLowerCase().includes(value.toLowerCase())
+                    );
+                });
+            }
             setSearchResults(results);
         }
     };
@@ -227,17 +256,17 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
                 }
                 {searchResults && searchResults.length > 0 && (
                     <div className={`${optionBar ? 'pt-5' : 'pt-2'} flex flex-col gap-1 text-neutral-1-900 text-caption-1 md:text-body-2`}>
-                        {tours && searchResults.map((result, id) => {
+                        {tours && searchResults.map((result, idx) => {
                             return (
-                                <Link to={`/${role}/tour-detail/${result.tour_ID}`} key={id} className='flex justify-between px-3 py-1 cursor-pointer w-full rounded-md hover:bg-neutral-3-100'>
+                                <Link to={`/${role}/tour-detail/${result.tour_ID}`} key={idx} className='flex justify-between px-3 py-1 cursor-pointer w-full rounded-md hover:bg-neutral-3-100'>
                                     <div className='w-1/4 italic'>{result.tour_ID}</div>
                                     <div className='w-[70%]'>{result.name}</div> 
                                 </Link>
                             );
                         })}
-                        {requests && searchResults.map((result, id) => {
+                        {requests && searchResults.map((result, idx) => {
                             return (
-                                <Link to={`/${role}/request-detail/${result.request_ID}`} key={id} className='flex justify-between px-3 py-1 cursor-pointer w-full rounded-md hover:bg-neutral-3-100'>
+                                <Link to={`/${role}/request-detail/${result.request_ID}`} key={idx} className='flex justify-between px-3 py-1 cursor-pointer w-full rounded-md hover:bg-neutral-3-100'>
                                     <div>{result.request_ID}</div>
                                     <div>{result.tour_ID}</div>
                                     <div>{result.staff_ID}</div>
@@ -245,9 +274,27 @@ const SearchBar = ({placeholder, width, newWidth, change, newPlaceholder, option
                                 </Link>
                             );
                         })}
-                        {places && searchResults.map((place, id) => {
+                        {places && searchResults.map((result, idx) => {
                             return (
-                                <div>{place.name}</div>
+                                <Link key={idx} to={`/news-detail/${formatVietnameseToString(result.province)}`} state={result.province}
+                                      className='flex justify-between items-center px-3 py-1 cursor-pointer w-full rounded-md hover:bg-neutral-3-100'>
+                                    <div className='flex items-center gap-4'>
+                                        <img className="rounded-md aspect-video w-16 object-cover md:rounded-lg" src={result.images[0].images} alt=''/> 
+                                        <div className='font-semibold'>{result.name}</div>
+                                    </div>
+                                    <div>{result.province}</div>
+                                </Link>
+                            );
+                        })}
+                        {staffs && searchResults.map((result, idx) => {
+                            return (
+                                <Link to={`/manager/staff-detail/${result.staff_ID}`} key={idx} className='flex px-3 py-1 cursor-pointer w-full rounded-md hover:bg-neutral-3-100'>
+                                    <div className='flex gap-6 w-64'>
+                                        <div className='italic'>{result.staff_ID}</div>
+                                        <div>{result.lastName} {result.firstName}</div>
+                                    </div>
+                                    <div>{result.email}</div>
+                                </Link>
                             );
                         })}
                     </div>

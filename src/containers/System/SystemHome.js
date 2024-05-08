@@ -7,7 +7,7 @@ import '../../index.scss';
 
 const SystemHome = () => {
     const { isLoggedIn, role } = useSelector(state => state.auth)
-    // if (!isLoggedIn || role === 'customer') return <Navigate to='/system-auth/login' replace={true} />
+    if (!isLoggedIn || role === 'customer') return <Navigate to='/system-auth/login' replace={true} />
     return (
         <div className='font-segoe'>
             <Header/>

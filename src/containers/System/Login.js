@@ -19,7 +19,12 @@ const Login = () => {
 
     // FUNCTIONS
     // validate inputs and call API
-    const handleSubmit = async () => {
+    const handleSubmitManager = async () => {
+        let invalids = validate(payload)
+        if (invalids === 0)
+            dispatch(actions.managerLogin(payload))
+    }
+    const handleSubmitStaff = async () => {
         let invalids = validate(payload)
         if (invalids === 0)
             dispatch(actions.staffLogin(payload))
@@ -97,9 +102,14 @@ const Login = () => {
             />
             <Link to={'/system-auth/reset_pass1'} className='text-body-2 text-black hover:text-secondary-1 ml-auto'>Quên mật khẩu</Link>
             <Button2 
-                text='Xác nhận'
+                text='Đăng nhập với tư cách nhân viên'
                 textColor='text-white' bgColor='bg-[#363837]' 
-                onClick={handleSubmit}
+                onClick={handleSubmitStaff}
+            />
+            <Button2 
+                text='Đăng nhập với tư cách quản lý'
+                textColor='text-white' bgColor='bg-[#363837]' 
+                onClick={handleSubmitManager}
             />
         </div>
     )

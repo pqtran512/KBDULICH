@@ -7,7 +7,7 @@ const initState = {
     count_cond: 0,
     tours_rating: [],
     count_rating: 0,
-    tour: [],
+    tour: {},
     tours_name: [],
     count_name: 0,
     tours_staff: [],
@@ -35,7 +35,7 @@ const tourReducer = (state = initState, action) => {
         case actionTypes.GET_TOUR:
             return {
                 ...state,
-                tour: action.tour || []
+                tour: action.tour || {}
             }
         case actionTypes.GET_TOURS_STAFF:
             return {

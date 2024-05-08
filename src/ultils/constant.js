@@ -15,7 +15,7 @@ export const path = {
     TOUR_BOOKING2: 'tour-booking2/:tourID',
     TOUR_BOOKING3: 'tour-booking3/:tourID',
     NEWS: 'news',
-    NEWS_DETAIL: 'news-detail',
+    NEWS_DETAIL: 'news-detail/:province',
     PERSONAL_PROFILE: 'personal-profile',
     CONTACT: 'contact',
 
@@ -31,11 +31,13 @@ export const path = {
     REQUEST_LIST: 'request',
     REQUEST_DETAIL: 'request-detail/:requestID',
     REQUEST_DUP: 'dup',
+    REQUEST_ADD: 'request_add',
+    REQUEST_REPLY: 'request_reply',
     
     STAFF_LIST: 'staff',
-    STAFF_DETAIL: 'staff-detail',
+    STAFF_DETAIL: 'staff-detail/:staffID',
     STAFF_NEW: 'staff-new',
-    STAFF_EDIT: 'staff-edit',
+    STAFF_EDIT: 'staff-edit/:staffID',
 
     REPORT: 'report',
     ACCOUNT: 'account'

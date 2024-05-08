@@ -2,6 +2,7 @@ import actionTypes from "../actions/actionTypes";
 
 const initState = {
     staffs: [],
+    staff: {},
 }
 const staffReducer = (state = initState, action) => {
     switch (action.type) {
@@ -9,6 +10,11 @@ const staffReducer = (state = initState, action) => {
             return {
                 ...state,
                 staffs: action.staffs || [],
+            }
+        case actionTypes.GET_STAFF:
+            return {
+                ...state,
+                staff: action.staff || {},
             }
         default:
             return state;

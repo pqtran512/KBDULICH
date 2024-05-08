@@ -1,7 +1,8 @@
 import actionTypes from "../actions/actionTypes";
 
 const initState = {
-    feedbacks: []
+    feedbacks: [],
+    msg: ''
 }
 const feedbackReducer = (state = initState, action) => {
     switch (action.type) {
@@ -9,6 +10,11 @@ const feedbackReducer = (state = initState, action) => {
             return {
                 ...state,
                 feedbacks: action.feedbacks || []
+            }
+        case actionTypes.ADD_FEEDBACK:
+            return {
+                ...state,
+                msg: action.msg || ''
             }
         default:
             return state;

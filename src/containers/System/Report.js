@@ -31,7 +31,7 @@ const Report = () => {
             <div className='pb-6 font-prata text-neutral-1-900 font-semibold text-header-1 md:text-heading-4'>Báo cáo và Thống kê</div>
             <div className='pb-5 flex gap-2 justify-end'>
                 <SelectInput options={chartOption} style2={true} placeholder='Theo tháng' myStyle='w-[118px]' keyPayload='option' setValue={setSelectedOption} />
-                <Datepicker width='w-40' height='h-7' top='top-[6px]' outline format='yyyy' keyPayload='year' setValue={setSelectedYear} />
+                <Datepicker width='w-40' height='h-7' top='top-[6px]' outline format='yyyy' placeholder={'Chọn năm'} keyPayload='year' setValue={setSelectedYear} />
             </div>
             <div className='pb-4 text-body-2 text-center uppercase tracking-wide text-neutral-1-600 md:text-body-1'>Báo cáo tổng quan năm <span className='font-semibold bg-neutral-1-500 rounded-md p-1 text-white'>{selectedYear.year}</span></div>
             <div className='pb-10 flex flex-col justify-center items-center gap-4 md:items-start md:gap-16 md:flex-row'>
