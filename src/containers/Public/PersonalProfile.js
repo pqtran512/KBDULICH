@@ -177,7 +177,7 @@ const PersonalProfile = () => {
                                         </div>
                                         <div className='flex justify-between items-end'>
                                             <div className='text-body-1 font-semibold'>Thành tiền: <span className='text-secondary-1'>{Number(order?.tour?.price*order?.order?.ticket_num).toLocaleString()} đ</span></div>
-                                            {!order.feedback.feedback_ID?
+                                            {!order.feedback.feedback_ID === ''?
                                                 <button className='cursor-default py-2 px-8 rounded-md bg-[#919EAB] text-white'>Đã đánh giá</button>
                                             :
                                                 <Button 
