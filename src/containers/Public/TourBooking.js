@@ -115,19 +115,19 @@ const TourBooking = () => {
             <section className="mx-auto w-full pt-10 xl:max-w-7xl">
                 <div className="px-6 lg:px-2 2xl:px-0">
                     <div className="truncate w-full flex items-center py-[10px] gap-x-2">
-                        <div className="text-neutral-1-600 text-body-1 leading-[34px] xl:text-[20px]">Du lịch</div>
+                        <div className="text-neutral-1-600 text-body-1 leading-[34px] xl:text-header-2">Du lịch</div>
                         <div className="flex items-center justify-center w-6 h-6">
                             <i className="twi-22-chevron-line text-[16px] text-secondary-1 text-center"></i>
                         </div>
-                        <div className="text-neutral-1-600 text-body-1 leading-[34px] xl:text-[20px]">Du lịch trong nước</div>
+                        <div className="text-neutral-1-600 text-body-1 leading-[34px] xl:text-header-2">Du lịch trong nước</div>
                         <div className="flex items-center justify-center w-6 h-6">
                             <i className="twi-22-chevron-line text-[16px] text-secondary-1 text-center"></i>
                         </div>
-                        <div className="text-neutral-1-600 text-body-1 leading-[34px] xl:text-[20px]">Du lịch Bà Nà - Cầu Vàng - Sơn Trà - Biển Mỹ Khê - Hội An</div>
+                        <div className="text-neutral-1-600 text-body-1 leading-[34px] xl:text-header-2">{tour?.name}</div>
                         <div className="flex items-center justify-center w-6 h-6">
                             <i className="twi-22-chevron-line text-[16px] text-secondary-1 text-center"></i>
                         </div>
-                        <div className="truncate text-body-1 leading-[34px] text-neutral-1-900 xl:text-[20px]">Thanh toán</div>
+                        <div className="truncate text-neutral-1-900 text-body-1 leading-[34px] xl:text-header-2">Thanh toán</div>
                     </div>
                     <div className='pt-5 flex items-center justify-center px-20 xl:justify-between'>
                         <div className='flex flex-col gap-2 items-center justify-center'>
@@ -153,7 +153,7 @@ const TourBooking = () => {
                         <div className='w-full h-fit p-6 bg-neutral-3-100 rounded-3xl max-w-[450px] mx-auto xl:w-1/2'>
                             <div className='text-body-2 font-semibold text-neutral-900 pb-2 md:text-header-1'>Thông tin đặt tour</div>
                             <div className='py-3 flex gap-5 border-b-[3px] border-white'>
-                                <img className='h-16 w-24 rounded-md' src={tour?.places[0].images[0].images} alt='' />
+                                {tour?.places && <img className='h-16 w-24 rounded-md' src={tour?.places[0].images[0].images} alt='' />}
                                 <div className="text-neutral-1-900 text-title-2 font-semibold xl:text-title-1">{tour?.name} | {tour?.day_num}N{tour?.night_num}Đ</div>
                             </div>
                             <div className="pt-5 flex flex-col gap-6 text-body-2">

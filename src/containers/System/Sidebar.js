@@ -64,15 +64,17 @@ const Sidebar = () => {
                         <div className={`${isClose? 'opacity-0' : 'opacity-100'} transition-all duration-300 whitespace-nowrap text-neutral-1-200`}>Thống kê</div>
                 </Link>
                 }
-                <Link to={`${isStaff ? '/staff/account' : '/manager/account' }`} className={`${switchPage === 'account' ? 'bg-neutral-1-800 opacity-90' : ''} mt-1 flex gap-3 items-center px-2 py-3 rounded-md cursor-pointer hover:hover:bg-neutral-1-800 hover:opacity-90`}
-                    onClick={() => setSwitchPage('account')}>
-                        <FaRegUser size={27} className='p-1 bg-white opacity-80 rounded-md min-w-[30px] text-neutral-1-600'/>
-                        <div className={`${isClose? 'opacity-0' : 'opacity-100'} transition-all duration-300 whitespace-nowrap text-neutral-1-200`}>Tài khoản</div>
-                </Link>
+                { isStaff ? 
+                    <Link to={'/staff/account'} className={`${switchPage === 'account' ? 'bg-neutral-1-800 opacity-90' : ''} mt-1 flex gap-3 items-center px-2 py-3 rounded-md cursor-pointer hover:hover:bg-neutral-1-800 hover:opacity-90`}
+                        onClick={() => setSwitchPage('account')}>
+                            <FaRegUser size={27} className='p-1 bg-white opacity-80 rounded-md min-w-[30px] text-neutral-1-600'/>
+                            <div className={`${isClose? 'opacity-0' : 'opacity-100'} transition-all duration-300 whitespace-nowrap text-neutral-1-200`}>Tài khoản</div>
+                    </Link>
+                : <></>
+                }
                 <div className='hidden xl:block bg-[#1AAFEA] hover:bg-[#0AECB4] rounded-full p-2 absolute -right-4 top-5 cursor-pointer'>
                     <VscTriangleLeft size={22} className={`${isClose? 'rotate-180' : ''} transition-all duration-300 text-white`} onClick={handleCloseBtn}/>
                 </div>
-                
                 <img className='absolute bottom-0 right-0 -z-10 w-full h-full opacity-60 object-cover xl:object-contain xl:w-52 xl:h-3/4' src={blackMountain} alt='mountain'/>
             </div>
         </div>

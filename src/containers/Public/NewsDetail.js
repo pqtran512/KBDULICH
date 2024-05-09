@@ -35,7 +35,7 @@ const NewsDetail = () => {
         dispatch(getPlaceCond({province: province}))
         dispatch(getToursCondition({
             destination: province,
-            isActive: 1
+            isActive: true
         }))
     }, [dispatch, province])
     useEffect(() => {

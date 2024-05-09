@@ -52,7 +52,7 @@ const STourList = () => {
             </div>
             <div className='pb-6 flex gap-10'>
                 <div className='text-body-2 xl:text-body-1 text-neutral-1-900'>Tổng số: <span className='font-semibold'>{tours_staff?.length}</span></div>
-                <div className='text-body-2 xl:text-body-1 text-neutral-1-900 px-3 h-fit bg-background-7 rounded-xl'>Số Tour đang hoạt động: <span className='font-semibold'>{tours_staff?.filter(item => item.isActive === 1).length}</span></div>
+                <div className='text-body-2 xl:text-body-1 text-neutral-1-900 px-3 h-fit bg-background-7 rounded-xl'>Số Tour đang hoạt động: <span className='font-semibold'>{tours_staff?.filter(item => item.isActive === true).length}</span></div>
             </div>
             <table id="dataTable" className="mb-8 mytable2 w-full text-body-2 xl:text-body-1 tracking-tight">
                 <thead>

@@ -127,7 +127,7 @@ const StaffDetail = () => {
             </div>
             <div className='pt-16'>
                 <div className='pb-1 font-prata text-neutral-1-900 font-semibold border-b-2 border-neutral-2-200 w-full px-4 rounded-xl shadow-title text-header-2 md:text-header-1'>Các Tour phụ trách</div>
-                <div className='pt-8 pb-4 text-body-1 text-neutral-1-900'>Tổng số: {tours_staff.length}</div>
+                <div className='pt-8 pb-4 text-body-1 text-neutral-1-900'>Tổng số: {tours_staff?.length}</div>
                 <table className="mb-8 mytable2 w-full text-body-2 md:mytable xl:text-body-1">
                     <thead></thead>
                     <tr className="h-10 font-semibold tracking-wider bg-neutral-3-200">

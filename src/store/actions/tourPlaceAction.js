@@ -1,5 +1,5 @@
 import actionTypes from './actionTypes'
-import { apiGetToursRating, apiGetToursCondition, apiGetTour, apiGetByName, apiGetTourByStaffID, apiGetTourByStaff, apiGetAllPlaces, apiGetPlaceCond } from '../../services/tourPlaceService'
+import { apiGetToursRating, apiGetToursCondition, apiGetTour, apiGetByName, apiGetTourByStaffID, apiGetTourByStaff, apiGetAllPlaces, apiGetPlaceCond, apiTourUpdate } from '../../services/tourPlaceService'
 
 // Tour
 export const getToursRating = () => async (dispatch) => { // register func. returns a func
@@ -95,6 +95,28 @@ export const getTourByStaffID = (id) => async (dispatch) => {
     }
 }
 
+export const tourUpdate = (payload) => async (dispatch) => {
+    try {
+        const response = await apiTourUpdate(payload)
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.TOUR_UPDATE,
+                msg: 'success'
+            })
+        }
+        else {
+            dispatch({
+                type: actionTypes.TOUR_UPDATE,
+                msg: response.data.msg
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.TOUR_UPDATE,
+            msg: error
+        })
+    }
+}
 // Place
 export const getAllPlaces = () => async (dispatch) => {
     try {

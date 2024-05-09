@@ -40,8 +40,8 @@ function App() {
   useEffect(() => {
     setTimeout(() => {
       isLoggedIn && dispatch(actions.getCurrent())
-    }, 1000)
-  }, [isLoggedIn])
+    }, 300)
+  }, [isLoggedIn, refresh_token])
   return (
     <div>
       <Routes>

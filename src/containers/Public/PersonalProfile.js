@@ -23,6 +23,7 @@ const PersonalProfile = () => {
     })
     const [isShown, setIsShown] = useState(false);
     const { orders_customer } = useSelector(state => state.order)
+    const { msg } = useSelector(state => state.feedback)
     // FUNCTION
     useEffect(() => {
         dispatch(getOrderOfCustomer())
@@ -44,14 +45,21 @@ const PersonalProfile = () => {
         })
     }
     // Handle feedback
-    const handleSubmitFeedback = async () => {
-        let invalids = validate(payload)
-        if (invalids === 0) {
-            dispatch(feedbackAdd({payload}))
+    useEffect(() => {
+        if (msg !== '') {
+          if (msg === 'success') {
             Swal.fire('Gửi đánh giá thành công !', '', 'success').then((result) => {
                 setIsShown(false);
                 document.body.style.overflow = "auto";
             })
+          }
+          else Swal.fire('Oops !', msg, 'error')
+        }
+    }, [msg])
+    const handleSubmitFeedback = async () => {
+        let invalids = validate(payload)
+        if (invalids === 0) {
+            dispatch(feedbackAdd({payload}))
         }
     }
     const validate = (payload) => {
@@ -122,11 +130,11 @@ const PersonalProfile = () => {
                                             <div>{splitDateTime(order.order.date_time)[1]}, {splitDateTime(order.order.date_time)[0]}</div>
                                         </div>
                                         <div className='flex justify-between items-end pb-4'>
-                                            <div className='flex gap-2'>
-                                                <div className="relative w-[90px] aspect-[130/75] rounded-xl overflow-hidden xl:w-[130px]">
+                                            <div className='flex gap-2 max-w-2xl'>
+                                                <div className="w-1/6 relative aspect-[130/75] rounded-xl overflow-hidden xl:w-[130px]">
                                                 {order.tour.places && <img className="absolute w-full h-full top-0 left-0 object-cover transition-all xl:group-hover:scale-125" src={order.tour.places[0].images[0].images} alt=''/>}
                                                 </div>
-                                                <div className='flex flex-col justify-between'>
+                                                <div className='w-5/6 flex flex-col justify-between'>
                                                     <Link to={'/tour-detail/'+order.order.tour_ID} className='text-[17px] text-primary-1 hover:text-primary-2 font-semibold text-body-2 xl:text-body-1'>{order?.tour?.name} | {order?.tour?.day_num}N{order?.tour?.night_num}Đ</Link>
                                                     <div className='italic text-body-2 tracking-wide flex justify-between'>{order?.tour?.departure} - {getProvinceTitle(order?.tour).join(' - ')}, {order?.tour?.vehicle}</div>
                                                 </div>
@@ -156,12 +164,12 @@ const PersonalProfile = () => {
                                             <div>{splitDateTime(order.order.date_time)[1]}, {splitDateTime(order.order.date_time)[0]}</div>
                                         </div>
                                         <div className='flex justify-between items-end pb-4'>
-                                            <div className='flex gap-2'>
-                                                <div className="relative w-[130px] aspect-[130/75] rounded-xl overflow-hidden">
+                                            <div className='flex gap-2 max-w-2xl'>
+                                                <div className="w-1/6 relative aspect-[110/75] rounded-xl overflow-hidden">
                                                     {order.tour.places && <img className="absolute w-full h-full top-0 left-0 object-cover transition-all xl:group-hover:scale-125" src={order.tour.places[0].images[0].images} alt=''/>}
                                                 </div>
-                                                <div className='flex flex-col justify-between'>
-                                                <Link to={'/tour-detail/'+order.order.tour_ID} className='text-[17px] text-primary-1 hover:text-primary-2 font-semibold'>{order?.tour?.name} | {order?.tour?.day_num}N{order?.tour?.night_num}Đ</Link>
+                                                <div className='w-5/6 flex flex-col justify-between'>
+                                                <Link to={'/tour-detail/'+order.order.tour_ID} className='text-[17px] text-primary-1 hover:text-primary-2 font-semibold text-body-2 xl:text-body-1'>{order?.tour?.name} | {order?.tour?.day_num}N{order?.tour?.night_num}Đ</Link>
                                                     <div className='italic text-body-2 tracking-wide flex justify-between'>{order?.tour?.departure} - {getProvinceTitle(order?.tour).join(' - ')}, {order?.tour?.vehicle}</div>
                                                 </div>
                                             </div>

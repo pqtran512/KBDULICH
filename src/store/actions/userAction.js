@@ -46,3 +46,21 @@ export const getStaff = (id) => async (dispatch) => {
         })
     }
 }
+
+export const staffAdd = (payload) => async (dispatch) => {
+    try {
+        const response = await apis.apiStaffAdd(payload)
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.TOUR_UPDATE,
+                msg: 'success'
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.TOUR_UPDATE,
+            msg: error
+        })
+    }
+}
+

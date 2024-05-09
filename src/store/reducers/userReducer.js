@@ -1,7 +1,8 @@
 import actionTypes from "../actions/actionTypes";
 
 const initState = {
-    currentData: {}
+    currentData: {},
+    msg: ''
 }
 const userReducer = (state = initState, action) => {
     switch (action.type) {
@@ -14,6 +15,11 @@ const userReducer = (state = initState, action) => {
             return {
                 ...state,
                 currentData: {} 
+            }
+        case actionTypes.STAFF_ADD:
+            return {
+                ...state,
+                msg: action.msg || '' // if currentData is null -> empty array
             }
         default:
             return state;

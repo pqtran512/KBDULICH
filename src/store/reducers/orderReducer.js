@@ -7,7 +7,8 @@ const initState = {
     count_order_tourtype: 0,
     orders_customer: [],
     count_order_customer: 0,
-    msg: ''
+    msg: '',
+    order_data: ''
 }
 const orderReducer = (state = initState, action) => {
     switch (action.type) {
@@ -36,7 +37,8 @@ const orderReducer = (state = initState, action) => {
         case actionTypes.ADD_ORDER:
             return {
                 ...state,
-                msg: action.msg || ''
+                msg: action.msg || '',
+                order_data: action.order_data || {}
             }
         default:
             return state;

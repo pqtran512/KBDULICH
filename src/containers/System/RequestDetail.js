@@ -17,7 +17,7 @@ const RequestDetail = () => {
     const {requestID} = useParams();
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { request, replyFail, msg } = useSelector(state => state.request)
+    const { request, msg } = useSelector(state => state.request)
     const { places } = useSelector(state => state.place)
     const { role } = useSelector(state => state.auth)
     const [invalidFields, setInvalidFields] = useState([])
@@ -198,7 +198,7 @@ const RequestDetail = () => {
         }))
     }
     useEffect(() => {
-        msg && role === 'manager' && !replyFail &&
+        msg && role === 'manager' &&
             Swal.fire(msg, '', 'success').then((result) => {
                 if (result.isConfirmed) {
                     navigate(`/manager/request`)

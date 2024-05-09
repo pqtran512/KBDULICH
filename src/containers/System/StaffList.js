@@ -47,7 +47,7 @@ const StaffList = () => {
         XLSX.writeFile(wb, 'staff_data.xlsx');
     };
     return (
-        <div className='w-full px-6 pt-20 xl:pt-7 xl:pl-0 xl:pr-10 overflow-x-hidden'>
+        <div className='w-full px-6 pt-20 pb-10 xl:pt-7 xl:pb-20 xl:pl-0 xl:pr-10 overflow-x-hidden'>
             <div className='pb-10 flex flex-col gap-y-5 md:flex-row md:items-center md:justify-between'>
                 <div className='font-prata text-neutral-1-900 font-semibold text-header-1 xl:text-heading-4'>Danh sách Nhân viên</div>
                 <div className='ml-auto xl:ml-0'>

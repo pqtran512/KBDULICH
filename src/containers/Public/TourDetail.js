@@ -75,10 +75,10 @@ const TourDetail = () => {
         }
     }, [tours_cond])
     const getRelatedTour = (count) => {
-        if(tour.places) {
+        if(tour.places && tour.places[count]) {
             dispatch(getToursCondition({
                 destination: tour.places[count].province,
-                isActive: 1
+                isActive: true
             }))
         }
     }

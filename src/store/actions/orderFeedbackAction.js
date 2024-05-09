@@ -87,7 +87,8 @@ export const orderAdd = (payload) => async (dispatch) => {
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.ADD_ORDER,
-                msg: 'success'
+                msg: 'success',
+                order_data: response.data.msg
             })
         }
         else {
@@ -125,7 +126,7 @@ export const feedbackAdd = (payload) => async (dispatch) => {
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.ADD_FEEDBACK,
-                msg: ''
+                msg: 'success'
             })
         }
         else {

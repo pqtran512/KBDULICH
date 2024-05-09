@@ -22,19 +22,19 @@ const TourBooking2 = () => {
             <section className="mx-auto w-full pt-10 xl:max-w-7xl">
                 <div className="px-6 lg:px-2 2xl:px-0">
                     <div className="truncate w-full flex items-center py-[10px] gap-x-2">
-                        <div className="text-neutral-1-600 text-body-1 leading-[34px] xl:text-[20px]">Du lịch</div>
+                        <div className="text-neutral-1-600 text-body-1 leading-[34px] xl:text-header-2">Du lịch</div>
                         <div className="flex items-center justify-center w-6 h-6">
                             <i className="twi-22-chevron-line text-[16px] text-secondary-1 text-center"></i>
                         </div>
-                        <div className="text-neutral-1-600 text-body-1 leading-[34px] xl:text-[20px]">Du lịch trong nước</div>
+                        <div className="text-neutral-1-600 text-body-1 leading-[34px] xl:text-header-2">Du lịch trong nước</div>
                         <div className="flex items-center justify-center w-6 h-6">
                             <i className="twi-22-chevron-line text-[16px] text-secondary-1 text-center"></i>
                         </div>
-                        <div className="text-neutral-1-600 text-body-1 leading-[34px] xl:text-[20px]">Du lịch Bà Nà - Cầu Vàng - Sơn Trà - Biển Mỹ Khê - Hội An</div>
+                        <div className="text-neutral-1-600 text-body-1 leading-[34px] xl:text-header-2">{tour?.name}</div>
                         <div className="flex items-center justify-center w-6 h-6">
                             <i className="twi-22-chevron-line text-[16px] text-secondary-1 text-center"></i>
                         </div>
-                        <div className="truncate text-body-1 leading-[34px] text-neutral-1-900 xl:text-[20px]">Thanh toán</div>
+                        <div className="truncate text-neutral-1-900 text-body-1 leading-[34px] xl:text-header-2">Thanh toán</div>
                     </div>
                     <div className='pt-5 flex items-center justify-center px-20 xl:justify-between'>
                         <div className='flex flex-col gap-2 items-center justify-center'>
@@ -91,7 +91,7 @@ const TourBooking2 = () => {
                         </div>
                         <div className='pt-10 flex flex-col gap-5 xl:pt-0 xl:w-1/2'>
                             <div className='text-body-2 font-semibold text-neutral-900 md:text-header-1'>Lựa chọn ngân hàng bạn sẽ thanh toán</div>
-                            <PayPal payload={payload} tour={tour} />
+                            {payload && <PayPal payload={payload} tour={tour} />}
                         </div>
                     </div>
                 </div>

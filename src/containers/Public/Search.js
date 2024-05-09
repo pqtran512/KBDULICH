@@ -29,7 +29,7 @@ const Search = () => {
         seat_num: '',
         price: 'F'+prices[0]+'T'+prices[1],
         vehicle: '',
-        isActive: 1,
+        isActive: true,
     })
     const [order, setOrder] = useState(searchParams.get('order') || 'asc');
     const [filter, setFilter] = useState(searchParams.get('sort') || 'rating');
@@ -180,7 +180,7 @@ const Search = () => {
                 ticket_num: ticketnum || '',
                 seat_num: seatnum || '',
                 vehicle: vehicle || '',
-                isActive: 1,
+                isActive: true,
             })).then(() => {
                 setLoading(false);
             })

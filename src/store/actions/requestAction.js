@@ -51,14 +51,22 @@ export const getRequestsByStaff = (id) => async (dispatch) => {
 export const requestAdd = (payload) => async (dispatch) => {
     try {
         const response = await apiRequestAdd(payload)
-        dispatch({
-            type: actionTypes.REQUEST_ADD,
-            msg: response.data.msg
-        })
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.REQUEST_ADD,
+                msg: 'success'
+            })
+        }
+        else {
+            dispatch({
+                type: actionTypes.REQUEST_ADD,
+                msg: response.data.msg
+            })
+        }
     } catch (error) {
         dispatch({
             type: actionTypes.REQUEST_ADD,
-            msg: ''
+            msg: error
         })
     }
 }
@@ -81,7 +89,7 @@ export const requestEdit = (payload) => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: actionTypes.REQUEST_ADD,
-            msg: ''
+            msg: error
         })
     }
 }
@@ -96,7 +104,7 @@ export const requestCancel = (payload) => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: actionTypes.REQUEST_ADD,
-            msg: ''
+            msg: error
         })
     }
 }
@@ -120,14 +128,14 @@ export const requestReply = (payload) => async (dispatch) => {
         }
         else {
             dispatch({
-                type: actionTypes.REQUEST_REPLY_FAIL,
-                msg: 'response.data.msg'
+                type: actionTypes.REQUEST_REPLY,
+                msg: response.data.msg
             })
         }
     } catch (error) {
         dispatch({
-            type: actionTypes.REQUEST_REPLY_FAIL,
-            msg: ''
+            type: actionTypes.REQUEST_REPLY,
+            msg: error
         })
     }
 }

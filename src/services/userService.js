@@ -39,3 +39,18 @@ export const apiGetStaff = (id) => new Promise(async (resolve, reject) => {
         reject(error)
     }
 })
+
+export const apiStaffAdd = (payload) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/staff/add',
+            data: payload
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
+

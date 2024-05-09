@@ -4,17 +4,21 @@ import CustomerList from './CustomerList';
 import Swal from 'sweetalert2'
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
-import { getTour, getAllPlaces } from '../../store/actions/tourPlaceAction'
+import { getTour, getAllPlaces, tourUpdate } from '../../store/actions/tourPlaceAction'
 import { provinceObjects, placeObjects, staffObjects } from '../../ultils/objectsToArr';
 import { getAllStaff } from '../../store/actions/userAction';
 import { requestEdit } from '../../store/actions/requestAction';
 
+const status = [
+    { value: 1, label: 'Active'},
+    { value: 2, label: 'Inactive' }
+]
 const EditTour = () => {
     // PARAMS
     const {tourID} = useParams();
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { tour } = useSelector(state => state.tour)
+    const { tour, msg_tour } = useSelector(state => state.tour)
     const { places } = useSelector(state => state.place)
     const { staffs } = useSelector(state => state.staff) 
     const { role } = useSelector(state => state.auth)
@@ -40,7 +44,8 @@ const EditTour = () => {
         schedule: [],
         note: '',
         service: [],
-        staff: ''
+        staff: '',
+        isActive: 0
     })
     const [maxDay, setMaxDay] = useState(0)
     const [defaultDate, setDefaultDate] = useState('')
@@ -65,6 +70,7 @@ const EditTour = () => {
     }, [places, staffs])
     useEffect(() => {
         if (tour.name) { setPayload(prev => ({...prev, name: tour.name})) }
+        if (tour.isActive) { setPayload(prev => ({...prev, isActive: tour.isActive})) }
         if (tour.price) { setPayload(prev => ({...prev, price: tour.price})) }
         if (tour.departure) { setPayload(prev => ({...prev, departure: tour.departure})) }
         if (tour.vehicle) { setPayload(prev => ({...prev, vehicle: tour.vehicle})) }
@@ -231,6 +237,14 @@ const EditTour = () => {
     useEffect(() => {
         setPayload(prev => ({...prev, place: destination}))
     }, [destination])
+    const submitEdit = async () => {
+        let invalids = validate(payload)
+        if (invalids === 0){
+            console.log(payload)
+            if (role === 'staff') { dispatch(requestEdit(payload)) }
+            else { dispatch(tourUpdate(payload))}
+        }
+    };
     useEffect(() => {
         if (msg === 'success') {
             Swal.fire('Gửi yêu cầu thành công !', '', 'success').then((result) => {
@@ -238,20 +252,13 @@ const EditTour = () => {
             })
         }
     }, [msg])
-    const submitEdit = async () => {
-        let invalids = validate(payload)
-        if (invalids === 0){
-            console.log(payload)
-            if (role === 'staff') {
-                dispatch(requestEdit(payload))
-            }
-            else {
-                Swal.fire('Đã cập nhật thông tin mới', '', 'success').then((result) => {
-                    // navigate('/manager/tour-detail')
-                })
-            }
+    useEffect(() => {
+        if (msg_tour === 'success') {
+            Swal.fire('Đã cập nhật thông tin mới', '', 'success').then((result) => {
+                navigate(`/manager/tour-detail/${tourID}`)
+            })
         }
-    };
+    }, [msg_tour])
     return (
         <div className='w-full px-6 pt-20 pb-10 xl:pt-7 xl:pb-20 lg:px-2 xl:pl-0 xl:pr-10 overflow-x-hidden'>
             <div className='pb-16'>
@@ -266,17 +273,7 @@ const EditTour = () => {
                     </div>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold whitespace-nowrap'>Tình trạng:</div>
-                        {tour.isActive? 
-                            <div className="flex items-center gap-[6px]">
-                                <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
-                                Active
-                            </div>
-                            :
-                            <div className="flex items-center gap-[6px]">
-                                <div className='w-2 h-2 rounded-full bg-accent-3'></div>
-                                Inactive
-                            </div>
-                        }
+                        <SelectInput options={status} myStyle='w-[100px]' style2={true} placeholder={tour.isActive? 'Active': 'Inactive'}  keyPayload='isActive' setValue={setPayload} />
                     </div>  
                 </div>
                 <div className='grid grid-rows-2 gap-6 md:grid-rows-1 md:grid-cols-2'>

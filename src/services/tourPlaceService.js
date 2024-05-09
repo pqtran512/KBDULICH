@@ -70,7 +70,6 @@ export const apiGetTourByStaff = (id) => new Promise(async (resolve, reject) => 
     }
 })
 
-
 export const apiGetTourByStaffID = (id) => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosConfig({
@@ -85,6 +84,19 @@ export const apiGetTourByStaffID = (id) => new Promise(async (resolve, reject) =
     }
 })
 
+export const apiTourUpdate = (payload) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/tour/update',
+            data: payload
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
 // Place
 export const apiGetAllPlaces = () => new Promise(async (resolve, reject) => {
     try {

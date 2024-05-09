@@ -24,7 +24,7 @@ const Homepage = () => {
         setLoading(true);
         dispatch(getAllPlaces())
         dispatch(getToursRating())
-        dispatch(getToursCondition({ isActive: 1 }))
+        dispatch(getToursCondition({ isActive: true }))
             .then(() => {
                 setLoading(false);
             })

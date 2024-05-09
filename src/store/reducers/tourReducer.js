@@ -11,6 +11,7 @@ const initState = {
     tours_name: [],
     count_name: 0,
     tours_staff: [],
+    msg_tour: ''
 }
 const tourReducer = (state = initState, action) => {
     switch (action.type) {
@@ -42,6 +43,11 @@ const tourReducer = (state = initState, action) => {
                 ...state,
                 tours_staff: action.tours_staff || []
             }
+        case actionTypes.TOUR_UPDATE:
+            return {
+                ...state,
+                msg_tour: action.msg || ''
+        }
         default:
             return state;
     }
