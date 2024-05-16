@@ -125,8 +125,6 @@ const Search = () => {
             pathname: location?.pathname,
             search: createSearchParams(params).toString(),
         });
-        console.log(prices)
-        console.log('submit', searchOption)
         setLoading(true);
         dispatch(getToursCondition(searchOption))
             .then(() => {
@@ -161,42 +159,43 @@ const Search = () => {
             const seatnum = searchParams.get('seat_num')
             const vehicle = searchParams.get('vehicle')
             const updatedOptions = {};
-            if (departure) { updatedOptions.departure = departure.value;}
-            if (destination) { updatedOptions.destination = destination.value;}
-            if (search_date) { updatedOptions.starting_date = search_date;}
-            if (price_lower) { updatedOptions.price = 'F'+price_lower+'T'+price_upper;}
-            if (search_date) { updatedOptions.starting_date = search_date;}
-            if (daynum) { updatedOptions.day_num = daynum;}
-            if (ticketnum) { updatedOptions.ticket_num = ticketnum;}
-            if (seatnum) { updatedOptions.seat_num = seatnum;}
-            if (vehicle) { updatedOptions.vehicle = vehicle;}
+            let count_search = searchParams.size;
+            if (searchParams.get('sort')) count_search = count_search - 1
+            if (searchParams.get('page')) count_search = count_search - 1
+            if (searchParams.get('order')) count_search = count_search - 1
+            let count_var = 0;
+            if (departure) { updatedOptions.departure = departure.value; count_var = count_var + 1}
+            if (destination) { updatedOptions.destination = destination.value; count_var = count_var + 1}
+            if (search_date) { updatedOptions.starting_date = search_date; count_var = count_var + 1}
+            if (price_lower) { updatedOptions.price = 'F'+price_lower+'T'+price_upper; count_var = count_var + 2}
+            if (daynum) { updatedOptions.day_num = daynum; count_var = count_var + 1}
+            if (ticketnum) { updatedOptions.ticket_num = ticketnum; count_var = count_var + 1}
+            if (seatnum) { updatedOptions.seat_num = seatnum; count_var = count_var + 1}
+            if (vehicle) { updatedOptions.vehicle = vehicle; count_var = count_var + 1}
             setSearchOption(prev => ({ ...prev, ...updatedOptions }));
-            dispatch(getToursCondition({
-                departure: (departure && departure.value) || '',
-                destination: (destination && destination.value) || '',
-                starting_date: search_date || '',
-                price: (price_lower && ('F'+price_lower+'T'+price_upper)) || 'F1000000T20000000',
-                day_num: daynum || '',
-                ticket_num: ticketnum || '',
-                seat_num: seatnum || '',
-                vehicle: vehicle || '',
-                isActive: true,
-            })).then(() => {
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-                setLoading(false); // Ensure loading is set to false even if an error occurs
-            });
+            if (count_search === count_var) {
+                dispatch(getToursCondition({
+                    departure: (departure && departure.value) || '',
+                    destination: (destination && destination.value) || '',
+                    starting_date: search_date || '',
+                    price: (price_lower && ('F'+price_lower+'T'+price_upper)) || 'F1000000T20000000',
+                    day_num: daynum || '',
+                    ticket_num: ticketnum || '',
+                    seat_num: seatnum || '',
+                    vehicle: vehicle || '',
+                    isActive: true,
+                })).then(() => {
+                    setLoading(false);
+                })
+            }
         }
-    }, [dispatch, newPlaces]);
+    }, [newPlaces]);
     // sort
     const sorting = (col) => {
         if (col === null) {
-            const sorted = [...tours_cond]
-            setSortTour(sorted)
+            setSortTour(tours_cond)
         }
-        else if (col !== 'rating') {
+        else {
             if (order === "asc") {
                 const sorted = [...tours_cond].sort((a, b) => 
                     a[col] > b[col] ? 1 : -1
@@ -272,7 +271,7 @@ const Search = () => {
                                 </div>
                                 <div className="flex pl-1 xl:pl-0 xl:justify-center">
                                     <div className="grid gap-y-4 gap-x-6 grid-cols-btn text-neutral-1-900 text-body-2 xl:text-body-1">
-                                        <button 
+                                        <button
                                             className={`${isDayBtnActive('F1T3') ? 'activeBtn' : 'hover:bg-neutral-3-50'} py-2 rounded-[6px] shadow-btn`}
                                             onClick={() => setSearchOption(prev => ({...prev, 'day_num': 'F1T3'}))}>1-3 ngày</button>
                                         <button 
@@ -400,13 +399,11 @@ const Search = () => {
                                 {/* desktop, tablet 8 cards, mobile 3 cards */}
                                 {count_cond > 0 ? 
                                     (currentTours.map((tour, idx) => (
-                                        <>
-                                        <Card2
+                                        <><Card2
                                             animation={idx % 2 === 0 ? 'md:animate-fade-right' : 'md:animate-fade-left'}
                                             tour={tour}
                                             key={idx}
-                                        />
-                                        </>
+                                        /></>
                                     ))) 
                                     :  <div className='text-right text-header-2 font-semibold text-neutral-1-500'>Không tìm thấy kết quả phù hợp .</div>
                                 }

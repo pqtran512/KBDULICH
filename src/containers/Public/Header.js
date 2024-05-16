@@ -15,9 +15,6 @@ const Header = () => {
     const {isLoggedIn, role} = useSelector(state => state.auth)
     const {currentData} = useSelector(state => state.user)
     const navigate = useNavigate()
-    useEffect(() => {
-        console.log(currentData)
-      }, [currentData])
     // FUNCTION
     // onclick navbar-menu function on mobile/ tablet screen
     const handleOpen = event => {
@@ -29,7 +26,7 @@ const Header = () => {
     };
     const logout = async () => {
         dispatch(actions.logout())
-        navigate('/auth/login')
+        navigate('/auth/instruction')
     }
     return (
         <header className='w-full bg-white shadow-shad1 sticky top-0 z-50'>
@@ -85,7 +82,7 @@ const Header = () => {
                                 }
                             </div>
                         </div>
-                        <Link to={`${isLoggedIn && role === 'customer'? '/personal-profile' : '/auth/login'} `} className='h-fit xl:pl-5'>
+                        <Link to={`${isLoggedIn && role === 'customer'? '/personal-profile' : '/auth/instruction'} `} className='h-fit xl:pl-5'>
                             <FaRegUser size={28}/>
                         </Link>
                         {isLoggedIn && role === 'customer' &&

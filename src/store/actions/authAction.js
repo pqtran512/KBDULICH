@@ -7,7 +7,7 @@ export const register = (payload) => async (dispatch) => { // register func. ret
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.REGISTER_SUCESS,
-                msg: 'Đăng ký thành công'
+                msg: 'success'
             })
         } else {
             dispatch({
@@ -18,7 +18,7 @@ export const register = (payload) => async (dispatch) => { // register func. ret
     } catch (error) {
         dispatch({
             type: actionTypes.REGISTER_FAIL,
-            msg: null
+            msg: error
         })
     }
 }
@@ -87,19 +87,19 @@ export const forgotPassword = (payload) => async (dispatch) => { // register fun
         const response = await apiForgotPassword(payload)
         if (response?.data.err === 0) {
             dispatch({
-                type: actionTypes.MAIL_SUCESS,
-                data: response.data.msg
+                type: actionTypes.CHANGEPASS_SUCESS,
+                msg: response.data.msg
             })
         } else {
             dispatch({
-                type: actionTypes.MAIL_FAIL,
-                data: response.data.msg
+                type: actionTypes.CHANGEPASS_FAIL,
+                msg: response.data.msg
             })
         }
     } catch (error) {
         dispatch({
-            type: actionTypes.MAIL_FAIL,
-            data: null
+            type: actionTypes.CHANGEPASS_FAIL,
+            msg: error
         })
     }
 }
@@ -110,18 +110,18 @@ export const changePassword = (payload) => async (dispatch) => { // register fun
         if (response?.data.err === 0) {
             dispatch({
                 type: actionTypes.CHANGEPASS_SUCESS,
-                data: response.data.token
+                msg: response.data.msg
             })
         } else {
             dispatch({
                 type: actionTypes.CHANGEPASS_FAIL,
-                data: response.data.msg
+                msg: response.data.msg
             })
         }
     } catch (error) {
         dispatch({
             type: actionTypes.CHANGEPASS_FAIL,
-            data: null
+            msg: error
         })
     }
 }

@@ -93,7 +93,7 @@ const STourList = () => {
                         </td>
                         <td className="hidden md:table-cell">
                             <div className='flex items-center'>
-                                <div>Tình trạng</div>
+                                <div>Trạng thái</div>
                                 <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
                                     onClick={() => sorting("isActive", tours_staff, setSortData, order, setOrder)}/> 
                             </div>

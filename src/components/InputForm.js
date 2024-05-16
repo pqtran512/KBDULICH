@@ -8,7 +8,7 @@ const InputForm = ({ width, label, asterisk, placeholder, type, value, setValue,
     const [focus, setFocus] = useState(false);
     return (
         <div className='relative'>
-            <label htmlFor={keyPayload} className='text-title-1 text-neutral-1-900'>{label}<span className='text-red-500'>{asterisk && ' *'}</span></label>
+            <label htmlFor={keyPayload} className='text-title-2 xl:text-title-1 text-neutral-1-900'>{label}<span className='text-red-500'>{asterisk && ' *'}</span></label>
             <input 
                 id={keyPayload}
                 type={type === 'password'? (visible? 'text' : 'password') : (type || 'text')}

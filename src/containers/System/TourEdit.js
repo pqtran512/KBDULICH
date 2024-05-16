@@ -10,19 +10,19 @@ import { getAllStaff } from '../../store/actions/userAction';
 import { requestEdit } from '../../store/actions/requestAction';
 
 const status = [
-    { value: 1, label: 'Active'},
-    { value: 2, label: 'Inactive' }
+    { value: true, label: 'Active'},
+    { value: false, label: 'Inactive' }
 ]
 const EditTour = () => {
     // PARAMS
     const {tourID} = useParams();
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { tour, msg_tour } = useSelector(state => state.tour)
+    const { tour, msg_tour, update_tour } = useSelector(state => state.tour)
     const { places } = useSelector(state => state.place)
     const { staffs } = useSelector(state => state.staff) 
     const { role } = useSelector(state => state.auth)
-    const { msg } = useSelector(state => state.request)  
+    const { msg, update } = useSelector(state => state.request)  
     const [invalidFields, setInvalidFields] = useState([])
     const [tourSchedule, setTourSchedule] = useState([])
     const [tourService, setTourService] = useState([])
@@ -36,7 +36,7 @@ const EditTour = () => {
         starting_date: '',
         bookingDeadline: '',
         departure: '',
-        place: destination, //'Bà Nà Hills - Cầu Rồng - Bán Đảo Sơn Trà',
+        place: destination,
         vehicle: '',
         seat_num: 0,
         night_num: 0,
@@ -53,6 +53,7 @@ const EditTour = () => {
     const [newProvinces, setNewProvinces] = useState([]);
     const [newPlaces, setNewPlaces] = useState([]);
     const [staffList, setStaffList] = useState([]);
+    const [submit, setSubmit] = useState(false)
     // FUNCTION
     useEffect(() => {
         dispatch(getAllPlaces())
@@ -150,8 +151,8 @@ const EditTour = () => {
                 </div>
             );
         }
-        invalidFields.length > 0 && invalidFields.some(i => i.name === 'tour_schedule')
-            && indents.push(<div className='pt-1 text-title-2 text-accent-3'>{invalidFields.find(i => i.name === 'tour_schedule')?.message}</div>);
+        invalidFields.length > 0 && invalidFields.some(i => i.name === 'schedule')
+            && indents.push(<div className='pt-1 text-title-2 text-accent-3'>{invalidFields.find(i => i.name === 'schedule')?.message}</div>);
         
         return indents;
     };
@@ -240,25 +241,74 @@ const EditTour = () => {
     const submitEdit = async () => {
         let invalids = validate(payload)
         if (invalids === 0){
-            console.log(payload)
-            if (role === 'staff') { dispatch(requestEdit(payload)) }
+            setSubmit(true)
+            if (role === 'staff') { 
+                let edit_info = {}
+                Object.keys(tour).forEach(key => {
+                    if (key !== 'staff' && key !== 'rating' && key !== 'cus_num' && key !== 'isActive') {
+                        if (key === 'starting_date') {
+                            if (JSON.stringify(tour.starting_date.split('-')) !== JSON.stringify(payload.starting_date.split('_'))) {
+                                // edit_info.push('starting_date');
+                                edit_info.starting_date = payload.starting_date.split('_').join('-');
+                            }
+                        }
+                        else if (key === 'bookingDeadline') {
+                            if (JSON.stringify(tour.bookingDeadline.split('-')) !== JSON.stringify(payload.bookingDeadline.split('_'))) {
+                                edit_info.bookingDeadline = payload.bookingDeadline.split('_').join('-');
+                            } 
+                        }
+                        else if (key === 'schedule') {
+                            const areEqual = tour[key].length === tourSchedule.length && tour[key].every((value, index) => value === tourSchedule[index]);
+                            console.log(areEqual, tour[key])
+                            if (!areEqual) {
+                                edit_info.schedule = tourSchedule;
+                            } 
+                        }
+                        else if (key === 'places') {
+                            if (tour.places.length === destination.length) {
+                                for (let i = 0; i < tour.places.length; i++) {
+                                    if(tour.places[i].name !== destination[i].label) {
+                                        edit_info.places = destination;
+                                        break;
+                                    }
+                                }
+                            }
+                            else {
+                                edit_info.places = destination;
+                            }
+                        }   
+                        else if (tour[key] !== payload[key]) {
+                            edit_info[key] = payload[key];
+                        }
+                    }
+                });
+                console.log(edit_info)
+                dispatch(requestEdit({
+                    edit_info: edit_info,
+                    tour_ID: tourID
+                })) 
+            }
             else { dispatch(tourUpdate(payload))}
         }
     };
     useEffect(() => {
-        if (msg === 'success') {
-            Swal.fire('Gửi yêu cầu thành công !', '', 'success').then((result) => {
-                navigate(`/staff/tour-detail/${tourID}`)
-            })
+        if (msg !== '' && submit) {
+            if (msg === 'success') {
+                Swal.fire('Gửi yêu cầu thành công !', '', 'success').then((result) => {
+                    navigate(`/staff/tour-detail/${tourID}`)
+                })
+            }
         }
-    }, [msg])
+    }, [msg, update])
     useEffect(() => {
-        if (msg_tour === 'success') {
-            Swal.fire('Đã cập nhật thông tin mới', '', 'success').then((result) => {
-                navigate(`/manager/tour-detail/${tourID}`)
-            })
+        if (msg_tour !== '' && submit) {
+            if (msg_tour === 'success') {
+                Swal.fire('Đã cập nhật thông tin mới', '', 'success').then((result) => {
+                    navigate(`/manager/tour-detail/${tourID}`)
+                })
+            }
         }
-    }, [msg_tour])
+    }, [msg_tour, update_tour])
     return (
         <div className='w-full px-6 pt-20 pb-10 xl:pt-7 xl:pb-20 lg:px-2 xl:pl-0 xl:pr-10 overflow-x-hidden'>
             <div className='pb-16'>
@@ -272,8 +322,21 @@ const EditTour = () => {
                         <div className='font-normal'>{tourID}</div>
                     </div>
                     <div className='flex gap-2 items-center'>
-                        <div className='font-semibold whitespace-nowrap'>Tình trạng:</div>
-                        <SelectInput options={status} myStyle='w-[100px]' style2={true} placeholder={tour.isActive? 'Active': 'Inactive'}  keyPayload='isActive' setValue={setPayload} />
+                        <div className='font-semibold whitespace-nowrap'>Trạng thái:</div>
+                        { role === 'staff' ?
+                            tour.isActive? 
+                            <div className="flex items-center gap-[6px]">
+                                <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
+                                Active
+                            </div>
+                            :
+                            <div className="flex items-center gap-[6px]">
+                                <div className='w-2 h-2 rounded-full bg-accent-3'></div>
+                                Inactive
+                            </div>
+                        : 
+                            <SelectInput options={status} myStyle='w-[100px]' style2={true} placeholder={tour.isActive? 'Active': 'Inactive'}  keyPayload='isActive' setValue={setPayload} />
+                        }
                     </div>  
                 </div>
                 <div className='grid grid-rows-2 gap-6 md:grid-rows-1 md:grid-cols-2'>
@@ -449,7 +512,7 @@ const EditTour = () => {
             
             <div className='flex gap-10 justify-center items-center pt-6 xl:pt-10'>
                 <Button2 text={`${role === 'staff' ? 'Gửi đề xuất' : 'Xác nhận'} `} textColor='text-white' bgColor='bg-[#363837]' onClick={submitEdit}/>
-                <Button2 text='Hủy' textColor='text-white' bgColor='bg-accent-3' onClick={() => {
+                <Button2 text='Trở về' textColor='text-white' bgColor='bg-accent-3' onClick={() => {
                         navigate(`/${role}/tour-detail/${tourID}`)
                 }}/>
             </div>

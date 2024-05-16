@@ -3,6 +3,9 @@ import actionTypes from "../actions/actionTypes";
 const initState = {
     staffs: [],
     staff: {},
+    msg: '',
+    add_data: {},
+    update: false // in case same msg is received
 }
 const staffReducer = (state = initState, action) => {
     switch (action.type) {
@@ -15,6 +18,19 @@ const staffReducer = (state = initState, action) => {
             return {
                 ...state,
                 staff: action.staff || {},
+            }
+        case actionTypes.STAFF_ADD:
+            return {
+                ...state,
+                msg: action.msg || '', 
+                add_data: action.data || {},
+                update: !state.update
+            }
+        case actionTypes.STAFF_UPDATE:
+            return {
+                ...state,
+                msg: action.msg || '',
+                update: !state.update
             }
         default:
             return state;

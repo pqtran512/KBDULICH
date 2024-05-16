@@ -7,8 +7,9 @@ const initState = {
     count_order_tourtype: 0,
     orders_customer: [],
     count_order_customer: 0,
-    msg: '',
-    order_data: ''
+    msg_order: '',
+    order_data: '',
+    update: false // in case same msg is received
 }
 const orderReducer = (state = initState, action) => {
     switch (action.type) {
@@ -34,11 +35,18 @@ const orderReducer = (state = initState, action) => {
                 ...state,
                 count_order_tourtype: action.count_order_tourtype || 0
             }
-        case actionTypes.ADD_ORDER:
+        case actionTypes.ORDER_ADD:
             return {
                 ...state,
-                msg: action.msg || '',
-                order_data: action.order_data || {}
+                msg_order: action.msg || '',
+                order_data: action.order_data || {},
+                update: !state.update
+            }
+        case actionTypes.ORDER_UPDATE:
+            return {
+                ...state,
+                msg_order: action.msg || '',
+                update: !state.update
             }
         default:
             return state;

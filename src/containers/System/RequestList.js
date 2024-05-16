@@ -28,7 +28,7 @@ const RequestList = () => {
         setLoading(true);
         setTimeout(() => {
             if (role === 'staff') {
-                dispatch(getRequestsByStaff({staff_ID: 'S_010'}))
+                dispatch(getRequestsByStaff())
                     .then(() => { setLoading(false);})
             }
             else {
@@ -37,7 +37,9 @@ const RequestList = () => {
         }, 300)
     }, [dispatch, role])
     useEffect(() => {
-        setSortData(requests)
+        if (requests.length > 0) {
+            requests && sorting("date", requests, setSortData, "asc", setOrder)
+        }
     }, [requests]);
     const indexOfLastPost = currentPage * dataPerPage;
     const indexOfFirstPost = indexOfLastPost - dataPerPage; 
@@ -143,7 +145,7 @@ const RequestList = () => {
                                 {role === 'staff' ? <></> : <td className='hidden md:table-cell pl-7'><Link to={`/manager/tour-detail/${r.staff_ID}`} className='text-accent-10 hover:text-accent-9'>{r.staff_ID}</Link></td>}
                                 <td className='hidden md:table-cell'>{r.typ}</td>
                                 <td className='hidden md:table-cell'>
-                                    <div className='text-white bg-secondary-2 text-caption-1 font-semibold w-fit pt-[1px] pb-0.5 px-2 rounded-full'>{requestStatus(r.status)}</div>
+                                    <div className={`${r.status === 1? 'bg-[#1ABB9C]' : r.status === -1? 'bg-accent-3' : 'bg-secondary-2' } text-white text-caption-1 font-semibold w-fit pt-[1px] pb-0.5 px-2 rounded-full`}>{requestStatus(r.status)}</div>
                                 </td>
                                 <td className='hidden xl:table-cell'>{splitDateTime(r.date)[0]}</td>
                                 {/* <td className='hidden xl:table-cell'></td> */}

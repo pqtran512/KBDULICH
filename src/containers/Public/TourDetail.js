@@ -26,6 +26,7 @@ const TourDetail = () => {
     const [countRelatedTour, setCountRelatedTour] = useState(0);
     const [count, setCount] = useState(0);
     const [feedbacksPerPage] = useState(4);
+    const [showOption, setShowOption] = useState(false);
     const [tourOption, setTourOption] = useState('detail');
     var settings = {
         dots: true,
@@ -310,7 +311,7 @@ const TourDetail = () => {
                                         <table className="tourtable table-auto text-body-2 xl:text-body-1">
                                             <thead>
                                                 <tr className="font-semibold tracking-wider">
-                                                    <td className="min-w-[41px] xl:min-w-[66px]">STT</td>
+                                                    <td className="w-[40px] xl:min-w-[66px]">STT</td>
                                                     <td className="xl:min-w-[130px]">Ngày khởi hành</td>
                                                     <td className="min-w-[94px] xl:min-w-[141px]">Giá</td>
                                                     <td className="min-w-[100px] xl:min-w-[128px]">Số chỗ</td>
@@ -326,7 +327,16 @@ const TourDetail = () => {
                                                                 <td>{splitDate(t.starting_date)[0]}/{splitDate(t.starting_date)[1]}/{splitDate(t.starting_date)[2]}</td>
                                                                 <td>{Number(t.price).toLocaleString()} đ</td>
                                                                 <td>Còn {t.seat_num - t.cus_num} chỗ</td>
-                                                                <td className='md:hidden'><BsThreeDotsVertical/></td>
+                                                                <td className='relative md:hidden'><BsThreeDotsVertical onClick={() => setShowOption(current => !current)}/>
+                                                                    {showOption && 
+                                                                        <div className='absolute'>
+                                                                            <Link to={`/tour-booking/${t.tour_ID}`} className="bg-primary-2 w-16 h-7 flex items-center justify-center rounded-md shadow-shad1 hover:bg-primary-1">
+                                                                                <div className="text-white text-body-2">Book</div></Link>
+                                                                            <Link to={`/tour-detail/${t.tour_ID}`}  className="bg-white w-16 h-7 flex items-center justify-center rounded-md shadow-btn hover:bg-neutral-3-50">
+                                                                                <div className="text-neutral-1-900 text-body-2">Chi tiết</div></Link>
+                                                                        </div>
+                                                                    }
+                                                                </td>
                                                                 <td className="gap-x-[11px] pt-4 hidden md:flex">
                                                                     <Link to={`/tour-booking/${t.tour_ID}`} className="bg-primary-2 w-16 h-7 flex items-center justify-center rounded-md shadow-shad1 hover:bg-primary-1">
                                                                         <div className="text-white text-body-2">Book</div></Link>
@@ -348,12 +358,11 @@ const TourDetail = () => {
                                     <div className="pb-8">
                                         <div className="pt-4 pb-2 font-semibold">* Trường hợp hủy vé landtour, quý khách vui lòng thanh toán các khoản sau:</div>
                                         <p className="text-caption-1 text-justify leading-5 tracking-wider md:text-[14px]">
-                                            - Quý khách chuyển đổi tour sang ngày khác và báo trước ngày khởi hành trước 15 ngày sẽ không chịu phí (không áp dụng các tour KS 4-5 sao), nếu trễ hơn sẽ căn cứ theo qui định hủy phạt phía dưới và chỉ được chuyển ngày khởi hành tour 1 lần.<br/>
                                             - Hủy vé trong vòng 24 giờ hoặc ngay ngày khởi hành, chịu phạt 100% tiền tour.<br/>
                                             - Hủy vé trước ngày khởi hành từ 2 - 7 ngày, chịu phạt 80% tiền tour.<br/>
                                             - Hủy vé trước ngày khởi hành từ 8 - 14 ngày, chịu phạt 50% tiền tour.<br/>
                                             - Hủy vé trước ngày khởi hành từ 15 ngày trở lên, chịu phạt 30% tiền tour.<br/>
-                                            - Sau khi hủy tour, du khách vui lòng đến nhận tiền trong vòng 15 ngày kể từ ngày kết thúc tour. Chúng tôi chỉ thanh toán trong khỏang thời gian nói trên.
+                                            - Sau khi hủy tour, du khách vui lòng kiểm tra email từ KBDulich hoặc đến nhận tiền trong vòng 15 ngày kể từ ngày kết thúc tour. Chúng tôi chỉ thanh toán trong khỏang thời gian nói trên.
                                         </p>
                                         <div className="pt-4 pb-2 font-semibold">* Quy định vé máy bay:</div>
                                         <p className="text-caption-1 text-justify leading-5 tracking-wider md:text-[14px]">
@@ -381,7 +390,7 @@ const TourDetail = () => {
                         </div>
                     </div>
                 </div>
-                <div className="pt-16">
+                <div className="pt-16 px-6 lg:px-2 2xl:px-0">
                     <div className="text-heading-2 leading-[42px] text-neutral-1-900 font-comfortaa font-semibold">Bình luận</div>
                     <div className="pt-6 flex items-center gap-1">
                         <div className="text-body-1 tracking-[0.2px] text-neutral-1-500 border-b border-neutral-1-500 w-fit">{getAvRating()}</div>

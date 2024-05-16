@@ -10,7 +10,7 @@ instance.interceptors.request.use(function (config) {
   // get token without " "
   let token = window.localStorage.getItem('persist:auth') && JSON.parse(window.localStorage.getItem('persist:auth'))?.token?.slice(1,-1) //?.slice(1,-1) // token: "abc" -> abc (using slice)
   // Assign token to header
-  console.log(token)
+  // console.log(token)
   config.headers = {
     authorization: token? `Bearer ${token}`: null
   }

@@ -14,14 +14,30 @@ const ResetPass2 = () => {
     })
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const { msg, update } = useSelector(state => state.staff)
+    const [submit, setSubmit] = useState(false)
 
     // FUNCTIONS
-    // validate inputs and call API
     const handleSubmit = async () => {
         let invalids = validate(payload)
-        // if (invalids === 0) 
-        //     dispatch(actions.login(payload))
+        if (invalids === 0) {
+            if (payload.password === payload.password2) {
+                setSubmit(true)
+                dispatch(actions.stafChangePassFirstLogin({password: payload.password}))
+            }
+            else {
+                Swal.fire('Oops !', 'Mật khẩu nhập lại không trùng khớp !', 'error')
+            }
+        }
     }
+    useEffect(() => {
+        if (msg === 'success' && submit) {
+            Swal.fire('Đổi mật khẩu thành công', 'Vui lòng đăng nhập lại !', 'success').then((result) => {
+                dispatch(actions.logout())
+                navigate('/system-auth/login')
+            })
+        }
+    }, [msg, update])
     // validate inputs function
     const validate = (payload) => {
         let invalids = 0 // number of invalid fields

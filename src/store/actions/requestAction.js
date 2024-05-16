@@ -33,9 +33,9 @@ export const getRequest = (id) => async (dispatch) => {
     }
 }
 
-export const getRequestsByStaff = (id) => async (dispatch) => {
+export const getRequestsByStaff = () => async (dispatch) => {
     try {
-        const response = await apiGetRequestsByStaff(id)
+        const response = await apiGetRequestsByStaff()
         dispatch({
             type: actionTypes.GET_REQUESTS_STAFF,
             requests: response.data
@@ -97,10 +97,18 @@ export const requestEdit = (payload) => async (dispatch) => {
 export const requestCancel = (payload) => async (dispatch) => {
     try {
         const response = await apiRequestCancel(payload)
-        dispatch({
-            type: actionTypes.REQUEST_ADD,
-            msg: response.data.msg
-        })
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.REQUEST_ADD,
+                msg: 'success'
+            })
+        }
+        else {
+            dispatch({
+                type: actionTypes.REQUEST_ADD,
+                msg: response.data.msg
+            })
+        }
     } catch (error) {
         dispatch({
             type: actionTypes.REQUEST_ADD,

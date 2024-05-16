@@ -37,6 +37,8 @@ const TourNew = () => {
         service: tourService,
         isActive: true,
     })
+    const [submit, setSubmit] = useState(false)
+    // Functions
     useEffect(() => {
         dispatch(getAllPlaces())
     }, [dispatch]);
@@ -108,9 +110,8 @@ const TourNew = () => {
     const handleSubmit = async () => {
         let invalids = validate(payload)
         if (invalids === 0) {
-            console.log(payload)
+            setSubmit(true)
             dispatch(requestAdd(payload))
-            
         }
     };
     const validate = (payload) => {
@@ -163,12 +164,14 @@ const TourNew = () => {
         return invalids
     }
     useEffect(() => {
-        if (msg === 'success') {
-            Swal.fire('Gửi thành công', '', 'success').then((result) => {
-                navigate('/staff/request')
-            })
+        if (msg !== '' && submit) {
+            if (msg === 'success' && submit) {
+                Swal.fire('Gửi thành công', '', 'success').then((result) => {
+                    navigate('/staff/request')
+                })
+            }
+            else { Swal.fire('Oops !', msg, 'error') }
         }
-        else { Swal.fire('Oops !', msg, 'error') }
     }, [msg])
     return (
         <div className='w-full px-6 pt-20 pb-10 xl:pt-7 xl:pb-20 lg:px-2 xl:pl-0 xl:pr-10 overflow-x-hidden'>

@@ -1,4 +1,5 @@
 export {default as Auth} from './Auth'
+export {default as Instruction} from './Instruction'
 export {default as Login} from './Login'
 export {default as Register} from './Register'
 export {default as ResetPass1} from './ResetPass1'

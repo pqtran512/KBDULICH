@@ -17,7 +17,7 @@ const RequestDetail = () => {
     const {requestID} = useParams();
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { request, msg } = useSelector(state => state.request)
+    const { request, msg, update } = useSelector(state => state.request)
     const { places } = useSelector(state => state.place)
     const { role } = useSelector(state => state.auth)
     const [invalidFields, setInvalidFields] = useState([])
@@ -42,7 +42,7 @@ const RequestDetail = () => {
         note: '',
         service: [],
         staff: '',
-        reason: 'Số lượng khách hàng đặt tour < 50% (10/50 khách).'
+        reason: ''
     })
     const types = [
         { value: 'Add', label: 'Add'},
@@ -54,6 +54,7 @@ const RequestDetail = () => {
     const [maxDay, setMaxDay] = useState(0)
     const [defaultDate, setDefaultDate] = useState('')
     const [defaultBookingDl, setBookingDl] = useState('')
+    const [submit, setSubmit] = useState(false)
     // FUNCTIONS
     useEffect(() => {
         dispatch(getAllPlaces())
@@ -102,6 +103,7 @@ const RequestDetail = () => {
             setBookingDl(myDate)
         }
         if (request?.staff_ID) { setPayload(prev => ({...prev, staff: request.staff_ID})) }
+        if (request?.reason) { setPayload(prev => ({...prev, reason: request.reason})) }
     }, [request])
     useEffect(() => {
         const max = Math.max(payload.day_num, payload.night_num)
@@ -181,6 +183,7 @@ const RequestDetail = () => {
             allowOutsideClick: () => !Swal.isLoading()
         }).then((result) => {
             if (result.isConfirmed) {
+                setSubmit(true)
                 dispatch(requestReply({
                     status: -1,
                     reply: result,
@@ -191,6 +194,7 @@ const RequestDetail = () => {
         })
     }
     const handleAccept = () => {
+        setSubmit(true)
         dispatch(requestReply({
             status: 1,
             reply: '',
@@ -198,13 +202,14 @@ const RequestDetail = () => {
         }))
     }
     useEffect(() => {
-        msg && role === 'manager' &&
+        if (msg !== '' && submit && role === 'manager') {
             Swal.fire(msg, '', 'success').then((result) => {
                 if (result.isConfirmed) {
                     navigate(`/manager/request`)
                 }
             })
-    }, [msg])
+        }
+    }, [msg, update])
     const getEditFields = (field) => {
         if (field === 'name') return 'Tên Tour'
         else if (field === 'departure') return 'Điểm xuất phát'
@@ -256,7 +261,7 @@ const RequestDetail = () => {
                         <div className='font-normal'>{request?.tour_ID}</div>
                     </div>
                     <div className='flex gap-2 items-center'>
-                        <div className='font-semibold whitespace-nowrap'>Tình trạng:</div>
+                        <div className='font-semibold whitespace-nowrap'>Trạng thái:</div>
                         {request?.tour_info?.isActive? 
                             <div className="flex items-center gap-[6px]">
                                 <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
@@ -499,11 +504,11 @@ const RequestDetail = () => {
                         }
                     </div>
                 </div>
-                <div className='flex flex-col gap-3'>
+                <div className='flex flex-col gap-3 text-accent-2'>
                     <div className='font-semibold'>Đã thay đổi: </div>
                     { request?.edit_fields?.map((item, idx) => {
                         return (
-                            <div key={idx} className='pl-5'>{getEditFields(item)} thành <span className='italic'>{request?.edit_info?.[item]}</span></div>
+                            <div key={idx} className='pl-5'>{getEditFields(item)} thành <span className='italic whitespace-pre-wrap'>{Array.isArray((request?.edit_info?.[item]))? request?.edit_info?.[item].join(', ') : request?.edit_info?.[item]}</span></div>
                         )
                     })}
                 </div>
@@ -533,11 +538,12 @@ const RequestDetail = () => {
                         <Button2 text='Gửi đề xuất' textColor='text-white' bgColor='bg-[#363837]' onClick={submitEdit}/>
                         : 
                         <></>
-                    :
+                    : request?.status === 0?
                     <>
                     <Button2 text='Đồng ý' textColor='text-black' bgColor='bg-accent-5' onClick={handleAccept}/>
                     <Button2 text='Từ chối' textColor='text-white' bgColor='bg-[#363837]' redBtn onClick={handleCancle}/>
                     </>
+                    : <></>
                 }
             </div>
         </div>

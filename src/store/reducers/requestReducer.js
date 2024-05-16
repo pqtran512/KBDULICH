@@ -24,7 +24,8 @@ const requestReducer = (state = initState, action) => {
         case actionTypes.REQUEST_REPLY:
             return {
                 ...state,
-                msg: action.msg
+                msg: action.msg,
+                update: !state.update
             }
         default:
             return state;

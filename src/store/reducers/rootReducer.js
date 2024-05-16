@@ -6,6 +6,7 @@ import feedbackReducer from "./feebackReducer";
 import placeReducer from "./placeReducer";
 import staffReducer from "./staffReducer";
 import requestReducer from "./requestReducer";
+import reportReducer from "./reportReducer";
 import { combineReducers } from "redux";
 import storage from 'redux-persist/lib/storage';
 import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
     feedback: feedbackReducer,
     place: placeReducer,
     staff: staffReducer,
-    request: requestReducer
+    request: requestReducer,
+    report: reportReducer
 })
 export default rootReducer

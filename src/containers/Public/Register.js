@@ -19,16 +19,17 @@ const Register = () => {
     })
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { isLoggedIn, msg, update, role } = useSelector(state => state.auth) // auth in rootReducer
+    const [submit, setSubmit] = useState(false)
+    const { msg, update} = useSelector(state => state.auth) // auth in rootReducer
 
     // FUNCTIONS
-    // validate inputs and call API
     const handleSubmit = async () => {
         let invalids = validate(payload)
-        if (invalids === 0) 
+        if (invalids === 0) {
+            setSubmit(true)
             dispatch(actions.register(payload)) 
+        }
     }
-    // validate inputs function
     const validate = (payload) => {
         let invalids = 0 // number of invalid fields
         let fields = Object.entries(payload) // tranform an object {key: value} to array [key, value]
@@ -134,18 +135,21 @@ const Register = () => {
         })
         return invalids
     } 
-    /// if isLoggedIn is true -> go to homepage
-    useEffect(() => {
-        isLoggedIn && navigate('/auth/login')
-    }, [isLoggedIn, role])
     // Popup msg when login failed
     useEffect(() => {
-        msg && Swal.fire('Oops !', msg, 'error')
+        if (msg !== '' && submit) {
+            if (msg === 'success')  {
+                Swal.fire('Đăng ký thành công', '', 'success').then((result) => {
+                    navigate('/auth/login')
+                })
+            }
+            else {Swal.fire('Oops !', msg, 'error')}
+        }
     }, [msg, update]) // variable in [] -> dependency -> run when 1 of them changes
 
     return (
-        <div className='mt-4 flex flex-col gap-3 bg-white w-[560px] rounded-xl p-8'>
-            <div className='text-header-1 font-bold'>ĐĂNG KÝ THÀNH VIÊN</div>
+        <div className='mt-4 flex flex-col gap-3 bg-white w-[350px] rounded-xl p-6 xl:p-8 xl:w-[550px]'>
+            <div className='text-header-2 font-bold xl:text-header-1'>ĐĂNG KÝ THÀNH VIÊN</div>
             <div className='flex gap-4'>
                 <InputForm 
                     invalidFields={invalidFields} 
@@ -212,7 +216,7 @@ const Register = () => {
                 mt
                 onClick={handleSubmit}
             />
-            <div className='text-body-1 mx-auto'>
+            <div className='text-body-2 xl:text-body-1 mx-auto'>
                 Bạn đã có tài khoản?  
                 <Link to={'/auth/login'} className='pl-1 text-primary-1 hover:text-secondary-1 cursor-pointer'>
                     Đăng nhập ngay

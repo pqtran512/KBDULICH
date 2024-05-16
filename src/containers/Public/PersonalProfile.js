@@ -7,6 +7,7 @@ import Swal from 'sweetalert2'
 import { getOrderOfCustomer, feedbackAdd } from '../../store/actions/orderFeedbackAction';
 import { splitDateTime } from '../../ultils/splitDateTime';
 import { getProvinceTitle } from '../../ultils/objectsToArr';
+import { orderCancel } from '../../store/actions/orderFeedbackAction';
 
 const { MdTour, FaStar, IoClose } = icons
 
@@ -22,13 +23,14 @@ const PersonalProfile = () => {
         reviews: '', 
     })
     const [isShown, setIsShown] = useState(false);
-    const { orders_customer } = useSelector(state => state.order)
+    const { orders_customer, msg_order, update } = useSelector(state => state.order)
     const { msg } = useSelector(state => state.feedback)
+    const [submitCancel, setSubmitCancel] = useState(false)
     // FUNCTION
     useEffect(() => {
         dispatch(getOrderOfCustomer())
     }, [dispatch])
-    const handleCancelBooking = async () => {
+    const handleCancelBooking = (orderID) => {
         Swal.fire({
             title: 'Chắc chắn ?',
             text: "Bạn chắc chắn muốn hủy đặt vé ?",
@@ -40,15 +42,24 @@ const PersonalProfile = () => {
             allowOutsideClick: () => !Swal.isLoading(),
         }).then((result) => {
             if (result.isConfirmed) {
-                // Swal.fire('Hủy thành công', 'Vui lòng kiểm tra email trong vòng 7 ngày tới !', 'success')
+                setSubmitCancel(true)
+                dispatch(orderCancel({order_ID: orderID}))
             }
         })
     }
+    useEffect(() => {
+        if (msg_order === 'success' && submitCancel) {
+            Swal.fire('Hủy tour thành công', 'Vui lòng kiểm tra email trong vòng 15 ngày tới !', 'success')
+            dispatch(getOrderOfCustomer())
+            setSubmitCancel(false) 
+        }
+    }, [msg_order, update])
     // Handle feedback
     useEffect(() => {
         if (msg !== '') {
           if (msg === 'success') {
             Swal.fire('Gửi đánh giá thành công !', '', 'success').then((result) => {
+                dispatch(getOrderOfCustomer())
                 setIsShown(false);
                 document.body.style.overflow = "auto";
             })
@@ -59,7 +70,7 @@ const PersonalProfile = () => {
     const handleSubmitFeedback = async () => {
         let invalids = validate(payload)
         if (invalids === 0) {
-            dispatch(feedbackAdd({payload}))
+            dispatch(feedbackAdd(payload))
         }
     }
     const validate = (payload) => {
@@ -148,7 +159,7 @@ const PersonalProfile = () => {
                                                 textColor='text-white' 
                                                 bgColor='bg-accent-3'
                                                 redBtn
-                                                onClick={handleCancelBooking}
+                                                onClick={() => handleCancelBooking(order.order.order_ID)}
                                             />
                                         </div>
                                     </div>
@@ -177,7 +188,7 @@ const PersonalProfile = () => {
                                         </div>
                                         <div className='flex justify-between items-end'>
                                             <div className='text-body-1 font-semibold'>Thành tiền: <span className='text-secondary-1'>{Number(order?.tour?.price*order?.order?.ticket_num).toLocaleString()} đ</span></div>
-                                            {!order.feedback.feedback_ID?
+                                            {order.feedback?
                                                 <button className='cursor-default py-2 px-8 rounded-md bg-[#919EAB] text-white'>Đã đánh giá</button>
                                             :
                                                 <Button 

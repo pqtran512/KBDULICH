@@ -4,7 +4,7 @@ export const apiGetOrderOfTour = (id) => new Promise(async (resolve, reject) => 
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: `/api/order/get_by_tour`,
+            url: `/api/tour/order/get_all`,
             data: id
         })
         resolve(response)
@@ -18,7 +18,7 @@ export const apiGetOrderOfCustomer = () => new Promise(async (resolve, reject) =
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: `/api/order/get_by_customer`
+            url: `/api/customer/order/get_all`
         })
         resolve(response)
 
@@ -45,7 +45,7 @@ export const apiCountByTourType = (id) => new Promise(async (resolve, reject) =>
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: `/api/order/count_by_tourtype`,
+            url: `/api/tour/type/order/count`,
             data: id
         })
         resolve(response)
@@ -69,12 +69,40 @@ export const apiOrderAdd = (payload) => new Promise(async (resolve, reject) => {
     }
 })
 
+export const apiOrderUpdate = (payload) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/order/update',
+            data: payload
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
+
+export const apiOrderCancel = (payload) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/order/cancel',
+            data: payload
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
+
 // Feedback
 export const apiGetFeedbackByTourType = (type_id) => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: `/api/feedback/get_by_tourtype`,
+            url: `/api/tour/type/feedback/get_all`,
             data: type_id
         })
         resolve(response)

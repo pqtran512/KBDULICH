@@ -18,7 +18,9 @@ const TourDetail = () => {
     const dispatch = useDispatch()
     const { tour } = useSelector(state => state.tour)
     const { role } = useSelector(state => state.auth)
+    const { msg } = useSelector(state => state.request) 
     const navigate = useNavigate()
+    const [submit, setSubmit] = useState(false)
     // FUNCTIONS
     useEffect(() => {
         dispatch(getTour({tour_ID: tourID}))
@@ -37,41 +39,44 @@ const TourDetail = () => {
         indents.push(<div key={des.length-1} className='font-normal'>{des[des.length-1].name}</div>);
         return indents;
     };
-    const handleCancle = () => {
-        if (role === 'staff') {
-            Swal.fire({
-                title: "Lí do hủy Tour",
-                input: "text",
-                inputAttributes: {
-                  spellcheck: "false"
-                },
-                showCancelButton: true,
-                confirmButtonText: "Gửi",
-                cancelButtonText: "Hủy",
-                showLoaderOnConfirm: true,
-                allowOutsideClick: () => !Swal.isLoading(),
-                inputValidator: (value) => {
-                    if (!value) {
-                      return "Vui lòng điền lí do hủy Tour!";
-                    }
-                  }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    console.log('reason', result.value)
-                    requestCancel({
-                        reason: result.value,
-                        tour_ID: tourID
-                    })
-                    Swal.fire('Gửi thành công', '', 'success')
+    const handleActivate = () => {
+        Swal.fire({
+            title: "Lí do hủy Tour",
+            input: "text",
+            inputAttributes: {
+                spellcheck: "false"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Gửi",
+            cancelButtonText: "Hủy",
+            showLoaderOnConfirm: true,
+            allowOutsideClick: () => !Swal.isLoading(),
+            inputValidator: (value) => {
+                if (!value) {
+                    return "Vui lòng điền lí do hủy Tour!";
                 }
-            })
-        }
-        else {
-            Swal.fire('Hủy Tour thành công', '', 'success') 
-        }  
+                }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setSubmit(true)
+                dispatch(requestCancel({
+                    reason: result.value,
+                    tour_ID: tourID
+                }))
+            }
+        })
     }
+    useEffect(() => {
+        if (msg !== '' && submit) {
+            if (msg === 'success') {
+                Swal.fire('Gửi thành công', '', 'success').then((result) => {
+                    setSubmit(false)
+                })
+            }
+        }
+    }, [msg])
     return (
-        <div className='w-full px-6 pt-20 pb-10 xl:pt-7 lg:px-2 xl:pl-0 xl:pr-10 overflow-x-hidden'>
+        <div className='w-full px-6 pt-20 pb-10 xl:pb-20 xl:pt-7 lg:px-2 xl:pl-0 xl:pr-10 overflow-x-hidden'>
             <div className='pb-16'>
                 <div className='font-prata text-neutral-1-900 font-semibold text-header-1 border-b-2 border-neutral-2-200 pb-1 w-full px-4 rounded-xl shadow-title xl:text-heading-4'>Thông tin Tour</div>
             </div>
@@ -80,7 +85,7 @@ const TourDetail = () => {
                 <div className='grid grid-rows-2 gap-6 md:grid-rows-1 md:grid-cols-2'>
                     <div className='font-semibold'>Mã tour: <span className='font-normal'>{tour?.tour_ID}</span></div>
                     <div className='flex gap-2 items-center'>
-                        <div className='font-semibold whitespace-nowrap'>Tình trạng:</div>
+                        <div className='font-semibold whitespace-nowrap'>Trạng thái:</div>
                         {tour.isActive? 
                             <div className="flex items-center gap-[6px]">
                                 <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
@@ -178,7 +183,9 @@ const TourDetail = () => {
             
             <div className='pt-6 xl:pt-10 flex gap-28 xl:gap-8 justify-center items-center'>
                 <Button2 text='Chỉnh sửa thông tin tour' textColor='text-black' bgColor='bg-accent-5' onClick={goToEditMode}  />
-                <Button2 text={`${role === 'staff' ? 'Đề xuất hủy tour' : 'Hủy tour'} `} textColor='text-white' bgColor='bg-[#363837]' onClick={handleCancle}/>
+                {tour?.isActive && role === 'staff' &&
+                    <Button2 text='Đề xuất hủy tour' textColor='text-white' bgColor='bg-[#363837]' onClick={handleActivate}/>
+                }
             </div>
             { role === 'staff' ? <CustomerList /> : <></> }
         </div>

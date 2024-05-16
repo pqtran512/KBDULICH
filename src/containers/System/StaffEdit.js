@@ -1,37 +1,38 @@
 import React, { useState, useEffect } from 'react'
-import { Button2, InputForm, Datepicker, SearchBar } from '../../components';
+import { Button2, InputForm, Datepicker } from '../../components';
 import Swal from 'sweetalert2'
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
-import icons from '../../ultils/icons';
-
-const { CgArrowsExchangeAltV } = icons
+import { getStaff, staffUpdate } from '../../store/actions/userAction'
 
 const StaffEdit = () => {
     // PARAMS
     const {staffID} = useParams();
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const [invalidFields, setInvalidFields] = useState([])
-    const { staff } = useSelector(state => state.staff)
+    const { staff, msg, update } = useSelector(state => state.staff)
     const [payload, setPayload] = useState({
         staff_ID: staffID, 
         firstName: '',
         lastName: '',
         gender: '',
         dateOfBirth: '', 
-        phone_no: '',
-        email: '',
-        isActive: true
+        phone_no: ''
     })
     const [defaultDate, setDefaultDate] = useState('')
-    const genders = ['Nam', 'Nữ'] // available vehicles
+    const [submit, setSubmit] = useState(false)
+    const genders = ['Nam', 'Nữ']
+    
     // FUNCTIONS
+    useEffect(() => {
+        dispatch(getStaff({staff_ID: staffID}))
+    }, [dispatch, staffID])
     useEffect(() => {
         if (staff.firstName) { setPayload(prev => ({...prev, firstName: staff.firstName})) }
         if (staff.lastName) { setPayload(prev => ({...prev, lastName: staff.lastName})) }
         if (staff.gender) { setPayload(prev => ({...prev, gender: staff.gender})) }
-        if (staff.phone_no) { setPayload(prev => ({...prev, phone_no: '0'+staff.phone_no})) }
-        if (staff.email) { setPayload(prev => ({...prev, email: staff.email})) }
+        if (staff.phone_no) { setPayload(prev => ({...prev, phone_no: staff.phone_no})) }
         if (staff.dateOfBirth) { 
             const [year, month, day] = staff.dateOfBirth.split('-');
             setPayload(prev => ({...prev, dateOfBirth: year+'_'+month+'_'+day}))
@@ -40,11 +41,82 @@ const StaffEdit = () => {
         }
     }, [staff])
     const submitEdit = async () => {
-        Swal.fire('Đã lưu thay đổi', '', 'success').then((result) => {
-            navigate('/manager/staff-detail/'+staffID)
-        })
-        // console.log(payload)
+        let invalids = validate(payload)
+        if (invalids === 0) {
+            setSubmit(true)
+            dispatch(staffUpdate(payload))
+        }
     };
+    const validate = (payload) => {
+        let invalids = 0 // number of invalid fields
+        let fields = Object.entries(payload) // tranform an object {key: value} to array [key, value]
+        fields.forEach(item => {
+            switch (item[0]) {
+                case 'firstName':
+                    if (item[1] === '') { // item[1] is the value field
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Bạn chưa nhập tên !'
+                        }])
+                        invalids++
+                    }
+                    break;
+                case 'lastName':
+                    if (item[1] === '') { // item[1] is the value field
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Bạn chưa nhập họ !'
+                        }])
+                        invalids++
+                    }
+                    break;
+                case 'dateOfBirth':
+                    if (item[1] === '') { // item[1] is the value field
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Bạn chưa chọn ngày tháng năm sinh !'
+                        }])
+                        invalids++
+                    }
+                    break;
+                case 'phone_no':
+                    if (item[1] === '') { // item[1] is the value field
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Bạn chưa nhập số điện thoại !'
+                        }])
+                        invalids++
+                    }
+                    else {
+                        if (!(/^[0-9]+$/.test(item[1]))) {
+                            setInvalidFields(prev => [...prev, {
+                                name: item[0],
+                                message: 'Số điện thoại không hợp lệ !'
+                            }])
+                            invalids++
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        })
+        return invalids
+    }
+    useEffect(() => {
+        if (msg !== '' && submit) {
+            if (msg === 'success') {
+                Swal.fire('Đã lưu thay đổi', '', 'success').then((result) => {
+                    navigate('/manager/staff-detail/'+staffID)
+                })
+            }
+            else { 
+                Swal.fire('Oops !', 'Lỗi đầu vào ! Vui lòng thử lại !', 'error')
+                setSubmit(false) 
+            }
+        }
+    }, [msg, update])
+
     return (
         <div className='w-full px-6 pt-20 pb-10 xl:pt-7 xl:pb-20 lg:px-2 xl:pl-0 xl:pr-10 overflow-x-hidden'>
             <div className='pb-16 flex gap-5 items-center'>
@@ -92,7 +164,7 @@ const StaffEdit = () => {
                                 else {
                                     return (
                                         <label key={i}><input type="radio" name="gender" value={item} className='w-2 h-2 md:w-3 md:h-3 accent-black cursor-pointer'
-                                                onChange={(e) => setPayload(prev => ({...prev, 'vehicle': e.target.value}))}
+                                                onChange={(e) => setPayload(prev => ({...prev, 'gender': e.target.value}))}
                                         />{' ' + item}</label>
                                     )
                                 }
@@ -119,21 +191,13 @@ const StaffEdit = () => {
                     </div>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Email:</div>
-                        <InputForm 
-                            invalidFields={invalidFields} 
-                            setInvalidFields={setInvalidFields}  
-                            value={payload.email}
-                            setValue={setPayload} 
-                            keyPayload={'email'}
-                            width='w-64'
-                            style2={true}
-                        />
+                        <div className='font-normal'>{staff?.email}</div>
                     </div>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Tình trạng:</div>
                         <div className="flex items-center gap-[6px]">
                             <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
-                            {payload.isActive ? 'Active' : 'Inactive'}
+                            {staff?.isActive ? 'Active' : 'Inactive'}
                         </div>
                     </div>
                 </div>
@@ -141,55 +205,6 @@ const StaffEdit = () => {
             <div className='pt-8 flex gap-10 justify-center items-center'>
                 <Button2 text='Lưu thay đổi' textColor='text-white' bgColor='bg-[#363837]' onClick={submitEdit}/>
                 <Button2 text='Hủy' textColor='text-white' bgColor='bg-accent-3' onClick={() => navigate('/manager/staff-detail/'+staffID)}/>
-            </div>
-            <div className='pt-16'>
-                <div className='pb-1 font-prata text-neutral-1-900 font-semibold border-b-2 border-neutral-2-200 w-full px-4 rounded-xl shadow-title text-header-2 md:text-header-1'>Các Tour phụ trách</div>
-                <div className='pt-6 w-full flex justify-end'>
-                    <SearchBar placeholder='Nhập ..' newPlaceholder='Nhập tìm kiếm . . .' width='w-12 md:w-24 xl:w-28' change={true} newWidth='w-[380px] md:w-[380px] xl:w-[620px]' 
-                        optionBar={true} id={true} tour={true} 
-                    />
-                </div>
-                <div className='pb-3 text-body-1 text-neutral-1-900'>Tổng số: 2</div>
-                <table className="mb-8 mytable2 w-full text-body-2 md:mytable xl:text-body-1">
-                    <tr className="h-10 font-semibold tracking-wider bg-neutral-3-200">
-                        <td><div className='flex items-center'>
-                            <div>#</div>
-                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/> 
-                        </div></td>
-                        <td><div className='flex items-center'>
-                            <div className='whitespace-nowrap'>Mã Tour</div>
-                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/> 
-                        </div></td>
-                        <td><div className='flex items-center gap-2'>
-                            <div>Tên Tour</div>
-                            <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/> 
-                        </div></td>
-                        <td className="hidden md:table-cell">Tình trạng</td>  
-                    </tr>
-                    <tr className='h-12 border-b-2 border-neutral-2-200'>
-                        <td>1</td>
-                        <td>T_048</td>
-                        <td><Link to={'/manager/tour-detail'} className='block text-accent-10 hover:text-accent-9'>Du lịch Bà Nà Hills - Cầu Rồng - Bán Đảo Sơn Trà</Link></td>
-                        <td className="hidden md:table-cell">
-                            <div className="flex items-center gap-[6px]">
-                                <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
-                                Active
-                            </div>
-                        </td>
-                    </tr>
-                    <tr className='h-12 border-b-2 border-neutral-2-200'>
-                        <td>2</td>
-                        <td>T_064</td>
-                        <td><Link to={'/manager/tour-detail'} className='block text-accent-10 hover:text-accent-9'>Du lịch Bà Nà Hills - Cầu Rồng - Bán Đảo Sơn Trà</Link></td>
-                        <td className="hidden md:table-cell">
-                            <div className="flex items-center gap-[6px]">
-                                <div className='w-2 h-2 rounded-full bg-accent-3'></div>
-                                Inactive
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                
             </div>
         </div>
     )

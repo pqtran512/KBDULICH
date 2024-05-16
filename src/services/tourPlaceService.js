@@ -5,7 +5,7 @@ export const apiGetToursCondition = (query) => new Promise(async (resolve, rejec
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: `/api/tour/get_by_condition`,
+            url: `/api/customer/tour/condition`,
             data: query // param: query
         })
         resolve(response)
@@ -19,7 +19,7 @@ export const apiGetToursRating = () => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/tour/highest_ratings',
+            url: '/api/customer/tour/highest_ratings',
         })
         resolve(response)
 
@@ -46,7 +46,7 @@ export const apiGetByName = (name) => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/tour/get_by_name',
+            url: '/api/customer/tour/name',
             data: name 
         })
         resolve(response)
@@ -60,7 +60,7 @@ export const apiGetTourByStaff = (id) => new Promise(async (resolve, reject) => 
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/tour/get_by_staff',
+            url: '/api/staff/tour/get_all',
             data: id 
         })
         resolve(response)
@@ -74,7 +74,7 @@ export const apiGetTourByStaffID = (id) => new Promise(async (resolve, reject) =
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/tour/get_by_staffID',
+            url: '/api/manager/tour/staffID',
             data: id 
         })
         resolve(response)
@@ -88,7 +88,7 @@ export const apiTourUpdate = (payload) => new Promise(async (resolve, reject) =>
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/tour/update',
+            url: '/api/manager/tour/update',
             data: payload
         })
         resolve(response)

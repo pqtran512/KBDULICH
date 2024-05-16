@@ -1,13 +1,13 @@
 import actionTypes from "../actions/actionTypes";
 
 const initState = {
-    isRegister: false,
     isLoggedIn: false,
     role: '',
     token: null,
     refresh_token: null,
     msg: '',
     refresh_msg: '',
+    change: false,
     update: false // in case same msg is received
 }
 const authReducer = (state = initState, action) => {
@@ -15,8 +15,14 @@ const authReducer = (state = initState, action) => {
         case actionTypes.REGISTER_SUCESS:
             return {
                 ...state,
-                isRegister: true,
-                msg: action.msg
+                msg: action.msg || ''
+            }
+        case actionTypes.REGISTER_FAIL:
+            return {
+                ...state,
+                role: '',
+                msg: action.msg || '',
+                update: !state.update
             }
         case actionTypes.LOGIN_SUCESS:
             return {
@@ -26,14 +32,6 @@ const authReducer = (state = initState, action) => {
                 token: action.token,
                 refresh_token: action.refresh_token,
                 msg: ''
-            }
-        case actionTypes.REGISTER_FAIL:
-            return {
-                ...state,
-                isRegister: false,
-                role: '',
-                msg: action.msg,
-                update: !state.update
             }
         case actionTypes.LOGIN_FAIL:
             return {
@@ -79,6 +77,20 @@ const authReducer = (state = initState, action) => {
                 refresh_token: action.refresh_token,
                 refresh_msg: action.refresh_msg,
                 role: action.role
+            }
+        case actionTypes.CHANGEPASS_SUCESS:
+            return {
+                ...state,
+                msg: action.msg || '',
+                change: true,
+                update: !state.update
+            }
+        case actionTypes.CHANGEPASS_FAIL:
+            return {
+                ...state,
+                msg: action.msg || '',
+                change: false,
+                update: !state.update
             }
         default:
             return state;

@@ -1,5 +1,5 @@
 import {Routes,Route} from "react-router-dom";
-import { Auth, Login, ResetPass1, ResetPass2, Register, Home, Homepage, Search, TourDetail, TourBooking, TourBooking2, TourBooking3, News, NewsDetail, PersonalProfile, Contact} from "./containers/Public";
+import { Auth, Login, ResetPass1, ResetPass2, Register, Home, Homepage, Search, TourDetail, TourBooking, TourBooking2, TourBooking3, News, NewsDetail, PersonalProfile, Contact, Instruction} from "./containers/Public";
 import { SystemLogin, SystemResetPass1, SystemResetPass2, SystemHome, STourList, SysTourDetail, TourNew, RequestList, RequestDetail, MTourList, StaffDetail, StaffList, StaffNew, Report, Account, CustomerDetail, TourEdit, StaffEdit, SystemAuth } from "./containers/System";
 import { path } from "./ultils/constant";
 import * as actions from './store/actions'
@@ -35,7 +35,7 @@ function App() {
     return () => clearInterval(interval)
   }, [isLoggedIn, loading]) 
   useEffect(() => {
-    if (refresh_msg !== '') alert(refresh_msg);
+    if (refresh_msg && refresh_msg !== '') alert(refresh_msg);
   }, [refresh_msg])
   useEffect(() => {
     setTimeout(() => {
@@ -46,10 +46,11 @@ function App() {
     <div>
       <Routes>
         <Route path={path.AUTH} element={<Auth/>} >
+          <Route path={path.INSTRUCTION} element={<Instruction/>} />
           <Route path={path.LOGIN} element={<Login/>} />
           <Route path={path.REGISTER} element={<Register/>} />
           <Route path={path.RESETPASS1} element={<ResetPass1/>} />
-          <Route path={path.RESETPASS2} element={<ResetPass2/>} />
+          <Route path={path.RESETPASS2_TOKEN} element={<ResetPass2/>} />
         </Route>
         <Route path={path.SYSTEM_AUTH} element={<SystemAuth/>} >
           <Route path={path.LOGIN} element={<SystemLogin/>} />

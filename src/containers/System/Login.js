@@ -15,19 +15,25 @@ const Login = () => {
     })
     const dispatch = useDispatch()
     const { isLoggedIn, msg, update, role } = useSelector(state => state.auth) // auth in rootReducer
+    const {currentData} = useSelector(state => state.user)
     const navigate = useNavigate()
+    const [submit, setSubmit] = useState(false)
 
     // FUNCTIONS
     // validate inputs and call API
     const handleSubmitManager = async () => {
         let invalids = validate(payload)
-        if (invalids === 0)
+        if (invalids === 0) {
+            setSubmit(true)
             dispatch(actions.managerLogin(payload))
+        }
     }
     const handleSubmitStaff = async () => {
         let invalids = validate(payload)
-        if (invalids === 0)
+        if (invalids === 0) {
+            setSubmit(true)
             dispatch(actions.staffLogin(payload))
+        }
     }
     // validate inputs function
     const validate = (payload) => {
@@ -69,11 +75,17 @@ const Login = () => {
     } 
     // if isLoggedIn is true -> go to homepage
     useEffect(() => {
-        isLoggedIn && role !== 'customer' && navigate('/'+role)
-    }, [isLoggedIn, role, navigate])
+        if (isLoggedIn && currentData.email && role !== 'customer') {
+            console.log(currentData)
+            if (role === 'staff' && currentData.firstLogin) {
+                navigate('/system-auth/reset_pass2')
+            }
+            else {navigate('/'+role)}
+        }   
+    }, [isLoggedIn, currentData, role, navigate])
     // Popup msg when login failed
     useEffect(() => {
-        msg && Swal.fire('Oops !', msg, 'error')
+        msg && submit && Swal.fire('Oops !', msg, 'error')
     }, [msg, update]) // variable in [] -> dependency -> run when 1 of them changes
 
     return (

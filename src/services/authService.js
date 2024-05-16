@@ -42,8 +42,8 @@ export const apiRefreshToken = (payload) => new Promise(async(resolve, reject) =
 export const apiForgotPassword = (payload) => new Promise(async(resolve, reject) => {
     try {
         const response = await axiosConfig({
-            method: 'get',
-            url: '/api/customer/forgot-password',
+            method: 'post',
+            url: '/api/customer/forget_pass/',
             data: payload // payload: email
         })
         resolve(response)
@@ -56,8 +56,8 @@ export const apiChangePassword = (payload) => new Promise(async(resolve, reject)
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/customer/forgot-password',
-            data: payload // payload: email
+            url: '/api/customer/change_pass/',
+            data: payload
         })
         resolve(response)
     } catch (error) {

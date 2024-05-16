@@ -10,7 +10,7 @@ const Datepicker = ({width, height, top, defaultValue, setValue, keyPayload, bgC
   return (
     <div className='relative'>
       <DatePicker
-          placeholderText="Chọn ngày"
+          placeholderText={format === 'yyyy'? "Chọn năm" : "Chọn ngày"}
           selected={startDate? startDate : (defaultValue? defaultValue : startDate)}
           onChange={(date) => {
             setStartDate(date)

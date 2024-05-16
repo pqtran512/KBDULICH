@@ -52,13 +52,89 @@ export const staffAdd = (payload) => async (dispatch) => {
         const response = await apis.apiStaffAdd(payload)
         if (response?.data.err === 0) {
             dispatch({
-                type: actionTypes.TOUR_UPDATE,
-                msg: 'success'
+                type: actionTypes.STAFF_ADD,
+                msg: 'success',
+                data: response.data.msg
+            })
+        }
+        else {
+            dispatch({
+                type: actionTypes.STAFF_ADD,
+                msg: 'fail'
             })
         }
     } catch (error) {
         dispatch({
-            type: actionTypes.TOUR_UPDATE,
+            type: actionTypes.STAFF_ADD,
+            msg: error
+        })
+    }
+}
+
+export const staffUpdate = (payload) => async (dispatch) => {
+    try {
+        const response = await apis.apiStaffUpdate(payload)
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.STAFF_UPDATE,
+                msg: 'success'
+            })
+        }
+        else {
+            dispatch({
+                type: actionTypes.STAFF_UPDATE,
+                msg: 'fail'
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.STAFF_UPDATE,
+            msg: error
+        })
+    }
+}
+
+export const staffActivate = (payload) => async (dispatch) => {
+    try {
+        const response = await apis.apiStaffActivate(payload)
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.STAFF_UPDATE,
+                msg: 'success'
+            })
+        }
+        else {
+            dispatch({
+                type: actionTypes.STAFF_UPDATE,
+                msg: 'fail'
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.STAFF_UPDATE,
+            msg: error
+        })
+    }
+}
+
+export const stafChangePassFirstLogin = (payload) => async (dispatch) => {
+    try {
+        const response = await apis.apiStaffChangePassFirstLogin(payload)
+        if (response?.data.err === 0) {
+            dispatch({
+                type: actionTypes.STAFF_UPDATE,
+                msg: 'success'
+            })
+        }
+        else {
+            dispatch({
+                type: actionTypes.STAFF_UPDATE,
+                msg: 'fail'
+            })
+        }
+    } catch (error) {
+        dispatch({
+            type: actionTypes.STAFF_UPDATE,
             msg: error
         })
     }

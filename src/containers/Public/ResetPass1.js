@@ -3,24 +3,36 @@ import { Link } from 'react-router-dom'
 import { InputForm, Button } from '../../components'
 import * as actions from '../../store/actions'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 
 const ResetPass1 = () => {
     // PARAMETERS
     // check inputs
+    const dispatch = useDispatch()
     const [invalidFields, setInvalidFields] = useState([])
     const [payload, setPayload] = useState({ 
         email: '',
     })
-    const navigate = useNavigate()
+    const {change, msg, update } = useSelector(state => state.auth) // auth in rootReducer
+    const [submit, setSubmit] = useState(false)
     // FUNCTIONS
-    // validate inputs and call API
+    useEffect(() => {
+        console.log(change, msg)
+        if (change) {
+            msg && submit && Swal.fire('Gửi email thành công !', msg, 'success')
+            setSubmit(false)
+        }
+        else {
+            msg && submit && Swal.fire('Oops !', msg, 'error')
+            setSubmit(false)
+        }
+    }, [change, msg, update]) // variable in [] -> dependency -> run when 1 of them changes
     const handleSubmit = async () => {
         let invalids = validate(payload)
-        if (invalids === 0) 
-        //     dispatch(actions.changePassword(payload))
-            navigate('/auth/reset_pass2') 
+        if (invalids === 0) {
+            setSubmit(true)
+            dispatch(actions.forgotPassword(payload))
+        }
     }
     // validate inputs function
     const validate = (payload) => {
@@ -46,7 +58,7 @@ const ResetPass1 = () => {
     } 
 
     return (
-        <div className='mt-10 flex flex-col gap-5 bg-white w-[550px] rounded-xl p-8'>
+        <div className='mt-10 flex flex-col gap-5 bg-white w-[350px] rounded-xl p-6 xl:p-8 xl:w-[550px]'>
             <div className='text-header-1 font-bold'>QUÊN MẬT KHẨU</div>
             <InputForm 
                 invalidFields={invalidFields} 

@@ -8,21 +8,24 @@ import Swal from 'sweetalert2'
 
 const Login = () => {
     // PARAMETERS
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     const [invalidFields, setInvalidFields] = useState([])
     const [payload, setPayload] = useState({ 
         username: '',
         password: ''
     })
-    const dispatch = useDispatch()
     const { isLoggedIn, msg, update, role } = useSelector(state => state.auth) // auth in rootReducer
-    const navigate = useNavigate()
+    const [submit, setSubmit] = useState(false)
 
     // FUNCTIONS
     // validate inputs and call API
     const handleSubmit = async () => {
         let invalids = validate(payload)
-        if (invalids === 0)
+        if (invalids === 0) {
+            setSubmit(true)
             dispatch(actions.login(payload))
+        }
     }
     // validate inputs function
     const validate = (payload) => {
@@ -77,11 +80,11 @@ const Login = () => {
     }, [isLoggedIn, role, navigate])
     // Popup msg when login failed
     useEffect(() => {
-        msg && Swal.fire('Oops !', msg, 'error')
+        msg && submit && Swal.fire('Oops !', msg, 'error')
     }, [msg, update]) // variable in [] -> dependency -> run when 1 of them changes
 
     return (
-        <div className='mt-10 flex flex-col gap-5 bg-white w-[550px] rounded-xl p-8'>
+        <div className='mt-10 flex flex-col gap-5 bg-white w-[350px] rounded-xl p-6 xl:p-8 xl:w-[550px]'>
             <div className='text-header-1 font-bold'>ĐĂNG NHẬP THÀNH VIÊN</div>
             <InputForm 
                 invalidFields={invalidFields} 
@@ -112,7 +115,7 @@ const Login = () => {
                 mt
                 onClick={handleSubmit}
             />
-            <div className='text-body-1 mx-auto'>
+            <div className='text-body-2 xl:text-body-1 mx-auto'>
                 Bạn chưa có tài khoản?  
                 <Link to={'/auth/register'} className='pl-1 text-primary-1 hover:text-secondary-1 cursor-pointer'>
                     Đăng ký ngay

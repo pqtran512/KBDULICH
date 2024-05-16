@@ -10,10 +10,10 @@ const Paypal = ({payload, tour}) => {
   const paypal = useRef();
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { msg, order_data } = useSelector(state => state.order)
+  const { msg_order, order_data, update } = useSelector(state => state.order)
   useEffect(() => {
-      if (msg !== '' && order_data) {
-        if (msg === 'success') {
+      if (msg_order !== '' && order_data) {
+        if (msg_order === 'success') {
           Swal.fire({
             title: "Thanh toán thành công",
             icon: "success",
@@ -55,9 +55,9 @@ const Paypal = ({payload, tour}) => {
             }
           })
         }
-        else Swal.fire('Oops !', msg, 'error')
+        else Swal.fire('Oops !', msg_order, 'error')
       }
-  }, [msg])
+  }, [msg_order, update])
   useEffect(() => {
     window.paypal
       .Buttons({

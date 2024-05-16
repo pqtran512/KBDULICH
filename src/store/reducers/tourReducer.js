@@ -11,7 +11,8 @@ const initState = {
     tours_name: [],
     count_name: 0,
     tours_staff: [],
-    msg_tour: ''
+    msg_tour: '',
+    update_tour: false // in case same msg is received
 }
 const tourReducer = (state = initState, action) => {
     switch (action.type) {
@@ -46,7 +47,8 @@ const tourReducer = (state = initState, action) => {
         case actionTypes.TOUR_UPDATE:
             return {
                 ...state,
-                msg_tour: action.msg || ''
+                msg_tour: action.msg || '',
+                update_tour: !state.update_tour
         }
         default:
             return state;

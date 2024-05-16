@@ -4,7 +4,7 @@ export const apiGetAllRequests = () => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: `/api/request/get_all`
+            url: `/api/manager/request/get_all`
         })
         resolve(response)
 
@@ -27,12 +27,11 @@ export const apiGetRequest = (id) => new Promise(async (resolve, reject) => {
     }
 })
 
-export const apiGetRequestsByStaff = (id) => new Promise(async (resolve, reject) => {
+export const apiGetRequestsByStaff = () => new Promise(async (resolve, reject) => {
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/request/get_by_staffID',
-            data: id 
+            url: '/api/staff/request/get_all'
         })
         resolve(response)
 
@@ -45,7 +44,7 @@ export const apiRequestAdd = (payload) => new Promise(async (resolve, reject) =>
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/request/add_req/add',
+            url: '/api/staff/request/add/add',
             data: payload
         })
         resolve(response)
@@ -59,7 +58,7 @@ export const apiRequestEdit = (payload) => new Promise(async (resolve, reject) =
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/request/edit/add',
+            url: '/api/staff/request/edit/add',
             data: payload
         })
         resolve(response)
@@ -73,7 +72,7 @@ export const apiRequestCancel = (payload) => new Promise(async (resolve, reject)
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/request/cancel/add',
+            url: '/api/staff/request/cancel/add',
             data: payload
         })
         resolve(response)
@@ -87,7 +86,7 @@ export const apiRequestReply = (payload) => new Promise(async (resolve, reject) 
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/request/reply',
+            url: '/api/manager/request/reply',
             data: payload
         })
         resolve(response)

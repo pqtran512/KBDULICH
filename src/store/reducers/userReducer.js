@@ -1,25 +1,19 @@
 import actionTypes from "../actions/actionTypes";
 
 const initState = {
-    currentData: {},
-    msg: ''
+    currentData: {}
 }
 const userReducer = (state = initState, action) => {
     switch (action.type) {
         case actionTypes.GET_CURRENT:
             return {
                 ...state,
-                currentData: action.currentData || {}, // if currentData is null -> empty array
+                currentData: action.currentData || {},
             }
         case actionTypes.LOGOUT:
             return {
                 ...state,
                 currentData: {} 
-            }
-        case actionTypes.STAFF_ADD:
-            return {
-                ...state,
-                msg: action.msg || '' // if currentData is null -> empty array
             }
         default:
             return state;

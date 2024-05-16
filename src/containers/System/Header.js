@@ -3,7 +3,7 @@ import icons from '../../ultils/icons';
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import * as actions from '../../store/actions'
-import blueLogo from '../../assets/img/header-footer/logo-white.png'
+import whiteLogo from '../../assets/img/header-footer/logo-white.png'
 import avatarMan from '../../assets/img/header-footer/avatar-man.png'
 import avatarWoman from '../../assets/img/header-footer/avatar-woman.png'
 import avatar from '../../assets/img/header-footer/avatar.png'
@@ -30,7 +30,7 @@ const Header = () => {
                 <div className='h-[55px] px-6 flex justify-between items-center lg:px-2 2xl:px-0'>
                     <div className='flex items-center'>
                         <Link to={`${role === 'staff'? '/staff' : '/manager'}`} >
-                            <img className='w-12 h-8 object-contain md:w-[65px] md:h-[40px]' src={blueLogo} alt='logo'/>
+                            <img className='w-12 h-8 object-contain md:w-[65px] md:h-[40px]' src={whiteLogo} alt='logo'/>
                         </Link>
                         <Link to={`${role === 'staff'? '/staff' : '/manager'}`} >
                             <span className='font-vampiroOne text-[20px] text-white tracking-[0.72px] uppercase pl-2 md:pl-[10px] md:text-[24px] md:tracking-[0.7px]'>

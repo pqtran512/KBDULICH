@@ -5,6 +5,8 @@ export const path = {
     REGISTER: 'register',
     RESETPASS1: 'reset_pass1',
     RESETPASS2: 'reset_pass2',
+    RESETPASS2_TOKEN: 'reset_pass2/:token',
+    INSTRUCTION: 'instruction',
 
     HOME: '/*',
     SEARCH: 'search',

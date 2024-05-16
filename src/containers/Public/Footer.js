@@ -49,7 +49,7 @@ const Footer = () => {
                             </div>
                             <div className='xl:pl-[120px]'>
                                 <div className='pb-2 font-semibold text-white text-title-2 md:pb-4 md:text-title-1'>DỊCH VỤ</div>
-                                <div className='text-neutral-1-300 text-header-1 md:text-header-2 xl:w-[218px]'>
+                                <div className='text-neutral-1-300 text-title-1 md:text-header-2 xl:w-[218px]'>
                                     <Link to={'/search'} className='block pb-2 md:pb-4'>Tour du lịch</Link>
                                     <Link to={'/news'} className='block pb-2 md:pb-4'>Tin tức du lịch</Link>
                                     <Link to={'/contact'} className='block pb-2 md:pb-4'>Liên hệ</Link>
