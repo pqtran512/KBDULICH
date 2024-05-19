@@ -46,7 +46,7 @@ const Report = () => {
                 setLoadingIncome(false);
             })
         dispatch(getToursRating())
-    }, [dispatch, selectedYear])
+    }, [dispatch, selectedYear.year])
     return (
         <div className='w-full px-6 pt-20 xl:pt-7 pb-20 xl:px-0 xl:pr-10 overflow-x-hidden'>
             <div className='pb-6 font-prata text-neutral-1-900 font-semibold text-header-1 md:text-heading-4'>Báo cáo và Thống kê</div>

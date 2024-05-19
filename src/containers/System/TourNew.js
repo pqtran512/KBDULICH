@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button2, InputForm, Datepicker, SelectInput } from '../../components';
+import { Button2, InputForm, CheckedBox, Datepicker, SelectInput } from '../../components';
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
@@ -97,7 +97,6 @@ const TourNew = () => {
         return indents;
     };
     const handle_addDestination = () => {
-        console.log(newPlaces[0].value)
         const newDes = [...destination, newPlaces[0].value];
         setDestination(newDes)
     }
@@ -326,16 +325,23 @@ const TourNew = () => {
                 <div className='flex gap-2 md:gap-5 xl:gap-8'>
                     <div className='font-semibold'>Dịch vụ bao gồm:</div>
                     <div className='flex flex-wrap justify-between gap-y-2 md:gap-5 xl:gap-16'>
-                        { services?.map((item, idx) => {
-                            return (
-                                <div key={idx} className='flex gap-1 items-center'>
-                                    <input type="checkbox" value={item} className='w-3 h-3 xl:w-4 xl:h-4 accent-black'
-                                        onChange={(e) => {setTourService([...tourService, item])}}
-                                    />
-                                    <div>{item}</div>
-                                </div>
-                            )
-                        })}
+                        { services?.map((item, i) => {
+                                if (tourService?.includes(item)) {
+                                    return (
+                                        <CheckedBox key={i} value={item} label={item} setValue={setTourService} keyValue={tourService} color={'accent-black'}/>
+                                    )
+                                }
+                                else {
+                                    return (
+                                        <div key={i} className='flex gap-1 items-center'>
+                                            <input type="checkbox" value={item} className='w-3 h-3 xl:w-4 xl:h-4 accent-black'
+                                                onChange={() => {setTourService([...tourService, item])}}/>
+                                            <div>{item}</div>
+                                        </div>
+                                    )
+                                }
+                            })
+                        }
                     </div>
                 </div>
             </div>

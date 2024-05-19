@@ -72,6 +72,7 @@ const TourDetail = () => {
                 Swal.fire('Gửi thành công', '', 'success').then((result) => {
                     setSubmit(false)
                 })
+                navigate('/staff/request')
             }
         }
     }, [msg])

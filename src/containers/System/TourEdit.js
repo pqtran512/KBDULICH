@@ -5,7 +5,7 @@ import Swal from 'sweetalert2'
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
 import { getTour, getAllPlaces, tourUpdate } from '../../store/actions/tourPlaceAction'
-import { provinceObjects, placeObjects, staffObjects } from '../../ultils/objectsToArr';
+import { provinceObjects, staffObjects } from '../../ultils/objectsToArr';
 import { getAllStaff } from '../../store/actions/userAction';
 import { requestEdit } from '../../store/actions/requestAction';
 
@@ -36,7 +36,6 @@ const EditTour = () => {
         starting_date: '',
         bookingDeadline: '',
         departure: '',
-        place: destination,
         vehicle: '',
         seat_num: 0,
         night_num: 0,
@@ -44,14 +43,13 @@ const EditTour = () => {
         schedule: [],
         note: '',
         service: [],
-        staff: '',
+        staff_ID: '',
         isActive: 0
     })
     const [maxDay, setMaxDay] = useState(0)
     const [defaultDate, setDefaultDate] = useState('')
     const [defaultBookingDl, setBookingDl] = useState('')
     const [newProvinces, setNewProvinces] = useState([]);
-    const [newPlaces, setNewPlaces] = useState([]);
     const [staffList, setStaffList] = useState([]);
     const [submit, setSubmit] = useState(false)
     // FUNCTION
@@ -63,8 +61,6 @@ const EditTour = () => {
         if (places) {
             const province_arr = provinceObjects(places)
             setNewProvinces(province_arr)
-            const place_arr = placeObjects(places)
-            setNewPlaces(place_arr)
             const staffArr = staffObjects(staffs)
             setStaffList(staffArr)
         }
@@ -99,18 +95,7 @@ const EditTour = () => {
             const myDate = new Date(Date.UTC(year, month - 1, day)); 
             setBookingDl(myDate)
         }
-        if (tour.staff) { setPayload(prev => ({...prev, staff: tour.staff.staff_ID})) }
-        if (tour.places) { 
-            let arr = []
-            for (var i = 0; i < tour.places.length; i++) {
-                arr = [...arr, 
-                    {   label: tour.places[i].name,
-                        value: tour.places[i].place_ID
-                    }
-                ]
-            }
-            setDestination(arr)
-        }
+        if (tour.staff) { setPayload(prev => ({...prev, staff_ID: tour.staff.staff_ID})) }
     }, [tour])
     useEffect(() => {
         dispatch(getTour({tour_ID: tourID}))
@@ -132,6 +117,17 @@ const EditTour = () => {
         newSchedule[index] = e.target.value;
         setTourSchedule(newSchedule);
         setPayload(prev => ({...prev, schedule: tourSchedule}))
+    };
+    const showDestination= () => {
+        let des = tour.places;
+        var indents = [];
+        for (var i = 0; i < des.length - 1; i++) {
+            indents.push(
+                <div key={i} className='font-normal'>{des[i].name} - </div>
+            );
+        }
+        indents.push(<div key={des.length-1} className='font-normal'>{des[des.length-1].name}</div>);
+        return indents;
     };
     const showSchedule = () => {
         var indents = [];
@@ -156,15 +152,6 @@ const EditTour = () => {
         
         return indents;
     };
-    const handle_addDestination = () => {
-        const newDes = [...destination, newPlaces[0].value];
-        setDestination(newDes)
-    }
-    const handle_delDestination = (i) => {
-        const delDes = [...destination];
-        delDes.splice(i, 1)
-        setDestination(delDes)
-    }
     const validate = (payload) => {
         let invalids = 0 // number of invalid fields
         let fields = Object.entries(payload) // tranform an object {key: value} to array [key, value]
@@ -259,7 +246,6 @@ const EditTour = () => {
                         }
                         else if (key === 'schedule') {
                             const areEqual = tour[key].length === tourSchedule.length && tour[key].every((value, index) => value === tourSchedule[index]);
-                            console.log(areEqual, tour[key])
                             if (!areEqual) {
                                 edit_info.schedule = tourSchedule;
                             } 
@@ -282,7 +268,6 @@ const EditTour = () => {
                         }
                     }
                 });
-                console.log(edit_info)
                 dispatch(requestEdit({
                     edit_info: edit_info,
                     tour_ID: tourID
@@ -383,20 +368,7 @@ const EditTour = () => {
                 </div>
                 <div className='flex flex-wrap gap-2 items-center'>
                     <div className='font-semibold'>Điểm đến:</div>
-                    {destination?.map((item, i) => {
-                        return (
-                        <div className='relative' key={i + 1}>
-                            {newPlaces.length > 0 && <SelectInput options={newPlaces} myStyle='w-28 xl:w-52' style2={true} defaultValue={item} idx={i} arr={destination} setArr={setDestination}/>}
-                            {i > 0 && 
-                                <div className="bg-white flex items-center justify-center cursor-pointer absolute -top-2 -right-2" onClick={() => handle_delDestination(i)}>
-                                    <i className="twi-22-x-circle-fill text-[17px] text-accent-3 text-center"></i>
-                                </div>
-                            }
-                        </div>
-                        )
-                    })}
-                    <div className='cursor-pointer rounded-md bg-black text-white text-[20px] text-center w-5 pb-1 ml-2 hover:bg-accent-5 hover:text-black'
-                        onClick={handle_addDestination}>+</div>    
+                    <>{tour?.places && showDestination()}</>   
                 </div>
                 <div className='flex gap-2 items-center'>
                     <div className='font-semibold whitespace-nowrap'>Phương tiện:</div>
@@ -501,12 +473,12 @@ const EditTour = () => {
                     : 
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Nhân viên đảm nhận:</div>
-                        <SelectInput options={staffList} myStyle='w-60' placeholder={tour?.staff?.lastName + ' ' + tour?.staff?.firstName} keyPayload='staff' setValue={setPayload} /> 
+                        <SelectInput options={staffList} myStyle='w-60' placeholder={tour?.staff?.lastName + ' ' + tour?.staff?.firstName} keyPayload='staff_ID' setValue={setPayload} /> 
                     </div>
                 }
                 <div className='flex gap-2 items-center'>
                     <div className='font-semibold'>Rating:</div>
-                    <div className='font-normal'>4.0</div> {/* data */} 
+                    <div className='font-normal'>{tour?.rating}</div>
                 </div>
             </div>
             

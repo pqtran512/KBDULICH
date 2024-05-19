@@ -150,7 +150,7 @@ const RequestList = () => {
                                 <td className='hidden xl:table-cell'>{splitDateTime(r.date)[0]}</td>
                                 {/* <td className='hidden xl:table-cell'></td> */}
                                 <td><FaArrowUpRightFromSquare onClick={() => navigate(`/${role}/request-detail/${r.request_ID}`)} className='ml-5 text-[12px] text-neutral-1-600 hover:text-neutral-1-500 cursor-pointer xl:text-[14px]'/></td>
-                                {role === 'staff' ? <td><MdContentCopy className='cursor-pointer text-neutral-1-800 hover:text-neutral-1-700 text-[15px] xl:text-[17px]' onClick={() => handleDuplicate(r.request_ID)} /></td> : <></>}
+                                {role === 'staff' && r.typ !== 'cancel' ? <td><MdContentCopy className='cursor-pointer text-neutral-1-800 hover:text-neutral-1-700 text-[15px] xl:text-[17px]' onClick={() => handleDuplicate(r.request_ID)} /></td> : <></>}
                             </tr>
                         )
                     })}

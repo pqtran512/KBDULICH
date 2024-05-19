@@ -11,8 +11,9 @@ const Paypal = ({payload, tour}) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { msg_order, order_data, update } = useSelector(state => state.order)
+  const [submit, setSubmit] = useState(false)
   useEffect(() => {
-      if (msg_order !== '' && order_data) {
+      if (msg_order !== '' && order_data && submit) {
         if (msg_order === 'success') {
           Swal.fire({
             title: "Thanh toán thành công",
@@ -35,19 +36,19 @@ const Paypal = ({payload, tour}) => {
                     phone_num: payload.phone,
                     tour_name: tour.name,
                     tour_days: tour.day_num + ' ngày ' + tour.night_num + ' đêm',
-                    tour_order_id: order_data.order_ID, // data
+                    tour_order_id: order_data.order_ID, 
                     start_date: splitDate(tour.starting_date)[0] + '/' + splitDate(tour.starting_date)[1] + '/' + splitDate(tour.starting_date)[2],
                     num_passenger: payload.ticket_num,
                     amount_money: Number(tour.price*payload.ticket_num).toLocaleString() + ' VND',
                 };
                 // Send the email using EmailJS
-                // emailjs.send(serviceId, templateId, templateParams, publicKey)
-                //     .then((response) => {
-                //         console.log('Email sent successfully!', response);
-                //     })
-                //     .catch((error) => {
-                //         console.error('Error sending email:', error);
-                //     });
+                emailjs.send(serviceId, templateId, templateParams, publicKey)
+                    .then((response) => {
+                        console.log('Email sent successfully!', response);
+                    })
+                    .catch((error) => {
+                        console.error('Error sending email:', error);
+                    });
                 navigate('/tour-booking3/'+ tour.tour_ID, { state: { 
                   ...order_data, 
                   total_bill: tour.price*payload.ticket_num 
@@ -81,6 +82,7 @@ const Paypal = ({payload, tour}) => {
                   ...payload,
                     pay_method: 'PayPal'
                 }
+                setSubmit(true)
                 dispatch(orderAdd(new_payload))
             });
         },

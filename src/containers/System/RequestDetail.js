@@ -4,13 +4,17 @@ import { Button2, InputForm, CheckedBox, Datepicker, SelectInput } from '../../c
 import Swal from 'sweetalert2'
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
-import { getRequest, requestReply } from '../../store/actions/requestAction'
+import { getRequest, requestReply, requestAdd, requestEdit } from '../../store/actions/requestAction'
 import { getAllPlaces } from '../../store/actions/tourPlaceAction'
 import { splitDate, splitDateTime } from '../../ultils/splitDateTime';
 import { provinceObjects, placeObjects } from '../../ultils/objectsToArr';
 import { requestStatus, requestStatusBg } from '../../ultils/requestStatus';
 
 const { FaCheck, FaClockRotateLeft } = icons
+const types = [
+    { value: 'add', label: 'Add'},
+    { value: 'edit', label: 'Edit' }
+]
 
 const RequestDetail = () => {
     // PARAMS
@@ -25,15 +29,16 @@ const RequestDetail = () => {
     const [requestService, setRequestService] = useState([])
     const services = ['Bảo hiểm', 'Bữa ăn', 'Xe đưa đón', 'Hướng dẫn viên', 'Vé tham quan'] // available services
     const vehicles = ['Xe 4 chỗ', 'Xe 7 chỗ', 'Xe khách', 'Máy bay'] // available vehicles
-    const [destination, setDestination] = useState(['Bà Nà Hills'])
+    const [destination, setDestination] = useState(['P_107'])
     const [isEdit, setIsEdit] = useState(false)
+    const [requestTyp, setRequestTyp] = useState('')
     const [payload, setPayload] = useState({ 
         name: '',
         price: 0,
         starting_date: '',
         bookingDeadline: '',
         departure: '',
-        tour_destination: destination, //'Bà Nà Hills - Cầu Rồng - Bán Đảo Sơn Trà',
+        place: destination, //'Bà Nà Hills - Cầu Rồng - Bán Đảo Sơn Trà',
         vehicle: '',
         seat_num: 0,
         night_num: 0,
@@ -44,17 +49,13 @@ const RequestDetail = () => {
         staff: '',
         reason: ''
     })
-    const types = [
-        { value: 'Add', label: 'Add'},
-        { value: 'Edit', label: 'Edit' },
-        { value: 'Cancel', label: 'Cancel'}
-    ]
     const [newProvinces, setNewProvinces] = useState([]);
     const [newPlaces, setNewPlaces] = useState([]);
     const [maxDay, setMaxDay] = useState(0)
     const [defaultDate, setDefaultDate] = useState('')
     const [defaultBookingDl, setBookingDl] = useState('')
     const [submit, setSubmit] = useState(false)
+    const [info, setInfo] = useState('tour_info')
     // FUNCTIONS
     useEffect(() => {
         dispatch(getAllPlaces())
@@ -91,19 +92,26 @@ const RequestDetail = () => {
             setMaxDay(Math.max(request.edit_info.day_num, request.edit_info.night_num))
         }
         if (request?.edit_info?.starting_date) { 
-            setPayload(prev => ({...prev, starting_date: request.edit_info.starting_date}))
             const [year, month, day] = request.edit_info.starting_date.split('-');
+            setPayload(prev => ({...prev, starting_date: year+'_'+month+'_'+day}))
             const myDate = new Date(Date.UTC(year, month - 1, day)); 
             setDefaultDate(myDate)
         }
         if (request?.edit_info?.bookingDeadline) { 
-            setPayload(prev => ({...prev, bookingDeadline: request.edit_info.bookingDeadline}))
             const [year, month, day] = request.edit_info.bookingDeadline.split('-');
+            setPayload(prev => ({...prev, bookingDeadline: year+'_'+month+'_'+day}))
             const myDate = new Date(Date.UTC(year, month - 1, day)); 
             setBookingDl(myDate)
         }
         if (request?.staff_ID) { setPayload(prev => ({...prev, staff: request.staff_ID})) }
         if (request?.reason) { setPayload(prev => ({...prev, reason: request.reason})) }
+        setRequestTyp(request?.typ)
+        if (request?.typ === 'add') {
+            setInfo('add_info')
+        }
+        else {
+            setInfo('tour_info')
+        }
     }, [request])
     useEffect(() => {
         const max = Math.max(payload.day_num, payload.night_num)
@@ -144,14 +152,14 @@ const RequestDetail = () => {
         return indents;
     };
     const showDestination= () => {
-        let des = destination;
+        let des = request[info].places; 
         var indents = [];
-        for (var i = 0; i < des.length - 1; i++) {  /* data */
+        for (var i = 0; i < des.length - 1; i++) {
             indents.push(
-                <div key={i} className='font-normal'>{des[i]} - </div>
+                <div key={i} className='font-normal'>{des[i].name} - </div>
             );
         }
-        indents.push(<div key={des.length-1} className='font-normal'>{des[des.length-1]}</div>);
+        indents.push(<div key={des.length-1} className='font-normal'>{des[des.length-1].name}</div>);
         return indents;
     };
     const handle_addDestination = () => {
@@ -166,12 +174,126 @@ const RequestDetail = () => {
     useEffect(() => {
         setPayload(prev => ({...prev, service: requestService}))
     }, [requestService])
+    useEffect(() => {
+        setPayload(prev => ({...prev, place: destination}))
+    }, [destination])
     const submitEdit = async () => {
-        setPayload(prev => ({...prev, tour_destination: destination}))
-        Swal.fire('Gửi thành công', '', 'success')
-        // navigate('/staff/request')
         console.log(payload)
+        let invalids = validate(payload)
+        if (invalids === 0) {
+            setSubmit(true)
+            if (requestTyp === 'add') {
+                dispatch(requestAdd(payload))
+            }
+            else {
+                let edit_info = {}
+                Object.keys(request.tour_info).forEach(key => {
+                    if (key !== 'staff' && key !== 'rating' && key !== 'cus_num' && key !== 'isActive' && key !== 'places') {
+                        if (key === 'starting_date') {
+                            if (JSON.stringify(request.tour_info.starting_date.split('-')) !== JSON.stringify(payload.starting_date.split('_'))) {
+                                // edit_info.push('starting_date');
+                                edit_info.starting_date = payload.starting_date.split('_').join('-');
+                            }
+                        }
+                        else if (key === 'bookingDeadline') {
+                            if (JSON.stringify(request.tour_info.bookingDeadline.split('-')) !== JSON.stringify(payload.bookingDeadline.split('_'))) {
+                                edit_info.bookingDeadline = payload.bookingDeadline.split('_').join('-');
+                            } 
+                        }
+                        else if (key === 'schedule') {
+                            const areEqual = request.tour_info[key].length === requestSchedule.length && request.tour_info[key].every((value, index) => value === requestSchedule[index]);
+                            if (!areEqual) {
+                                edit_info.schedule = requestSchedule;
+                            } 
+                        }  
+                        else if (request.tour_info[key] !== payload[key]) {
+                            edit_info[key] = payload[key];
+                        }
+                    }
+                });
+                dispatch(requestEdit({
+                    edit_info: edit_info,
+                    tour_ID: request.tour_ID
+                })) 
+            }
+        }
     };
+    useEffect(() => {
+        if (msg !== '' && submit) {
+            if (msg === 'success') {
+                Swal.fire('Gửi yêu cầu thành công !', '', 'success').then((result) => {
+                    navigate(`/staff/request`)
+                })
+            }
+        }
+    }, [msg, update])
+    const validate = (payload) => {
+        let invalids = 0 // number of invalid fields
+        let fields = Object.entries(payload) // tranform an object {key: value} to array [key, value]
+        fields.forEach(item => {
+            switch (item[0]) {
+                case 'name':
+                    if (item[1] === '') { // item[1] is the value field
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Bạn chưa nhập tên Tour !'
+                        }])
+                        invalids++
+                    }
+                    break;
+                case 'price':
+                    if (item[1] === '') { // item[1] is the value field
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Bạn chưa nhập giá Tour !'
+                        }])
+                        invalids++
+                    }
+                    break;
+                case 'starting_date':
+                    if (item[1] === '') { // item[1] is the value field
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Bạn chưa chọn ngày khởi hành !'
+                        }])
+                        invalids++
+                    }
+                    break;
+                case 'bookingDeadline':
+                    if (item[1] === '') { // item[1] is the value field
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Bạn chưa chọn ngày hạn chót đặt tour !'
+                        }])
+                        invalids++
+                    }
+                    break;
+                case 'departure':
+                    if (item[1] === '') { // item[1] is the value field
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Bạn chưa nhập điểm xuất phát !'
+                        }])
+                        invalids++
+                    }
+                    break;
+                case 'schedule':
+                    for (let i = 0; i < item[1].length; i++) {
+                        if (item[1][i] === '') { 
+                            setInvalidFields(prev => [...prev, {
+                                name: item[0],
+                                message: 'Bạn chưa nhập lịch trình ngày ' + (i+1) + ' !'
+                            }])
+                            invalids++
+                        }
+                    } 
+                    break;
+                default:
+                    break;
+            }
+        })
+        return invalids
+    }
     const handleCancle = () => {
         Swal.fire({
             title: "Lí do từ chối",
@@ -231,8 +353,8 @@ const RequestDetail = () => {
             <div className='pb-8 flex gap-5 items-center'>
                 <div className='w-full flex justify-between gap-5 xl:gap-10'>
                     <div className='font-prata text-neutral-1-900 font-semibold text-header-1 border-b-2 border-neutral-2-200 pb-1 w-full px-4 rounded-xl shadow-title xl:text-heading-4'>{ isEdit ? 'Tạo Đề xuất mới' : 'Thông tin Đề xuất'}</div>
-                    { isEdit ? 
-                        <SelectInput options={types} myStyle='w-[124px] uppercase tracking-wide' style3={true} placeholder={types[0].value} />
+                    { request?.typ && isEdit ? 
+                        <SelectInput options={types} myStyle='w-[124px] uppercase tracking-wide' style3={true} placeholder={request?.typ} setVar={setRequestTyp}/>
                         : <div className='font-prata pt-2 px-[10px] rounded-md bg-accent-4 uppercase text-white font-semibold text-body-1 tracking-[.14em] md:text-title-2'>{request?.typ}</div>
                     }
                 </div> 
@@ -255,26 +377,28 @@ const RequestDetail = () => {
             }
             <div className='mt-6 relative text-body-2 text-neutral-1-900 flex flex-col gap-6 mx-auto px-4 py-6 border-[3px] border-secondary-2 rounded-b-2xl rounded-tr-2xl xl:text-body-1'>
                 <div className='absolute -top-6 left-0.5 bg-gradient-to-tr from-secondary-2 to-accent-4 border border-white outline-offset-2 outline outline-[3px] outline-secondary-2 rounded-t-xl w-[100px] h-5'></div>
-                <div className='grid grid-rows-2 gap-6 md:grid-rows-1 md:grid-cols-2'>
-                    <div className='flex flex-wrap gap-2 items-center'>
-                        <div className='font-semibold'>Mã tour: </div>
-                        <div className='font-normal'>{request?.tour_ID}</div>
+                { requestTyp === 'edit' &&
+                    <div className='grid grid-rows-2 gap-6 md:grid-rows-1 md:grid-cols-2'>
+                        <div className='flex flex-wrap gap-2 items-center'>
+                            <div className='font-semibold'>Mã tour: </div>
+                            <div className='font-normal'>{request?.tour_ID}</div>
+                        </div>
+                        <div className='flex gap-2 items-center'>
+                            <div className='font-semibold whitespace-nowrap'>Trạng thái:</div>
+                            {request?.tour_info?.isActive? 
+                                <div className="flex items-center gap-[6px]">
+                                    <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
+                                    Active
+                                </div>
+                                :
+                                <div className="flex items-center gap-[6px]">
+                                    <div className='w-2 h-2 rounded-full bg-accent-3'></div>
+                                    Inactive
+                                </div>
+                            }
+                        </div>  
                     </div>
-                    <div className='flex gap-2 items-center'>
-                        <div className='font-semibold whitespace-nowrap'>Trạng thái:</div>
-                        {request?.tour_info?.isActive? 
-                            <div className="flex items-center gap-[6px]">
-                                <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
-                                Active
-                            </div>
-                            :
-                            <div className="flex items-center gap-[6px]">
-                                <div className='w-2 h-2 rounded-full bg-accent-3'></div>
-                                Inactive
-                            </div>
-                        }
-                    </div>  
-                </div>
+                }
                 <div className={`grid grid-rows-2 gap-6 ${isEdit? 'md:grid-rows-1 md:grid-cols-2' : ''}`}>
                     <div className='flex flex-wrap gap-2 items-center w-'>
                         <div className='font-semibold'>Tên chương trình: </div>
@@ -289,7 +413,7 @@ const RequestDetail = () => {
                                 style2={true}
                             />
                             :
-                            <div className='font-normal'>{request?.tour_info?.name}</div>
+                            <div className='font-normal'>{request[info]?.name}</div>
                         }
                     </div>
                     <div className='flex gap-2 items-center'>
@@ -310,7 +434,7 @@ const RequestDetail = () => {
                             VNĐ
                             </>
                             :
-                            <div className='font-norma'>{Number(request?.tour_info?.price).toLocaleString()} VNĐ</div>
+                            <div className='font-normal'>{Number(request[info]?.price).toLocaleString()} VNĐ</div>
                         }
                     </div>
                 </div>
@@ -320,7 +444,7 @@ const RequestDetail = () => {
                         {isEdit? 
                             <Datepicker width='w-[148px]' height='h-7' top='top-[6px]' outline min={true} defaultValue={defaultDate} keyPayload='starting_date' setValue={setPayload} />
                             :
-                            request && <div className='font-normal'>{splitDate(request.tour_info?.starting_date)[0]}/{splitDate(request.tour_info?.starting_date)[1]}/{splitDate(request?.tour_info?.starting_date)[2]}</div>
+                            request && <div className='font-normal'>{splitDate(request[info]?.starting_date)[0]}/{splitDate(request[info]?.starting_date)[1]}/{splitDate(request[info]?.starting_date)[2]}</div>
                         }
                     </div>
                     <div className='flex gap-2 items-center'>
@@ -328,7 +452,7 @@ const RequestDetail = () => {
                         {isEdit? 
                             <Datepicker width='w-[148px]' height='h-7' top='top-[6px]' outline min={true} defaultValue={defaultBookingDl} keyPayload='bookingDeadline' setValue={setPayload} />
                             :
-                            request && <div className='font-normal'>{splitDate(request.tour_info?.bookingDeadline)[0]}/{splitDate(request.tour_info?.bookingDeadline)[1]}/{splitDate(request?.tour_info?.bookingDeadline)[2]}</div>
+                            request && <div className='font-normal'>{splitDate(request[info]?.bookingDeadline)[0]}/{splitDate(request[info]?.bookingDeadline)[1]}/{splitDate(request[info]?.bookingDeadline)[2]}</div>
                         }
                     </div>
                 </div>
@@ -337,18 +461,18 @@ const RequestDetail = () => {
                     {isEdit? 
                         <SelectInput options={newProvinces} myStyle='w-40 xl:w-52' style2={true} placeholder={payload.departure} />
                         :
-                        <div className='font-normal'>{request?.tour_info?.departure}</div>
+                        <div className='font-normal'>{request[info]?.departure}</div>
                     }
                 </div>
                 <div className='flex flex-wrap gap-2 items-center'>
                     <div className='font-semibold'>Điểm đến:</div>
-                    {isEdit? 
+                    {isEdit && requestTyp === 'add'? 
                         <>
                             {destination?.map((item, i) => {
                                 if (item !== '') {
                                     return (
-                                    <div className='relative' key={i + 1}>
-                                        {newPlaces?.length > 0 && <SelectInput options={newPlaces} myStyle='w-28 xl:w-52' style2={true} placeholder={item} />}
+                                        <div className='relative' key={i + 1}>
+                                        {newPlaces.length > 0 && <SelectInput options={newPlaces} myStyle='w-28 xl:w-52' style2={true} defaultValue={newPlaces[0]} idx={i} arr={destination} setArr={setDestination}/>}
                                         {i > 0 && 
                                             <div className="bg-white flex items-center justify-center cursor-pointer absolute -top-2 -right-2" onClick={() => handle_delDestination(i)}>
                                                 <i className="twi-22-x-circle-fill text-[17px] text-accent-3 text-center"></i>
@@ -363,7 +487,7 @@ const RequestDetail = () => {
                                 onClick={handle_addDestination}>+</div>   
                         </>
                         :
-                        <>{showDestination()}</>
+                        <>{request[info] && showDestination()}</>
                     }
                 </div>
                 <div className={`flex ${isEdit? 'gap-4 xl:gap-16' : 'gap-2'} items-center`}>
@@ -391,7 +515,7 @@ const RequestDetail = () => {
                                 }
                             })
                             :
-                            <div className='font-normal'>{request?.tour_info?.vehicle}</div>
+                            <div className='font-normal'>{request[info]?.vehicle}</div>
                         }
                     </div>
                 </div>
@@ -439,14 +563,14 @@ const RequestDetail = () => {
                                 />đêm
                             </>
                             :
-                            <div className='font-normal'>{request?.tour_info?.day_num} ngày {request?.tour_info?.night_num} đêm</div>
+                            <div className='font-normal'>{request[info]?.day_num} ngày {request[info]?.night_num} đêm</div>
                         }
                     </div>  
                     <div className='font-semibold pl-5 xl:pl-10'>Mô tả chi tiết:</div>
                     { isEdit ? 
                         <>{showSchedule()}</>
                         : 
-                        request?.tour_info?.schedule?.map((item, i) => {
+                        request[info]?.schedule?.map((item, i) => {
                             return (
                                 <div key={i} className='pl-5 xl:pl-10'>
                                     <div className='italic'>Ngày {i+1}:</div>
@@ -469,7 +593,7 @@ const RequestDetail = () => {
                             style2={true}
                         />
                         :
-                        <div className='font-normal'>{request?.tour_info?.note}</div>
+                        <div className='font-normal'>{request[info]?.note}</div>
                     }
                 </div>
                 <div className='flex gap-2 md:gap-5 xl:gap-8'>
@@ -493,7 +617,7 @@ const RequestDetail = () => {
                                 }
                             })
                         : 
-                            request?.tour_info?.service?.map((item, idx) => {
+                            request[info]?.service?.map((item, idx) => {
                                 return (
                                     <div key={idx} className='flex gap-1 items-center'>
                                         <FaCheck color={'black'} className='text-[14px] md:text-[16px]'/>
@@ -504,14 +628,17 @@ const RequestDetail = () => {
                         }
                     </div>
                 </div>
-                <div className='flex flex-col gap-3 text-accent-2'>
-                    <div className='font-semibold'>Đã thay đổi: </div>
-                    { request?.edit_fields?.map((item, idx) => {
-                        return (
-                            <div key={idx} className='pl-5'>{getEditFields(item)} thành <span className='italic whitespace-pre-wrap'>{Array.isArray((request?.edit_info?.[item]))? request?.edit_info?.[item].join(', ') : request?.edit_info?.[item]}</span></div>
-                        )
-                    })}
-                </div>
+                {request?.typ === 'edit' && !isEdit?
+                    <div className='flex flex-col gap-3 text-accent-2'>
+                        <div className='font-semibold'>Đã thay đổi: </div>
+                        { request?.edit_fields?.map((item, idx) => {
+                            return (
+                                <div key={idx} className='pl-5'>{getEditFields(item)} thành <span className='italic whitespace-pre-wrap'>{Array.isArray((request?.edit_info?.[item]))? request?.edit_info?.[item].join(', ') : request?.edit_info?.[item]}</span></div>
+                            )
+                        })}
+                    </div>
+                : <></>
+                }
                 { request?.typ === 'cancel'?
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Lí do đề xuất hủy:</div>

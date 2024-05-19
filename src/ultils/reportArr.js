@@ -21,16 +21,18 @@ export const dataReportArr = (data, filterBy, key) => {
 }
 
 export const getDataForCurrentTime = (data, key, filterBy) => {
-    // Array of month names to match the structure of your data
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    let currentTime
-    if (filterBy === 'month') {
-        // Get the current month using the Date object
-        currentTime = months[new Date().getMonth()];
-    }
-    else {  currentTime = Math.ceil((new Date().getMonth() + 1) / 3);}
-    // Find the data for the current month
-    const currentData = data.find(item => item[filterBy] === currentTime);
-    return currentData ? currentData[key] : 0;  // Returns 0 if the current month is not found in data
+    if (data) {
+        // Array of month names to match the structure of your data
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        let currentTime
+        if (filterBy === 'month') {
+            // Get the current month using the Date object
+            currentTime = months[new Date().getMonth()];
+        }
+        else {  currentTime = Math.ceil((new Date().getMonth() + 1) / 3);}
+        // Find the data for the current month
+        const currentData = data.find(item => item[filterBy] === currentTime);
+        return currentData ? currentData[key] : 0;  // Returns 0 if the current month is not found in data
+    }   
 };
 

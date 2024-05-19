@@ -116,7 +116,7 @@ export const apiFeedbackAdd = (payload) => new Promise(async (resolve, reject) =
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/feedback/add',
+            url: '/api/customer/feedback/add',
             data: payload
         })
         resolve(response)
