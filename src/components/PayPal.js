@@ -41,13 +41,13 @@ const Paypal = ({payload, tour}) => {
                     amount_money: Number(tour.price*payload.ticket_num).toLocaleString() + ' VND',
                 };
                 // Send the email using EmailJS
-                // emailjs.send(serviceId, templateId, templateParams, publicKey)
-                //     .then((response) => {
-                //         console.log('Email sent successfully!', response);
-                //     })
-                //     .catch((error) => {
-                //         console.error('Error sending email:', error);
-                //     });
+                emailjs.send(serviceId, templateId, templateParams, publicKey)
+                    .then((response) => {
+                        console.log('Email sent successfully!', response);
+                    })
+                    .catch((error) => {
+                        console.error('Error sending email:', error);
+                    });
                 navigate('/tour-booking3/'+ tour.tour_ID, { state: { 
                   ...order_data, 
                   total_bill: tour.price*payload.ticket_num 
