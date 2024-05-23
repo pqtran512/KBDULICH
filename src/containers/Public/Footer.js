@@ -61,7 +61,7 @@ const Footer = () => {
                                 ĐĂNG KÝ TÀI KHOẢN NGAY !
                             </div>
                             <div className='pb-8 text-neutral-1-300 text-body-2 leading-7 xl:pb-[42px]'>
-                                Đăng nhập để lưu lại lịch sử đặt tour và gửi đánh giá cho hành trình của bạn. <Link to={'/login'} className='underline'>Đăng nhập ngay</Link></div>
+                                Đăng nhập để lưu lại lịch sử đặt tour và gửi đánh giá cho hành trình của bạn. <Link to={'auth/login'} className='underline'>Đăng nhập ngay</Link></div>
                         </div>
                     </div>
                     <div className='xl:max-w-7xl mx-auto'>
