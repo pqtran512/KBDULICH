@@ -4,7 +4,6 @@ import { Button2, SearchBar, Pagination, Loading } from '../../components';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { getTourByStaff } from '../../store/actions/tourPlaceAction';
-import { formatVietnameseToString } from '../../ultils/formatVietnameseToString';
 import { sorting } from '../../ultils/sorting';
 
 const { CgArrowsExchangeAltV } = icons
@@ -100,7 +99,7 @@ const STourList = () => {
                         </td>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className='text-caption-1 xl:text-body-2'>
                     { loading && <tr><td></td>
                         <td className="hidden xl:table-cell"></td>
                         <td className="hidden xl:table-cell"></td>

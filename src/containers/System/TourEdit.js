@@ -43,7 +43,7 @@ const EditTour = () => {
         schedule: [],
         note: '',
         service: [],
-        staff_ID: '',
+        staff: '',
         isActive: 0
     })
     const [maxDay, setMaxDay] = useState(0)
@@ -95,7 +95,7 @@ const EditTour = () => {
             const myDate = new Date(Date.UTC(year, month - 1, day)); 
             setBookingDl(myDate)
         }
-        if (tour.staff) { setPayload(prev => ({...prev, staff_ID: tour.staff.staff_ID})) }
+        if (tour.staff) { setPayload(prev => ({...prev, staff: tour.staff.staff_ID})) }
     }, [tour])
     useEffect(() => {
         dispatch(getTour({tour_ID: tourID}))
@@ -473,7 +473,7 @@ const EditTour = () => {
                     : 
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Nhân viên đảm nhận:</div>
-                        <SelectInput options={staffList} myStyle='w-60' placeholder={tour?.staff?.lastName + ' ' + tour?.staff?.firstName} keyPayload='staff_ID' setValue={setPayload} /> 
+                        <SelectInput options={staffList} myStyle='w-60' placeholder={tour?.staff?.lastName + ' ' + tour?.staff?.firstName} keyPayload='staff' setValue={setPayload} /> 
                     </div>
                 }
                 <div className='flex gap-2 items-center'>

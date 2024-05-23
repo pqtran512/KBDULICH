@@ -17,7 +17,7 @@ export const apiLogin = (payload) => new Promise(async(resolve, reject) => {
     try {
         const response = await axiosConfig({
             method: 'post',
-            url: '/api/customer/get/',
+            url: '/api/customer/login/',
             data: payload // payload: email, password
         })
         resolve(response)

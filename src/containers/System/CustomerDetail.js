@@ -40,7 +40,7 @@ const CustomerDetail = () => {
         if (order.pay_method) { setPayload(prev => ({...prev, pay_method: order.pay_method})) }
         if (order.phone_no) { setPayload(prev => ({...prev, phone_no: order.phone_no})) }
         if (order.email) { setPayload(prev => ({...prev, email: order.email})) }
-        if (order.note) { setPayload(prev => ({...prev, note: order.note})) }
+        if (order.note !== "No note") { setPayload(prev => ({...prev, note: order.note})) }
         if (order.ticket_num) { setPayload(prev => ({...prev, ticket_num: order.ticket_num})) }
         if (order.is_cancel) { setPayload(prev => ({...prev, is_cancel: order.is_cancel})) }
         if (order.cancel_percent) { setPayload(prev => ({...prev, cancel_percent: order.cancel_percent})) }
@@ -244,7 +244,7 @@ const CustomerDetail = () => {
                                 style2={true}
                             />
                             :
-                            <div className='font-normal whitespace-nowrap'>{order?.note}</div>
+                            <div className='font-normal whitespace-nowrap'>{order?.note === "No note"? 'Không' : order.note}</div>
                         }
                     </div>
                     <div className='flex gap-2 items-center'>

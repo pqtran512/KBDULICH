@@ -65,7 +65,7 @@ const MTourList = () => {
                 </div>
                 <button className="w-fit py-1 px-2 text-body-2 rounded-md bg-accent-7 text-white border-[3px] border-background-8 xl:px-3 xl:text-body-1" onClick={exportToExcel}>Export to Excel</button>
             </div>
-            <table id="dataTable" className="mb-8 mytable2 w-full text-caption-1 xl:text-body-2 tracking-tight">
+            <table id="dataTable" className="mb-8 mytable2 w-full text-body-2 xl:text-body-1 tracking-tight">
                 <thead>
                     <tr className="h-10 font-semibold tracking-wider bg-neutral-3-200">
                         <td><div>#</div></td>
@@ -119,7 +119,7 @@ const MTourList = () => {
                         </td>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className='text-caption-1 xl:text-body-2'>
                     { loading && 
                         <tr><td></td>
                             <td className="hidden xl:table-cell"></td>

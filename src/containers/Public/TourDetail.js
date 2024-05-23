@@ -243,14 +243,8 @@ const TourDetail = () => {
                                             <div className='font-semibold'>Số chỗ còn lại</div>
                                             <div>{tour?.seat_num - tour?.cus_num}</div>
                                         </div>
-                                        <p className="pt-4 text-caption-1 leading-5 tracking-wider md:text-[14px] xl:pt-6">
-                                            <span className="font-semibold">{tour.name} ({tour.departure} - {getProvinceTitle(tour).join(' - ')}). </span>
-                                            {/* Được mệnh danh là ‘’thành phố đáng đến’’ với dòng sông Hàn thơ mộng với cây cầu Rồng biểu tượng của Thành phố biển du lịch Đà Nẵng 
-                                            - nơi mà quý khách có thể cảm nhận được sự pha trộn giữa khí hậu miền Bắc, miền Nam.
-                                            Ngoài ra Đà Nẵng còn sở hữu nhiều danh lam thắng cảnh làm say lòng người như: Bà Nà Hills, Bán Đảo Sơn Trà, Ngũ Hành Sơn, Đà Nẵng, phố cổ Hội An…. 
-                                            Tour du lịch Đà Nẵng sẽ đưa quý khách khám phá bãi biển được Forbes lựa chọn là bãi biển quyến rũ nhất hành tinh với bờ biển dài,làn nước trong xanh, không khí mát mẻ 
-                                            …Tham khảo kinh nghiệm du lịch Đà Nẵng và Đặt ngay tour Đà Nẵng của Du Lịch Việt để khám phá Đà Nẵng có gì mà lại luôn là điểm đến hấp dẫn như vậy. */}
-                                        </p>
+                                        <div className="pt-4 text-caption-1 leading-5 tracking-wider font-semibold md:text-[14px] xl:pt-6">{tour.name} ({tour.departure} - {getProvinceTitle(tour).join(' - ')}). </div>
+                                        <p className="whitespace-pre-wrap text-caption-1 leading-5 tracking-wider md:text-[14px]">{tour?.tour_description}</p>
                                     </div>
                                 </div>
                                  {/* Lịch trình  */}
