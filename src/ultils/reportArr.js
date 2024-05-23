@@ -36,3 +36,31 @@ export const getDataForCurrentTime = (data, key, filterBy) => {
     }   
 };
 
+
+export const increaseRate = (data, key, filterBy) => {
+    if (data) {
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        let currentTime
+        let lastTime
+        if (filterBy === 'month') {
+            // Get the current month using the Date object
+            currentTime = months[new Date().getMonth()];
+            lastTime = months[new Date().getMonth()-1];
+        }
+        else {  
+            currentTime = Math.ceil((new Date().getMonth() + 1) / 3);
+            lastTime = currentTime - 1
+        }
+        const currentData = data.find(item => item[filterBy] === currentTime);
+        const lastData = data.find(item => item[filterBy] === lastTime);
+        console.log(lastTime, currentData, key)
+        if (!currentData) {
+            return -100
+        }
+        if (lastData && lastData[key] !== 0) {
+            return ((currentData[key] - lastData[key])/lastData[key]).toFixed(1)
+        }
+        return '-'
+    }   
+};
+

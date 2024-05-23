@@ -75,6 +75,7 @@ const StaffDetail = () => {
             allowOutsideClick: () => !Swal.isLoading(),
         }).then((result) => {
             if (result.isConfirmed) {
+                setSubmit(true)
                 dispatch(staffActivate({
                     staff_ID: staffID,
                     isActive: true
@@ -84,16 +85,18 @@ const StaffDetail = () => {
     }
     useEffect(() => {
         if (msg !== '' && submit) {
-            if (msg === 'success' && staff.isActive === true) {
+            if (msg === 'success' && staff.isActive === false) {
                 Swal.fire('Kích hoạt thành công', '', 'success')
+                dispatch(getStaff({staff_ID: staffID}))
             }
-            else if (msg === 'success' && staff.isActive === false) {
+            else if (msg === 'success' && staff.isActive === true) {
                 Swal.fire('Vô hiệu hóa thành công', '', 'success')
+                dispatch(getStaff({staff_ID: staffID}))
             }
             else { 
                 Swal.fire('Oops !', 'Lỗi đầu vào ! Vui lòng thử lại !', 'error')
-                setSubmit(false) 
             }
+            setSubmit(false)
         }
     }, [msg, update])
 
@@ -136,10 +139,17 @@ const StaffDetail = () => {
                     </div>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Tình trạng:</div>
-                        <div className="flex items-center gap-[6px]">
-                            <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
-                            {staff?.isActive ? 'Active' : 'Inactive'}
-                        </div>
+                        {staff?.isActive? 
+                            <div className="flex items-center gap-[6px]">
+                                <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
+                                Active
+                            </div>
+                            :
+                            <div className="flex items-center gap-[6px]">
+                                <div className='w-2 h-2 rounded-full bg-accent-3'></div>
+                                Inactive
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

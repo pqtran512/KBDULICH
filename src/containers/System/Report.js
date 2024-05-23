@@ -7,7 +7,7 @@ import { getToursRating } from '../../store/actions/tourPlaceAction';
 import { useDispatch, useSelector } from 'react-redux'
 import { ratingClassifier } from '../../ultils/ratingClassifier';
 import { reportTour, reportCustomer, reportIncome } from '../../store/actions/reportAction';
-import { dataReportArr, getDataForCurrentTime } from '../../ultils/reportArr';
+import { dataReportArr, getDataForCurrentTime, increaseRate } from '../../ultils/reportArr';
 
 const { VscTriangleLeft, HiMiniFire, FaStar } = icons
 
@@ -29,6 +29,31 @@ const Report = () => {
         { value: 'Theo tháng', label: 'Theo tháng' },
         { value: 'Theo quý', label: 'Theo quý' }
       ]
+    const showIncreaseRate = (data, key, option) => {
+        var indents = [];
+        const rate = increaseRate(data, key, option)
+        console.log(rate)
+        if (rate === '-') {
+            indents.push(<div key={'rate'} className='bg-accent-5 w-4 h-1'></div>);
+        }
+        else if (rate > 0) {
+            indents.push(
+                <div key={'rate'} className='text-accent-6 flex gap-0.5 items-center'>
+                    <VscTriangleLeft size={17} className='rotate-90'/>
+                    <div className=' text-body-1 font-semibold'>{rate}%</div>
+                </div>
+            );
+        }
+        else {
+            indents.push(
+            <div key={'rate'} className='text-accent-3 flex gap-0.5 items-center'>
+                <VscTriangleLeft size={17} className='-rotate-90'/>
+                <div className=' text-body-1 font-semibold'>{Math.abs(rate)}%</div>
+            </div>
+            )
+        }
+        return indents;
+    };
     useEffect(() => {
         setLoadingTour(true);
         setLoadingCustomer(true);
@@ -75,10 +100,10 @@ const Report = () => {
                     <div className='pb-1 text-caption-1 text-neutral-1-300 font-semibold tracking-wide md:text-body-2'>Thống kê thu nhập hằng {selectedOption.option === 'Theo tháng'? 'tháng' : 'quý'} (VNĐ)</div>
                     <div className='pb-2 flex justify-between items-center'>
                         <div className='text-heading-4 font-semibold md:text-heading-3'>{!loadingIncome && selectedOption.option === 'Theo tháng'? Number(getDataForCurrentTime(income_data.orders_by_month, 'total', 'month')).toLocaleString() : Number(getDataForCurrentTime(income_data.orders_by_quarter, 'total', 'quarter')).toLocaleString()}</div>
-                        <div className='text-accent-6 flex gap-0.5 items-center'>
-                            <VscTriangleLeft size={17} className='rotate-90'/>
-                            <div className=' text-body-1 font-semibold'>5%</div>
-                        </div>
+                        {selectedOption.option === 'Theo tháng'?
+                            showIncreaseRate(income_data.orders_by_month, 'total', 'month')
+                        :   showIncreaseRate(income_data.orders_by_quarter, 'total', 'quarter')
+                        }
                     </div>
                     <div className='h-60'>
                         {!loadingIncome && selectedOption.option === 'Theo tháng'? 
@@ -162,12 +187,12 @@ const Report = () => {
                     <div className='w-full md:w-1/2 shadow-shad1 p-4'>
                         <div className='pb-1 text-caption-1 text-neutral-1-300 font-semibold tracking-wide md:text-body-2'>Thống kê Tour khởi hành hằng {selectedOption.option === 'Theo tháng'? 'tháng' : 'quý'}</div>
                         {!loadingTour &&
-                        <><div className='pb-2 flex justify-between items-center'>
+                        <>  <div className='pb-2 flex justify-between items-center'>
                                 <div className='text-heading-4 font-semibold md:text-heading-3'>{selectedOption.option === 'Theo tháng'? getDataForCurrentTime(tour_data.tours_by_month, 'count', 'month') : getDataForCurrentTime(tour_data.tours_by_quarter, 'count', 'quarter')}</div>
-                                <div className='text-accent-6 flex gap-0.5 items-center'>
-                                    <VscTriangleLeft size={17} className='rotate-90'/>
-                                    <div className=' text-body-1 font-semibold'>5%</div>
-                                </div>
+                                {selectedOption.option === 'Theo tháng'?
+                                    showIncreaseRate(tour_data.tours_by_month, 'count', 'month')
+                                :   showIncreaseRate(tour_data.tours_by_quarter, 'count', 'quarter')
+                                }    
                             </div>
                             <div className='h-60'>
                                 {selectedOption.option === 'Theo tháng'? 
@@ -237,10 +262,10 @@ const Report = () => {
                         {!loadingCustomer &&
                         <>  <div className='pb-2 flex justify-between items-center'>
                                 <div className='text-heading-4 font-semibold md:text-heading-3'>{selectedOption.option === 'Theo tháng'? getDataForCurrentTime(customer_data.orders_by_month, 'total', 'month') : getDataForCurrentTime(customer_data.orders_by_quarter, 'total', 'quarter')}</div>
-                                <div className='text-accent-3 flex gap-0.5 items-center'>
-                                    <VscTriangleLeft size={17} className='-rotate-90'/>
-                                    <div className=' text-body-1 font-semibold'>5%</div>
-                                </div>
+                                {selectedOption.option === 'Theo tháng'?
+                                    showIncreaseRate(customer_data.orders_by_month, 'total', 'month')
+                                :   showIncreaseRate(customer_data.orders_by_quarter, 'total', 'quarter')
+                                } 
                             </div>
                             <div className='h-60'>
                             {selectedOption.option === 'Theo tháng'? 

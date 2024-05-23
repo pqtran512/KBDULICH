@@ -152,7 +152,10 @@ const RequestDetail = () => {
         return indents;
     };
     const showDestination= () => {
-        let des = request[info].places; 
+        let des = request[info].places
+        if (info === 'add_info') {
+            des = places.filter(place => request[info].places.includes(place.place_ID))
+        }
         var indents = [];
         for (var i = 0; i < des.length - 1; i++) {
             indents.push(

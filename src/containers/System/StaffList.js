@@ -93,7 +93,8 @@ const StaffList = () => {
                         <td className="hidden md:table-cell">
                             <div className='flex items-center gap-1'>
                                 <div>Đang phụ trách</div>
-                                <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/> 
+                                <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'
+                                    onClick={() => sorting("tour_num", staffs, setSortData, order, setOrder)}/> 
                             </div>
                         </td>
                         <td><div className='flex items-center gap-1'>

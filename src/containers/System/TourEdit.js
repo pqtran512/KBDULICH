@@ -232,7 +232,7 @@ const EditTour = () => {
             if (role === 'staff') { 
                 let edit_info = {}
                 Object.keys(tour).forEach(key => {
-                    if (key !== 'staff' && key !== 'rating' && key !== 'cus_num' && key !== 'isActive') {
+                    if (key !== 'staff' && key !== 'rating' && key !== 'cus_num' && key !== 'isActive' && key !== 'places') {
                         if (key === 'starting_date') {
                             if (JSON.stringify(tour.starting_date.split('-')) !== JSON.stringify(payload.starting_date.split('_'))) {
                                 // edit_info.push('starting_date');
@@ -250,19 +250,19 @@ const EditTour = () => {
                                 edit_info.schedule = tourSchedule;
                             } 
                         }
-                        else if (key === 'places') {
-                            if (tour.places.length === destination.length) {
-                                for (let i = 0; i < tour.places.length; i++) {
-                                    if(tour.places[i].name !== destination[i].label) {
-                                        edit_info.places = destination;
-                                        break;
-                                    }
-                                }
-                            }
-                            else {
-                                edit_info.places = destination;
-                            }
-                        }   
+                        // else if (key === 'places') {
+                        //     if (tour.places.length === destination.length) {
+                        //         for (let i = 0; i < tour.places.length; i++) {
+                        //             if(tour.places[i].name !== destination[i].label) {
+                        //                 edit_info.places = destination;
+                        //                 break;
+                        //             }
+                        //         }
+                        //     }
+                        //     else {
+                        //         edit_info.places = destination;
+                        //     }
+                        // }   
                         else if (tour[key] !== payload[key]) {
                             edit_info[key] = payload[key];
                         }
