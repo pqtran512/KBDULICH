@@ -18,7 +18,7 @@ const TourDetail = () => {
     const dispatch = useDispatch()
     const { tour } = useSelector(state => state.tour)
     const { role } = useSelector(state => state.auth)
-    const { msg } = useSelector(state => state.request) 
+    const { msg, update } = useSelector(state => state.request) 
     const navigate = useNavigate()
     const [submit, setSubmit] = useState(false)
     // FUNCTIONS
@@ -55,7 +55,7 @@ const TourDetail = () => {
                 if (!value) {
                     return "Vui lòng điền lí do hủy Tour!";
                 }
-                }
+            }
         }).then((result) => {
             if (result.isConfirmed) {
                 setSubmit(true)
@@ -75,7 +75,7 @@ const TourDetail = () => {
                 navigate('/staff/request')
             }
         }
-    }, [msg])
+    }, [msg, update])
     return (
         <div className='w-full px-6 pt-20 pb-10 xl:pb-20 xl:pt-7 lg:px-2 xl:pl-0 xl:pr-10 overflow-x-hidden'>
             <div className='pb-16'>

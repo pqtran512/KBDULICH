@@ -26,6 +26,7 @@ const PersonalProfile = () => {
     const { orders_customer, msg_order, update } = useSelector(state => state.order)
     const { msg } = useSelector(state => state.feedback)
     const [submitCancel, setSubmitCancel] = useState(false)
+    const [submitFeedback, setSubmitFeedback] = useState(false)
     // FUNCTION
     useEffect(() => {
         dispatch(getOrderOfCustomer())
@@ -57,19 +58,24 @@ const PersonalProfile = () => {
     // Handle feedback
     useEffect(() => {
         if (msg !== '') {
-          if (msg === 'success') {
-            Swal.fire('Gửi đánh giá thành công !', '', 'success').then((result) => {
-                dispatch(getOrderOfCustomer())
-                setIsShown(false);
-                document.body.style.overflow = "auto";
-            })
-          }
-          else Swal.fire('Oops !', msg, 'error')
+            if (msg === 'success') {
+                Swal.fire('Gửi đánh giá thành công !', '', 'success').then((result) => {
+                    dispatch(getOrderOfCustomer())
+                    setIsShown(false);
+                    document.body.style.overflow = "auto";
+                    setSubmitFeedback(false) 
+                })
+            }
+            else {
+                Swal.fire('Oops !', msg, 'error')
+                setSubmitFeedback(false) 
+            }
         }
     }, [msg])
     const handleSubmitFeedback = async () => {
         let invalids = validate(payload)
         if (invalids === 0) {
+            setSubmitFeedback(true)
             dispatch(feedbackAdd(payload))
         }
     }
