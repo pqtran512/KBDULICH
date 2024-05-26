@@ -91,8 +91,8 @@ const TourNew = () => {
                 </div>
             );
         }
-        invalidFields.length > 0 && invalidFields.some(i => i.name === 'tour_schedule')
-            && indents.push(<div className='pt-1 text-title-2 text-accent-3'>{invalidFields.find(i => i.name === 'tour_schedule')?.message}</div>);
+        invalidFields.length > 0 && invalidFields.some(i => i.name === 'schedule')
+            && indents.push(<div className='pt-1 text-title-2 text-accent-3'>{invalidFields.find(i => i.name === 'schedule')?.message}</div>);
         
         return indents;
     };
