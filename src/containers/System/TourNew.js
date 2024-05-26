@@ -11,7 +11,7 @@ const TourNew = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { places } = useSelector(state => state.place)
-    const { msg } = useSelector(state => state.request)  
+    const { msg, update } = useSelector(state => state.request)  
     const [newProvinces, setNewProvinces] = useState([]);
     const [newPlaces, setNewPlaces] = useState([]);
     const [invalidFields, setInvalidFields] = useState([])
@@ -171,7 +171,7 @@ const TourNew = () => {
             }
             else { Swal.fire('Oops !', msg, 'error') }
         }
-    }, [msg])
+    }, [msg, update])
     return (
         <div className='w-full px-6 pt-20 pb-10 xl:pt-7 xl:pb-20 lg:px-2 xl:pl-0 xl:pr-10 overflow-x-hidden'>
             <div className='font-prata text-neutral-1-900 font-semibold text-header-1 border-b-2 border-neutral-2-200 pb-1 w-full px-4 rounded-xl shadow-title xl:text-heading-4'>Thêm Tour mới</div>
