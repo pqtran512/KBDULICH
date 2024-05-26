@@ -103,7 +103,6 @@ const TourNew = () => {
     const handle_delDestination = (i) => {
         const delDes = [...destination];
         delDes.splice(i, 1)
-        console.log(delDes)
         setDestination(delDes)
     }
     const handleSubmit = async () => {
@@ -145,7 +144,7 @@ const TourNew = () => {
                         invalids++
                     }
                     break;
-                case 'tour_schedule':
+                case 'schedule':
                     for (let i = 0; i < item[1].length; i++) {
                         if (item[1][i] === '') { 
                             setInvalidFields(prev => [...prev, {

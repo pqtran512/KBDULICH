@@ -5,7 +5,8 @@ const initState = {
     request: {},
     requests_staff: [],
     msg: '',
-    replyFail: false
+    replyFail: false,
+    update: false // in case same msg is received
 }
 const requestReducer = (state = initState, action) => {
     switch (action.type) {

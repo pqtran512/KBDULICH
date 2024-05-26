@@ -273,7 +273,10 @@ const EditTour = () => {
                     tour_ID: tourID
                 })) 
             }
-            else { dispatch(tourUpdate(payload))}
+            else { 
+                setSubmit(true)
+                dispatch(tourUpdate(payload))
+            }
         }
     };
     useEffect(() => {
