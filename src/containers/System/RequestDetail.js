@@ -524,17 +524,20 @@ const RequestDetail = () => {
                 </div>
                 <div className='flex gap-2 items-center'>
                     <div className='font-semibold'>Số ghế:</div>
-                    <InputForm 
-                        invalidFields={invalidFields} 
-                        setInvalidFields={setInvalidFields}  
-                        value={payload.seat_num}
-                        setValue={setPayload} 
-                        keyPayload={'seat_num'}
-                        width='w-16'
-                        type='number'
-                        min={1}
-                        style2={true}
-                    />
+                    {isEdit? 
+                        <InputForm 
+                            invalidFields={invalidFields} 
+                            setInvalidFields={setInvalidFields}  
+                            value={payload.seat_num}
+                            setValue={setPayload} 
+                            keyPayload={'seat_num'}
+                            width='w-16'
+                            type='number'
+                            min={1}
+                            style2={true}
+                        />
+                    :  <div className='font-normal'>{request[info]?.seat_num}</div>
+                    }
                 </div>
                 <div className='flex flex-col gap-2'>
                     <div className='font-semibold'>Lịch trình:</div>
