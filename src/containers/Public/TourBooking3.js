@@ -65,7 +65,7 @@ const TourBooking3 = () => {
                         <img className="object-contain w-36 h-36" src={bookConfirm} alt=''/>
                         <div className='text-body-2 font-semibold text-neutral-900 pb-2 md:text-header-1'>KB DULICH xin cảm ơn Quý Khách !</div>
                     </div>
-                    <div className='w-full p-6 rounded-3xl max-w-[50%]'>
+                    <div className='mx-auto w-full p-6 rounded-3xl max-w-[50%]'>
                         <div className='text-body-2 font-semibold text-neutral-900 pb-2 md:text-header-1'>Chi tiết đơn hàng</div>
                         <div className='py-3 flex gap-5 border-b-[3px] border-neutral-3-200'>
                             {tour.places && <img className='h-16 w-24 rounded-md' src={tour.places[0].images[0].images} alt='' />}
