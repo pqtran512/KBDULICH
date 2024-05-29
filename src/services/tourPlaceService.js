@@ -97,6 +97,20 @@ export const apiTourUpdate = (payload) => new Promise(async (resolve, reject) =>
         reject(error)
     }
 })
+
+export const apiTourCancel = (payload) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await axiosConfig({
+            method: 'post',
+            url: '/api/manager/tour/cancel',
+            data: payload
+        })
+        resolve(response)
+
+    } catch (error) {
+        reject(error)
+    }
+})
 // Place
 export const apiGetAllPlaces = () => new Promise(async (resolve, reject) => {
     try {

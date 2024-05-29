@@ -238,13 +238,13 @@ useEffect(() => {
                                 : <td className="hidden xl:table-cell">Chưa đánh giá</td>
                             }
                             {order.order.is_cancel? 
-                                <td className="hidden md:table-cell">
+                                <td className="hidden xl:table-cell">
                                     <div className="flex items-center gap-[6px]">
                                         <div className='w-2 h-2 rounded-full bg-accent-3'></div>
                                         Hủy
                                     </div>
                                 </td>
-                                : <td className="hidden md:table-cell">
+                                : <td className="hidden xl:table-cell">
                                     <div className="flex items-center gap-[6px]">
                                         <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
                                         Tiếp tục

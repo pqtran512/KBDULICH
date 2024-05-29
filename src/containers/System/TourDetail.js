@@ -5,7 +5,7 @@ import CustomerList from './CustomerList';
 import Swal from 'sweetalert2'
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
-import { getTour } from '../../store/actions/tourPlaceAction'
+import { getTour, tourCancel } from '../../store/actions/tourPlaceAction'
 import { splitDate } from '../../ultils/splitDateTime';
 import { ratingClassifier } from '../../ultils/ratingClassifier';
 import { requestCancel } from '../../store/actions/requestAction';
@@ -16,7 +16,7 @@ const TourDetail = () => {
     // PARAMS
     const {tourID} = useParams();
     const dispatch = useDispatch()
-    const { tour } = useSelector(state => state.tour)
+    const { tour, msg_tour, update_tour } = useSelector(state => state.tour)
     const { role } = useSelector(state => state.auth)
     const { msg, update } = useSelector(state => state.request) 
     const navigate = useNavigate()
@@ -39,33 +39,61 @@ const TourDetail = () => {
         indents.push(<div key={des.length-1} className='font-normal'>{des[des.length-1].name}</div>);
         return indents;
     };
-    const handleActivate = () => {
-        Swal.fire({
-            title: "Lí do hủy Tour",
-            input: "text",
-            inputAttributes: {
-                spellcheck: "false"
-            },
-            showCancelButton: true,
-            confirmButtonText: "Gửi",
-            cancelButtonText: "Hủy",
-            showLoaderOnConfirm: true,
-            allowOutsideClick: () => !Swal.isLoading(),
-            inputValidator: (value) => {
-                if (!value) {
-                    return "Vui lòng điền lí do hủy Tour!";
+    const handleCancel = () => {
+        if (role === 'staff') {
+            Swal.fire({
+                title: "Lí do hủy Tour",
+                input: "text",
+                inputAttributes: {
+                    spellcheck: "false"
+                },
+                showCancelButton: true,
+                confirmButtonText: "Gửi",
+                cancelButtonText: "Hủy",
+                showLoaderOnConfirm: true,
+                allowOutsideClick: () => !Swal.isLoading(),
+                inputValidator: (value) => {
+                    if (!value) {
+                        return "Vui lòng điền lí do hủy Tour!";
+                    }
                 }
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                setSubmit(true)
-                dispatch(requestCancel({
-                    reason: result.value,
-                    tour_ID: tourID
-                }))
-            }
-        })
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setSubmit(true)
+                    dispatch(requestCancel({
+                        reason: result.value,
+                        tour_ID: tourID
+                    }))
+                }
+            })
+        }
+        else {
+            Swal.fire({
+                title: "Bạn chắc chắn muốn hủy tour ?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Chắc chắn",
+                cancelButtonText: "Hủy",
+                showLoaderOnConfirm: true,
+                allowOutsideClick: () => !Swal.isLoading(),
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setSubmit(true)
+                    dispatch(tourCancel({tour_ID: tourID}))
+                }
+            })
+        }
     }
+    useEffect(() => {
+        if (msg_tour !== '' && submit) {
+            if (msg_tour === 'success') {
+                Swal.fire('Hủy thành công', '', 'success').then((result) => {
+                    setSubmit(false)
+                    dispatch(getTour({tour_ID: tourID}))
+                })
+            }
+        }
+    }, [msg_tour, update_tour])
     useEffect(() => {
         if (msg !== '' && submit) {
             if (msg === 'success') {
@@ -184,8 +212,8 @@ const TourDetail = () => {
             
             <div className='pt-6 xl:pt-10 flex gap-28 xl:gap-8 justify-center items-center'>
                 <Button2 text='Chỉnh sửa thông tin tour' textColor='text-black' bgColor='bg-accent-5' onClick={goToEditMode}  />
-                {tour?.isActive && role === 'staff' &&
-                    <Button2 text='Đề xuất hủy tour' textColor='text-white' bgColor='bg-[#363837]' onClick={handleActivate}/>
+                {tour?.isActive && 
+                    <Button2 text={`${role === 'staff' ? 'Đề xuất hủy tour' : 'Hủy tour'} `} textColor='text-white' bgColor='bg-[#363837]' onClick={handleCancel}/>
                 }
             </div>
             { role === 'staff' ? <CustomerList /> : <></> }

@@ -43,8 +43,7 @@ const EditTour = () => {
         schedule: [],
         note: '',
         service: [],
-        staff: '',
-        isActive: 0
+        staff: ''
     })
     const [maxDay, setMaxDay] = useState(0)
     const [defaultDate, setDefaultDate] = useState('')
@@ -311,8 +310,7 @@ const EditTour = () => {
                     </div>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold whitespace-nowrap'>Trạng thái:</div>
-                        { role === 'staff' ?
-                            tour.isActive? 
+                        {tour.isActive? 
                             <div className="flex items-center gap-[6px]">
                                 <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
                                 Active
@@ -322,8 +320,6 @@ const EditTour = () => {
                                 <div className='w-2 h-2 rounded-full bg-accent-3'></div>
                                 Inactive
                             </div>
-                        : 
-                            <SelectInput options={status} myStyle='w-[100px]' style2={true} placeholder={tour.isActive? 'Active': 'Inactive'}  keyPayload='isActive' setValue={setPayload} />
                         }
                     </div>  
                 </div>
