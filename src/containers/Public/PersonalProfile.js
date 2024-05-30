@@ -57,7 +57,7 @@ const PersonalProfile = () => {
     }, [msg_order, update])
     // Handle feedback
     useEffect(() => {
-        if (msg !== '') {
+        if (msg !== '' && submitFeedback) {
             if (msg === 'success') {
                 Swal.fire('Gửi đánh giá thành công !', '', 'success').then((result) => {
                     dispatch(getOrderOfCustomer())
