@@ -1,5 +1,5 @@
 import {Routes,Route} from "react-router-dom";
-import { Auth, Login, ResetPass1, ResetPass2, Register, Home, Homepage, Search, TourDetail, TourBooking, TourBooking2, TourBooking3, News, NewsDetail, PersonalProfile, Contact, Instruction} from "./containers/Public";
+import { Auth, Login, ResetPass1, ResetPass2, Register, Home, Homepage, Search, TourDetail, TourBooking, TourBooking2, TourBooking3, News, NewsDetail, PersonalProfile, Contact, Instruction, Policy} from "./containers/Public";
 import { SystemLogin, SystemResetPass1, SystemResetPass2, SystemHome, STourList, SysTourDetail, TourNew, RequestList, RequestDetail, MTourList, StaffDetail, StaffList, StaffNew, Report, Account, CustomerDetail, TourEdit, StaffEdit, SystemAuth } from "./containers/System";
 import { path } from "./ultils/constant";
 import * as actions from './store/actions'
@@ -63,6 +63,7 @@ function App() {
           <Route path={path.SEARCH__PAGE} element={<Search/>} />
           {/* <Route path={path.TOUR_DETAIL} element={<TourDetail/>} /> */}
           <Route path={path.TOUR_DETAIL_ID} element={<TourDetail/>} />
+          <Route path={path.POLICY} element={<Policy/>} />
           <Route path={path.TOUR_BOOKING} element={<TourBooking/>} />
           <Route path={path.TOUR_BOOKING2} element={<TourBooking2/>} />
           <Route path={path.TOUR_BOOKING3} element={<TourBooking3/>} />

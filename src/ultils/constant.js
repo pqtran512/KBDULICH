@@ -20,6 +20,7 @@ export const path = {
     NEWS_DETAIL: 'news-detail/:province',
     PERSONAL_PROFILE: 'personal-profile',
     CONTACT: 'contact',
+    POLICY: 'policy',
 
     STAFF_HOME: '/staff/*',
     MANAGER_HOME: '/manager/*',

@@ -65,3 +65,9 @@ export const getProvinceTitle = (tour) => {
     }
     return arr
 }
+
+export const getPlaceObject = (places, placeID) => {
+    const placeObject = places.find(item => item.value === placeID);
+    console.log(placeID)
+    return placeObject
+}

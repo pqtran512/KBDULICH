@@ -57,7 +57,7 @@ const PersonalProfile = () => {
     }, [msg_order, update])
     // Handle feedback
     useEffect(() => {
-        if (msg !== '') {
+        if (msg !== '' && submitFeedback) {
             if (msg === 'success') {
                 Swal.fire('Gửi đánh giá thành công !', '', 'success').then((result) => {
                     dispatch(getOrderOfCustomer())
@@ -196,7 +196,7 @@ const PersonalProfile = () => {
                                             <div className='text-body-1 font-semibold'>Thành tiền: <span className='text-secondary-1'>{Number(order?.tour?.price*order?.order?.ticket_num).toLocaleString()} đ</span></div>
                                             {order.feedback?
                                                 <button className='cursor-default py-2 px-8 rounded-md bg-[#919EAB] text-white'>Đã đánh giá</button>
-                                            : !order?.order?.is_cancel &&
+                                            : 
                                                 <Button 
                                                     text='Đánh giá'
                                                     textColor='text-white' 

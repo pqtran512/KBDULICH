@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
 import { getAllPlaces } from '../../store/actions/tourPlaceAction'
 import { requestAdd } from '../../store/actions/requestAction';
-import { provinceObjects, placeObjects } from '../../ultils/objectsToArr';
+import { provinceObjects, placeObjects, getPlaceObject } from '../../ultils/objectsToArr';
+import * as XLSX from 'xlsx';
 
 const TourNew = () => {
     const navigate = useNavigate()
@@ -19,7 +20,7 @@ const TourNew = () => {
     const [tourService, setTourService] = useState([])
     const services = ['Bảo hiểm', 'Bữa ăn', 'Xe đưa đón', 'Hướng dẫn viên', 'Vé tham quan'] // available services
     const vehicles = ['Xe 4 chỗ', 'Xe 7 chỗ', 'Xe khách', 'Máy bay'] // available vehicles
-    const [destination, setDestination] = useState(['P_107'])
+    const [destination, setDestination] = useState([{value: 'P_084', label: 'Ba Bể'}])
     const [maxDay, setMaxDay] = useState(0)
     const [payload, setPayload] = useState({
         name: '',
@@ -38,6 +39,8 @@ const TourNew = () => {
         isActive: true,
     })
     const [submit, setSubmit] = useState(false)
+    const [defaultDate, setDefaultDate] = useState('')
+    const [defaultBookingDl, setBookingDl] = useState('')
     // Functions
     useEffect(() => {
         dispatch(getAllPlaces())
@@ -66,6 +69,9 @@ const TourNew = () => {
         setPayload(prev => ({...prev, place: destination}))
     }, [destination])
     useEffect(() => {
+        setPayload(prev => ({...prev, schedule: tourSchedule}))
+    }, [tourSchedule])
+    useEffect(() => {
         setPayload(prev => ({...prev, service: tourService}))
     }, [tourService])
     const handleInputChange = (e, index) => {
@@ -82,6 +88,7 @@ const TourNew = () => {
                     <div className='italic'>Ngày {i+1}:</div>
                     <textarea id={i}
                         className={`w-full h-24 rounded-md p-3 bg-neutral-3-50 text-neutral-1-600`}
+                        defaultValue={tourSchedule[i]}
                         onChange={(e) => {
                             handleInputChange(e, e.currentTarget.id)
                         }}
@@ -108,8 +115,12 @@ const TourNew = () => {
     const handleSubmit = async () => {
         let invalids = validate(payload)
         if (invalids === 0) {
+            const placeArr = destination.map(obj => obj.value);
+            dispatch(requestAdd({
+                ...payload,
+                place: placeArr,
+            }))
             setSubmit(true)
-            dispatch(requestAdd(payload))
         }
     };
     const validate = (payload) => {
@@ -171,10 +182,56 @@ const TourNew = () => {
             else { Swal.fire('Oops !', msg, 'error') }
         }
     }, [msg, update])
+    const handleFileUpload = (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+    
+        reader.onload = (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+        
+            // Assuming the data is in the first sheet
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+        
+            // Example of how to parse data from Excel to formData
+            const [header, ...rows] = jsonData;
+            const formValues = rows[0]; // Assuming data is in the first row
+            setPayload({
+                name: formValues[0] || '',
+                price: formValues[1] || '',
+                departure: formValues[2] || '',
+                day_num: formValues[3] || '', 
+                night_num:  formValues[4] || '',
+                vehicle:  formValues[5] || '',
+                seat_num:  formValues[6] || '',
+                starting_date:  formValues[7] || '',
+                bookingDeadline:  formValues[8] || '',
+                note:  formValues[9] || '',
+            });
+            const [y1, m1, d1] = formValues[7].split('_');
+            setDefaultDate(new Date(Date.UTC(y1, m1 - 1, d1)))
+            const [y2, m2, d2] = formValues[8].split('_');
+            setBookingDl(new Date(Date.UTC(y2, m2 - 1, d2)))
+            // Array data
+            const scheduleData = jsonData.slice(1).map(row => row[10]);
+            setTourSchedule(scheduleData);
+            const placeData = jsonData.slice(1).map(row => row[11]).filter(item => item && item.trim() !== '');
+            const placeObjects = placeData.map(item => getPlaceObject(newPlaces, item))
+            setDestination(placeObjects);
+            const serviceData = jsonData.slice(1).map(row => row[12]);
+            setTourService(serviceData);
+        };
+        reader.readAsArrayBuffer(file);
+    };
+
     return (
         <div className='w-full px-6 pt-20 pb-10 xl:pt-7 xl:pb-20 lg:px-2 xl:pl-0 xl:pr-10 overflow-x-hidden'>
             <div className='font-prata text-neutral-1-900 font-semibold text-header-1 border-b-2 border-neutral-2-200 pb-1 w-full px-4 rounded-xl shadow-title xl:text-heading-4'>Thêm Tour mới</div>
-            <div className='relative mt-16 text-body-2 text-neutral-1-900 flex flex-col gap-6 mx-auto px-4 py-6 border-[3px] border-secondary-2 rounded-b-2xl rounded-tr-2xl xl:text-body-1'>
+            <div className='pt-8 ml-auto w-fit'>
+                <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} />
+            </div>
+            <div className='relative mt-8 text-body-2 text-neutral-1-900 flex flex-col gap-6 mx-auto px-4 py-6 border-[3px] border-secondary-2 rounded-b-2xl rounded-tr-2xl xl:text-body-1'>
                 <div className='absolute -top-6 left-0.5 bg-gradient-to-tr from-secondary-2 to-accent-4 border border-white outline-offset-2 outline outline-[3px] outline-secondary-2 rounded-t-xl w-[100px] h-5'></div>
                 <div className='grid grid-rows-2 gap-6 md:grid-rows-1 md:grid-cols-2'>
                     <div className='flex gap-2 items-center'>
@@ -209,16 +266,16 @@ const TourNew = () => {
                 <div className='grid grid-rows-2 gap-6 md:grid-rows-1 md:grid-cols-2'>
                     <div className='flex gap-[18px] items-center'>
                         <div className='font-semibold'>Ngày khởi hành:</div>
-                        <Datepicker width='w-[148px]' height='h-7' top='top-[6px]' outline min={true} keyPayload='starting_date' setValue={setPayload} />
+                        <Datepicker width='w-[148px]' height='h-7' top='top-[6px]' outline min={true} defaultValue={defaultDate} keyPayload='starting_date' setValue={setPayload} />
                     </div>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Hạn chót đặt tour:</div>
-                        <Datepicker width='w-[148px]' height='h-7' top='top-[6px]' outline min={true} keyPayload='bookingDeadline' setValue={setPayload} />
+                        <Datepicker width='w-[148px]' height='h-7' top='top-[6px]' outline min={true} defaultValue={defaultBookingDl} keyPayload='bookingDeadline' setValue={setPayload} />
                     </div>
                 </div>
                 <div className='flex items-center gap-2 xl:gap-[63px]'>
                     <div className='font-semibold'>Xuất phát:</div>
-                    {newProvinces.length > 0 && <SelectInput options={newProvinces} myStyle='w-40 xl:w-52' style2={true} defaultValue={newProvinces[32]} keyPayload='departure' setValue={setPayload} />}
+                    {newProvinces.length > 0 && <SelectInput options={newProvinces} myStyle='w-40 xl:w-52' style2={true} placeholder={payload.departure} keyPayload='departure' setValue={setPayload} />}
                 </div>
                 <div className='flex flex-wrap gap-2 items-center'>
                     <div className='font-semibold xl:pr-14'>Điểm đến:</div>
@@ -226,7 +283,7 @@ const TourNew = () => {
                         if (item !== '') {
                             return (
                             <div className='relative' key={i + 1}>
-                                {newPlaces.length > 0 && <SelectInput options={newPlaces} myStyle='w-28 xl:w-52' style2={true} defaultValue={newPlaces[0]} idx={i} arr={destination} setArr={setDestination}/>}
+                                {newPlaces.length > 0 && <SelectInput options={newPlaces} myStyle='w-28 xl:w-52' style2={true} placeholder={item.label} idx={i} arr={destination} setArr={setDestination}/>}
                                 {i > 0 && 
                                     <div className="bg-white flex items-center justify-center cursor-pointer absolute -top-2 -right-2" onClick={() => handle_delDestination(i)}>
                                         <i className="twi-22-x-circle-fill text-[17px] text-accent-3 text-center"></i>
@@ -243,10 +300,10 @@ const TourNew = () => {
                 <div className='flex gap-4 items-center xl:gap-11'>
                     <div className='font-semibold whitespace-nowrap'>Phương tiện:</div>
                     <div className='flex flex-wrap gap-x-8 gap-y-2 xl:gap-16'>
-                        { vehicles?.map(item => {
+                        { vehicles?.map((item, idx) => {
                             if (payload.vehicle.includes(item)) {
                                 return (
-                                    <div className='flex gap-1 items-center'>
+                                    <div key={idx} className='flex gap-1 items-center'>
                                         <input type="radio" name="vehicle" value={item} className='w-3 h-3 accent-black cursor-pointer' checked/>
                                         <div>{item}</div>
                                     </div>

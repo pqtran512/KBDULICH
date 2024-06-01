@@ -9,7 +9,7 @@ const CheckedBox = ({value, label, setValue, keyValue, color}) => {
             defaultChecked={checked}
             onChange={(e) => {
                 setChecked((state) => !state)
-                setValue(keyValue.filter(item => item !== e.target.value))
+                setValue && setValue(keyValue.filter(item => item !== e.target.value))
             }}
             />
             <div>{label}</div>
