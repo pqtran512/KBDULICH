@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import icons from '../../ultils/icons';
-import { Button } from '../../components';
+import { Button, SelectInput } from '../../components';
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2'
@@ -10,6 +10,14 @@ import { getProvinceTitle } from '../../ultils/objectsToArr';
 import { orderCancel } from '../../store/actions/orderFeedbackAction';
 
 const { MdTour, FaStar, IoClose } = icons
+const reasons = [
+    { value: 'Có công việc, lịch trình bất ngờ hoặc có vấn đề về sức khỏe.', label: '1. Có công việc, lịch trình bất ngờ hoặc có vấn đề về sức khỏe.'},
+    { value: 'Tìm thấy 1 tour tương tự ở nơi khác với mức giá hợp lý hơn.', label: '2. Tìm thấy 1 tour tương tự ở nơi khác với mức giá hợp lý hơn.' },
+    { value: 'Tìm thấy 1 tour khác với lịch trình và địa điểm tham quan hợp với nhu cầu hơn.', label: '3. Tìm thấy 1 tour khác với lịch trình và địa điểm tham quan hợp với nhu cầu hơn.' },
+    { value: 'Chưa được cung cấp đủ thông tin cần thiết.', label: '4. Chưa được cung cấp đủ thông tin cần thiết.' },
+    { value: 'Vấn đề liên quan đến dịch vụ và chăm sóc khách hàng', label: '5. Vấn đề liên quan đến dịch vụ và chăm sóc khách hàng' },
+    { value: 'Lí do khác', label: '6. Lí do khác' },
+]
 
 const PersonalProfile = () => {
     const dispatch = useDispatch()
@@ -21,8 +29,11 @@ const PersonalProfile = () => {
         order_ID: '',
         ratings: 0,
         reviews: '', 
+        cancel_reason: '',
+        other_reason: ''
     })
-    const [isShown, setIsShown] = useState(false);
+    const [isShown, setIsShown] = useState(false); // feedback form
+    const [isCancel, setIsCancel] = useState(false) // cancelling form
     const { orders_customer, msg_order, update } = useSelector(state => state.order)
     const { msg } = useSelector(state => state.feedback)
     const [submitCancel, setSubmitCancel] = useState(false)
@@ -31,22 +42,21 @@ const PersonalProfile = () => {
     useEffect(() => {
         dispatch(getOrderOfCustomer())
     }, [dispatch])
-    const handleCancelBooking = (orderID) => {
-        Swal.fire({
-            title: 'Chắc chắn ?',
-            text: "Bạn chắc chắn muốn hủy đặt vé ?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Chắc chắn",
-            cancelButtonText: "Hủy",
-            showLoaderOnConfirm: true,
-            allowOutsideClick: () => !Swal.isLoading(),
-        }).then((result) => {
-            if (result.isConfirmed) {
-                setSubmitCancel(true)
-                dispatch(orderCancel({order_ID: orderID}))
+    const handleCancelBooking = () => {
+        let invalids = validate(payload)
+        if (invalids === 0) {
+            if (payload.cancel_reason === "Lí do khác" && payload.other_reason !== '') {
+                setSubmitCancel(true) 
+                dispatch(orderCancel({
+                    ...payload,
+                    cancel_reason: payload.other_reason
+                }))
             }
-        })
+            else {
+                setSubmitCancel(true) 
+                dispatch(orderCancel(payload))
+            }
+        }
     }
     useEffect(() => {
         if (msg_order === 'success' && submitCancel) {
@@ -93,6 +103,15 @@ const PersonalProfile = () => {
                         invalids++
                     }
                     break;
+                case 'cancel_reason':
+                    if (item[1] === "Lí do khác" && payload.other_reason === '') { // item[1] is the value field
+                        setInvalidFields(prev => [...prev, {
+                            name: item[0],
+                            message: 'Bạn chưa điền lí do hủy đặt tour !'
+                        }])
+                        invalids++
+                    }
+                    break;
                 default:
                     break;
             }
@@ -108,6 +127,18 @@ const PersonalProfile = () => {
     };
     const closeForm = () => {
         setIsShown(false);
+        document.body.style.overflow = "auto";
+    };
+    // Cancelling form
+    const showCancelForm = (orderID) => {
+        window.scrollTo(0, 0);
+        setIsCancel(true);
+        document.body.style.overflow = "hidden";
+        setPayload(prev => ({...prev, 'order_ID': orderID}))
+    };
+    const closeCancelForm = () => {
+        setIsCancel(false);
+        setPayload(prev => ({...prev, 'cancel_reason': ''}))
         document.body.style.overflow = "auto";
     };
     // onClick option button
@@ -165,7 +196,7 @@ const PersonalProfile = () => {
                                                 textColor='text-white' 
                                                 bgColor='bg-accent-3'
                                                 redBtn
-                                                onClick={() => handleCancelBooking(order.order.order_ID)}
+                                                onClick={() => showCancelForm(order.order.order_ID)}
                                             />
                                         </div>
                                     </div>
@@ -227,7 +258,7 @@ const PersonalProfile = () => {
                             {[...Array(5)].map((star, index) => {
                                 const currentRating = index + 1;
                                 return (
-                                    <label htmlFor={'rating ' + index}>
+                                    <label key={index} htmlFor={'rating ' + index}>
                                         <input
                                         id={'rating ' + index}
                                         type='radio'
@@ -269,7 +300,47 @@ const PersonalProfile = () => {
                 </div>
             </div>
             }
-            
+            {/* Tour cancel form */}
+            {isCancel && (payload.order_ID !== '') &&
+            <div className='absolute z-20 top-[78px] left-0 w-full h-[106%] bg-neutral-600/50 pt-[10%] pl-[35%]'>
+                <div className='w-full h-fit p-6 bg-neutral-3-100 rounded-3xl max-w-[60%]'>
+                    <div className='flex justify-between'>
+                        <div className='pb-3 flex gap-5 border-b-[3px] border-white w-[95%]'>
+                            <div className='text-heading-3 text-neutral-1-900 font-semibold'>Lí do hủy tour</div>
+                        </div>
+                        <IoClose size={30} className='cursor-pointer' onClick={() => closeCancelForm()}/>
+                    </div>
+                    <form action="" className="pt-5 text-body-2">
+                        <div className="pr-4 pb-4 text-header-2 text-neutral-1-900">Lí do hủy tour</div>
+                        <SelectInput options={reasons} myStyle='w-[200px] text-body-2 xl:w-full xl:text-body-1' placeholder='--- Chọn lí do hủy tour ---' keyPayload='cancel_reason' setValue={setPayload}/>
+                        { payload.cancel_reason === "Lí do khác"? 
+                            <><textarea rows="2" 
+                                className="mt-4 p-4 w-full rounded-md bg-white border border-neutral-2-200 tracking-[0.1px] text-body-2 text-neutral-1-400 placeholder:text-neutral-1-400" 
+                                placeholder="Lí do khác ..."
+                                onChange={(e) => setPayload(prev => ({...prev, 'other_reason': e.target.value}))}
+                                spellCheck={false}
+                            />
+                            {invalidFields.length > 0 && <div className='pt-1 text-title-2 text-accent-3'>{invalidFields[0].message}</div>}
+                            </>
+                        : <></>
+                        }
+                        { payload.cancel_reason === ''?
+                        <></>
+                        :
+                        <div className='pt-8 ml-auto w-fit'>
+                            <Button 
+                                text='Xác nhận hủy tour'
+                                textColor='text-white' 
+                                bgColor='bg-accent-3'
+                                redBtn
+                                onClick={handleCancelBooking}
+                            />
+                        </div>
+                        }
+                    </form>
+                </div>
+            </div>
+            }
         </section>
     )
 }

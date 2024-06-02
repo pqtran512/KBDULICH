@@ -8,6 +8,7 @@ const Policy = () => {
     const location = useLocation();
     const [value, setVar] = useState(false)
     const tourID = location.state;
+    console.log(location.state)
     return (
         <>
             <section className="w-full bg-neutral-1-50 pt-10 pb-12 md:pb-20">

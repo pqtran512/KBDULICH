@@ -21,7 +21,6 @@ const Paypal = ({payload, tour}) => {
             confirmButtonText: "Tiếp tục"
           }).then((result) => {
             if (result.isConfirmed) {
-              console.log('order: ', order_data)
                 // Your EmailJS service ID, template ID, and Public Key
                 const serviceId = 'service_xkshgih';
                 const templateId = 'template_ook7ttp';

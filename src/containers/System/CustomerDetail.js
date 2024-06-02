@@ -178,8 +178,8 @@ const CustomerDetail = () => {
             <div className='relative text-body-1 text-[#363837] grid gap-6 mx-auto px-4 py-6 border-[3px] border-secondary-2 rounded-b-2xl rounded-tr-2xl md:grid-cols-2 xl:gap-40 xl:w-[900px]'>
                 <div className='absolute -top-6 left-0.5 bg-gradient-to-tr from-secondary-2 to-accent-4 border border-white outline-offset-2 outline outline-[3px] outline-secondary-2 rounded-t-xl w-[100px] h-5'></div>
                 <div className='flex flex-col gap-6'>
-                    <div className='font-semibold'>Mã: <span className='pl-[64px] font-normal'>{orderID}</span></div>
-                    <div className='flex gap-5 items-center'>
+                    <div className='font-semibold'>Mã: <span className='pl-[52px] font-normal'>{orderID}</span></div>
+                    <div className='flex gap-[9px] items-center'>
                         <div className='font-semibold'>Họ và tên: </div>
                         {isEdit? 
                             <InputForm 
@@ -196,7 +196,7 @@ const CustomerDetail = () => {
                             <div className='font-normal'>{order?.name}</div>    
                         }
                     </div>    
-                    <div className='flex gap-[63px] items-center'>
+                    <div className='flex gap-[51px] items-center'>
                         <div className='font-semibold'>SĐT:</div>
                         {isEdit? 
                             <InputForm
@@ -213,7 +213,7 @@ const CustomerDetail = () => {
                             <div className='font-normal'>{order?.phone_no}</div>
                         }
                     </div>
-                    <div className='flex gap-[51px] items-center'>
+                    <div className='flex gap-[39px] items-center'>
                         <div className='font-semibold'>Email:</div>
                         {isEdit? 
                             <InputForm 
@@ -230,7 +230,7 @@ const CustomerDetail = () => {
                             <div className='font-normal'>{order?.email}</div>
                         }
                     </div>
-                    <div className='flex flex-wrap gap-9 items-center'>
+                    <div className='flex flex-wrap gap-6 items-center'>
                         <div className='font-semibold'>Ghi chú:</div>
                         {isEdit? 
                             <InputForm
@@ -247,22 +247,21 @@ const CustomerDetail = () => {
                             <div className='font-normal whitespace-nowrap'>{order?.note === "No note"? 'Không' : order.note}</div>
                         }
                     </div>
+                    <div className='flex gap-10 items-center'>
+                        <div className='font-semibold'>SL vé:</div>
+                        <div className='font-normal'>{order?.ticket_num}</div>
+                    </div>
+                    <div className='flex gap-2 items-center'>
+                        <div className='font-semibold'>Ngày đặt:</div>
+                        {order?.date_time && <div className='font-normal'>{splitDateTime(order?.date_time)[1]} {splitDateTime(order?.date_time)[0]}</div>}
+                    </div>
                     <div className='flex gap-2 items-center'>
                         <div className='font-semibold'>Thanh toán:</div>
                         <div className='font-normal'>{order?.pay_method}</div>
                     </div>
                 </div>
                 <div className='flex flex-col gap-6'>
-                    <div className='flex gap-2 items-center'>
-                        <div className='font-semibold'>Ngày đặt:</div>
-                        {order?.date_time && <div className='font-normal'>{splitDateTime(order?.date_time)[1]} {splitDateTime(order?.date_time)[0]}</div>}
-                    </div>
-                    <div className='flex gap-10 items-center'>
-                        <div className='font-semibold'>SL vé:</div>
-                        <div className='font-normal'>{order?.ticket_num}</div>
-                    </div>
-                    
-                    <div className='flex gap-2 items-center'>
+                    <div className='flex gap-7 items-center'>
                         <div className='font-semibold'>Đánh giá:</div>
                         {order?.Feedback && 
                             <div className='flex gap-2'>
@@ -274,11 +273,25 @@ const CustomerDetail = () => {
                             </div>
                         }
                     </div>
-                    <div className='flex flex-wrap gap-2 items-center'>
+                    <div className='flex flex-wrap gap-6 items-center'>
                         <div className='font-semibold'>Bình luận:</div>
                         <div className='font-normal'>{order?.Feedback?.reviews}</div>
                     </div>
                     <div className='flex flex-wrap gap-2 items-center'>
+                        <div className='font-semibold'>Thanh toán:</div>
+                        {order?.is_complete? 
+                            <div className="flex items-center gap-[6px]">
+                                <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
+                                Đã thanh toán
+                            </div>
+                            :
+                            <div className="flex items-center gap-[6px]">
+                                <div className='w-2 h-2 rounded-full bg-accent-3'></div>
+                                Chưa thanh toán
+                            </div>
+                        }
+                    </div>
+                    <div className='flex flex-wrap gap-4 items-center'>
                         <div className='font-semibold'>Trạng thái:</div>
                         {order?.is_cancel? 
                             <div className="flex items-center gap-[6px]">
@@ -292,7 +305,11 @@ const CustomerDetail = () => {
                             </div>
                         }
                     </div>
-                    <div className='flex flex-wrap gap-2 items-center'>
+                    <div className='flex flex-wrap gap-6 items-center'>
+                        <div className='font-semibold'>Lí do hủy:</div>
+                        <div className='font-normal'>{order?.cancel_reason}</div>
+                    </div>
+                    <div className='flex flex-wrap gap-5 items-center'>
                         <div className='font-semibold'>Hoàn tiền:</div>
                         {isEdit? 
                             <SelectInput options={refundStatus} myStyle='w-[150px]' style2={true} placeholder={order?.is_refund? 'Đã hoàn tiền': 'Chưa hoàn tiền'}  keyPayload='is_refund' setValue={setPayload} />

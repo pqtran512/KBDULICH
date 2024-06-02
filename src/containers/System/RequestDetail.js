@@ -364,19 +364,36 @@ const RequestDetail = () => {
             </div>
             { isEdit ? <></>
             : 
-            <>
-            <div className={`mb-3 ml-auto px-2 py-1 w-fit flex items-center gap-4 rounded-md bg-gradient-to-l ${requestStatusBg(request?.status)} text-caption-1 xl:text-body-2`}>
-                <div className='flex gap-2 items-center'>
-                    <div className='font-semibold whitespace-pre-wrap'>{requestStatus(request?.status)}</div>
+            <div className='flex justify-between items-center'>
+                <div>
+                    {role === 'manager'&& request?.duplicates?
+                    <div className='flex gap-2 text-accent-2'>
+                        <div className='font-semibold pr-2'>Đề xuất trùng với các mã đề xuất: </div>
+                        { request?.duplicates?.map((item, idx) => {
+                            if (idx === request.duplicates.length - 1)
+                                return ( <div key={idx}>{item}</div>)
+                            else 
+                                return ( <div key={idx}>{item}, </div>)
+                        })}
+                    </div>
+                    : <></>
+                    }
+                </div>
+                <div>
+                    <div className={`mb-3 ml-auto px-2 py-1 w-fit flex items-center gap-4 rounded-md bg-gradient-to-l ${requestStatusBg(request?.status)} text-caption-1 xl:text-body-2`}>
+                        <div className='flex gap-2 items-center'>
+                            <div className='font-semibold whitespace-pre-wrap'>{requestStatus(request?.status)}</div>
+                        </div>
+                    </div>
+                    <div className='ml-auto px-2 py-1 w-fit flex items-center gap-4 rounded-md bg-gradient-to-l from-neutral-3-200 to-neutral-3-50 text-caption-1 xl:text-body-2'>
+                        <div className='flex gap-2 items-center text-neutral-1-500'>
+                            <FaClockRotateLeft className='text-[14px]' />
+                            <div className='font-semibold'>Ngày gửi</div>
+                        </div>
+                        {request.date && <div className='italic text-neutral-1-400'>{splitDateTime(request.date)[0]} {splitDateTime(request.date)[1]}</div>}
+                    </div>
                 </div>
             </div>
-            <div className='ml-auto px-2 py-1 w-fit flex items-center gap-4 rounded-md bg-gradient-to-l from-neutral-3-200 to-neutral-3-50 text-caption-1 xl:text-body-2'>
-                <div className='flex gap-2 items-center text-neutral-1-500'>
-                    <FaClockRotateLeft className='text-[14px]' />
-                    <div className='font-semibold'>Ngày gửi</div>
-                </div>
-                {request.date && <div className='italic text-neutral-1-400'>{splitDateTime(request.date)[0]} {splitDateTime(request.date)[1]}</div>}
-            </div></>
             }
             <div className='mt-6 relative text-body-2 text-neutral-1-900 flex flex-col gap-6 mx-auto px-4 py-6 border-[3px] border-secondary-2 rounded-b-2xl rounded-tr-2xl xl:text-body-1'>
                 <div className='absolute -top-6 left-0.5 bg-gradient-to-tr from-secondary-2 to-accent-4 border border-white outline-offset-2 outline outline-[3px] outline-secondary-2 rounded-t-xl w-[100px] h-5'></div>

@@ -90,7 +90,7 @@ const TourDetail = () => {
                 .replace(/đ/g, 'd').replace(/Đ/g, 'D');
     }
     const navigateBooking = () => {
-        navigate('/policy', { state: { tourID } });
+        navigate('/policy', { state: tourID });
     };
     const splitTitle = (paragraph) => {
         const firstNewlineIndex = paragraph.indexOf('\n');

@@ -204,7 +204,7 @@ useEffect(() => {
                             <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/> 
                         </div></td> */}
                         <td className="hidden xl:table-cell"><div className='flex items-center gap-1'>
-                            <div>Đánh giá</div>
+                            <div>Thanh toán</div>
                             <CgArrowsExchangeAltV size={24} className='text-neutral-1-200 rounded-md hover:text-neutral-1-300 hover:bg-neutral-3-300 cursor-pointer'/> 
                         </div></td>
                         <td className="hidden xl:table-cell"><div className='flex items-center gap-1'>
@@ -228,7 +228,7 @@ useEffect(() => {
                             <td className='hidden md:table-cell'>{order.order?.email}</td>
                             <td className="hidden md:table-cell">{splitDateTime(order.order?.date_time)[0]}</td>
                             <td className="hidden md:table-cell">{order.order?.ticket_num}</td>
-                            { order.feedback?.ratings?
+                            {/* { order.feedback?.ratings?
                                 <td className='hidden xl:table-cell'>
                                     <div className={`${ratingClassifier(order.feedback.ratings) < 3? 'bg-[#1ABB9C]' : 'bg-accent-3'} flex items-center gap-1 w-fit px-2 rounded-full`}>
                                         <div className='text-white'>{order.feedback.ratings}</div>
@@ -236,6 +236,20 @@ useEffect(() => {
                                     </div>
                                 </td>
                                 : <td className="hidden xl:table-cell">Chưa đánh giá</td>
+                            } */}
+                            { order.order?.is_complete?
+                                <td className="hidden xl:table-cell">
+                                    <div className="flex items-center gap-[6px]">
+                                        <div className='w-2 h-2 rounded-full bg-[#1ABB9C]'></div>
+                                        Đã thanh toán
+                                    </div>
+                                </td>
+                                : <td className="hidden xl:table-cell">
+                                    <div className="flex items-center gap-[6px]">
+                                        <div className='w-2 h-2 rounded-full bg-accent-3'></div>
+                                        Chưa thanh toán
+                                    </div>
+                                </td>
                             }
                             {order.order.is_cancel? 
                                 <td className="hidden xl:table-cell">
